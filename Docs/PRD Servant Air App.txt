@@ -1,0 +1,499 @@
+Aviation Booking and Resource Management System
+Product Requirements Document (PRD)
+Document Information
+	• Version: 2.1
+	• Last Updated: December 26, 2024
+	• System Type: Aviation-focused Progressive Web Application (PWA)
+1. Overview
+1.1 Product Purpose
+A comprehensive Progressive Web Application (PWA) designed specifically for aviation organizations (flight schools, flying clubs, FBOs) to manage aircraft bookings, pilot certifications, resource scheduling, and compliance tracking. The system supports aircraft and general resource management, booking capabilities, payment processing, and aviation-specific compliance features.
+1.2 Target Users
+	• Flight instructors and pilots (members only)
+	• Flight school administrators
+	• Aircraft owners and operators
+	• Aviation organization management
+	• Passengers (non-members, added by members)
+2. Core Features
+2.1 Calendar and Booking Interface
+	• Calendar Views 
+		○ Monthly View: Traditional calendar grid showing all bookings across all resources
+		○ Weekly View: 7-day horizontal timeline with hourly slots
+		○ Daily View: Resource-column layout with individual aircraft/resource columns
+		○ Agenda View: List format showing chronological bookings
+	• Daily View Features 
+		○ Resource Columns: Each aircraft/resource displayed as separate column
+		○ Resource Filtering: Toggle visibility of specific aircraft/resources
+		○ Horizontal Time Axis: Hourly time slots displayed horizontally
+		○ Multi-Resource Booking: Drag bookings between resource columns
+	• Drag-and-Drop Functionality 
+		○ Booking Creation: Drag to create new bookings on any resource
+		○ Booking Movement: Drag bookings between resources and time slots
+		○ Time Modification: Drag booking edges to extend/shorten duration
+		○ Resource Transfer: Drag bookings between aircraft columns
+		○ Conflict Prevention: Visual warnings for scheduling conflicts
+	• Booking Resolution 
+		○ 30-minute interval booking slots (default, admin configurable)
+		○ Prevention of double-booking with admin override capability
+		○ Real-time calendar updates across all users
+		○ Live conflict detection during drag operations
+		○ Snap-to-grid functionality for precise time alignment
+2.2 Resource Management
+2.2.1 Aircraft Resources
+	• Aircraft tail number/registration
+	• Aircraft type and model
+	• Hourly rates (varies by membership level)
+	• Home base location
+	• Equipment specifications
+	• Operating limitations
+	• Insurance requirements
+	• Maintenance status
+2.2.2 Human Resources (Instructors/Personnel)
+	• Certified Flight Instructors (CFI)
+	• Designated Pilot Examiners (DPE)
+	• Ground instructors
+	• Maintenance personnel
+	• Check airmen and evaluators
+	• Student pilots and pilots (when included in bookings)
+	• Hourly instruction rates by instructor level
+	• Certification levels and endorsement authority
+	• Availability schedules and time blocks
+	• Instructor-specific aircraft authorizations
+2.2.3 Facility Resources
+	• Meeting rooms and classrooms
+	• Training equipment and simulators
+	• Ground support equipment
+	• Maintenance facilities
+2.2.4 Resource Properties (All Types)
+	• Title and description
+	• Custom pricing matrix by membership level
+	• Role/membership restrictions
+	• Location and category
+	• Capacity limits
+	• Default time zone
+	• Resource-specific custom fields
+	• Resource designation flag (available for booking or not)
+	• Conflict prevention rules (human resources cannot be double-booked)
+	• Automatic availability blocking when scheduled
+2.2.4 Expiration and Compliance Tracking
+	• Aircraft Certifications 
+		○ IFR transponder certification (24-month cycle)
+		○ Pitot static system checks (24-month cycle)
+		○ ELT battery/certification tracking
+		○ Annual inspection dates
+		○ 100-hour inspection tracking
+		○ Engine overhaul due dates
+	• Maintenance Scheduling 
+		○ Oil change intervals
+		○ Airworthiness Directive (AD) compliance
+		○ Service bulletin tracking
+	• Custom Expiration Fields 
+		○ Admin-configurable expiration date fields
+		○ Automated alerts for approaching deadlines
+		○ Resource availability restrictions based on expired certifications
+2.3 Event Management
+2.3.1 Event Properties
+	• Start datetime and end datetime
+	• Title and description
+	• Associated aircraft/resource
+	• Human resources (CFI, DPE, maintenance personnel)
+	• Primary pilot (organizer)
+	• Additional pilots and passengers
+	• Flight purpose and type
+	• Hobbs/Tach time (actual vs. scheduled)
+	• Instructor billing hours and rates
+	• Multi-resource booking (aircraft + instructor combinations)
+	• Dynamic data fields
+	• Recurrence information
+	• Status and approval workflow
+	• Created/Updated timestamps
+	• Resource availability conflict prevention
+2.3.2 Aviation-Specific Event Features
+	• Flight Types: Training, solo, cross-country, checkride, maintenance
+	• Recurring Events: Regular training schedules, recurring maintenance
+	• Pre and Post-flight Workflows: n8n integration for automated processes
+	• Flight Logging: Integration with pilot logbooks
+	• Weather Integration: Optional METAR/TAF data display
+
+2.3.3 Advanced Calendar Interface Requirements
+	• Resource Column Management 
+		○ Individual columns for each aircraft/resource in daily view
+		○ Human resource columns for instructors, examiners, and personnel
+		○ Combined booking columns showing both aircraft and human resources
+		○ Column width adjustment based on booking density
+		○ Resource filtering with show/hide toggle controls
+		○ Color-coded resource identification (aircraft vs. human resources)
+		○ Resource grouping options (by type: aircraft, instructors, facilities)
+	• Interactive Booking Operations 
+		○ Click-and-drag booking creation across time slots
+		○ Edge-dragging for start/end time modifications
+		○ Cross-resource dragging for aircraft changes
+		○ Multi-select operations for bulk booking changes
+	• Visual Feedback Systems 
+		○ Real-time conflict highlighting during drag operations
+		○ Visual grid snapping indicators
+		○ Booking status color coding (confirmed, tentative, maintenance)
+		○ Resource availability indicators
+	• Touch and Mobile Optimization 
+		○ Touch-friendly drag operations with haptic feedback
+		○ Long-press context menus for booking options
+		○ Pinch-to-zoom for detailed time resolution
+		○ Swipe navigation between calendar views
+2.4 User Management and Membership System
+2.4.1 Membership Requirements
+	• Members Only Booking: No guest bookings allowed
+	• Passenger Addition: Non-members can be added as passengers by members
+	• Member Authentication: Firebase Authentication with Google Sign-In
+2.4.2 Membership Tiers and Pricing
+	• Membership Levels (Admin configurable): 
+		○ Student Pilot
+		○ Private Pilot
+		○ Commercial Pilot
+		○ Certified Flight Instructor (CFI)
+		○ Aircraft Owner
+		○ Custom membership types
+	• Tiered Pricing: Different hourly rates per membership level per resource
+	• Membership Benefits: Access levels, booking priorities, rate discounts
+2.4.3 Pilot Certification Tracking
+	• Currency Requirements 
+		○ Biennial Flight Review (BFR) expiration dates
+		○ Medical certificate expiration
+		○ 90-day passenger currency
+		○ Night currency requirements
+		○ Instrument currency (6 approaches, holding, tracking)
+	• Endorsements and Ratings 
+		○ Aircraft type endorsements
+		○ High-performance endorsements
+		○ Complex aircraft endorsements
+		○ Tailwheel endorsements
+	• Automatic Restrictions: Prevent bookings when currency expired
+2.4.4 User Roles and Permissions
+	• Admin: Full system access and configuration
+	• Instructor: Student management, endorsement authority, bookable as resource
+	• Member: Standard booking and flight privileges
+	• Maintenance: Aircraft status updates, maintenance scheduling
+	• External User Invitations: Specific access levels for visiting pilots
+	• Role-Based Resource Designation:
+		○ CFI/CFII: Automatically designated as bookable resource
+		○ DPE (Designated Pilot Examiner): Bookable resource for checkrides
+		○ Ground Instructor: Bookable for ground training sessions
+		○ Student Pilot: Can be included as resource in their own bookings
+		○ Private/Commercial Pilot: Can be included as resource when booking
+		○ Maintenance Personnel: Bookable for scheduled maintenance work
+
+2.4.5 Advanced Role-Based Access Control System
+	• Granular Permission System: Screen-level access control for all user interfaces
+	• Custom Role Creation: Admin ability to create roles with specific permission sets
+	• Predefined Roles with Specific Access:
+		○ Administrator: Complete system access including admin dashboard, role management, system settings
+		○ FlightLine Manager: Members, aircraft details, maintenance items, flight line status monitoring
+		○ Mechanic: Aircraft status viewing, maintenance logbook entry modification and deletion
+		○ Treasurer: All charges viewing, payment refund capabilities, charge status verification
+		○ Pilot/Student/Instructor/Examiner: Aircraft status, booking calendars, member directory with messaging
+	• Permission Categories:
+		○ Core Access: Dashboard, Calendar, Profile, Messages
+		○ Fleet Management: Aircraft viewing/editing, maintenance logs, compliance tracking
+		○ User Management: Member directory, membership management, role administration
+		○ Financial: Payment viewing/processing, refunds, billing management
+		○ System Admin: Settings, reports, admin dashboard, system logs
+	• Role Management Interface:
+		○ Visual role creation and editing with checkbox-based permissions
+		○ Role duplication for similar permission structures
+		○ Badge color assignment for role identification
+		○ Import/export roles for system migration
+		○ Admin-only role deletion (except administrator role)
+2.5 Payment Processing
+2.5.1 Multi-Gateway Integration
+	• Stripe: Primary payment processor
+	• Zelle: Alternative payment method
+	• PayPal: Secondary payment option
+	• Payment Timing Options: 
+		○ Pre-booking: Deposits or full payment before flight
+		○ Post-flight: Hobbs time-based billing after completion
+2.5.2 Aviation-Specific Billing
+	• Hobbs Time Billing: Actual aircraft usage time
+	• Fuel Surcharges: Variable fuel cost adjustments
+	• Instructor Fees: Separate CFI billing rates by instructor level
+	• Human Resource Billing: Time-based billing for all personnel resources
+	• Multi-Resource Billing: Combined aircraft + instructor rate calculations
+	• Resource-Specific Rates: Different rates per instructor/examiner
+	• Membership Dues: Recurring monthly/annual payments
+	• Late Fees and Penalties: Configurable penalty structure
+2.6 Notifications and Communication
+	• Email Notifications: Firebase email services
+	• SMS Notifications: Critical flight reminders
+	• Automated Alerts: 
+		○ Upcoming flight reminders
+		○ Weather alerts for scheduled flights
+		○ Certification expiration warnings
+		○ Maintenance due notifications
+	• Booking Confirmations: Immediate confirmation emails
+	• Cancellation Processing: Automated refund workflows
+
+2.7 In-App Messaging System
+	• Real-Time User-to-User Messaging: Direct communication between all system users
+	• Role-Based Message Filtering:
+		○ All conversations view with search capabilities
+		○ Unread messages filtering for priority communications
+		○ Staff/Instructor filtering for official communications
+	• Aviation-Specific Features:
+		○ Instructor-student lesson coordination messaging
+		○ Maintenance team aircraft status communications
+		○ Flight operations weather and safety announcements
+		○ System-wide administrative announcements
+	• Message Interface Features:
+		○ Real-time typing indicators and online status
+		○ Message history with timestamp tracking
+		○ Conversation search and filtering capabilities
+		○ Attachment support for aviation documents
+		○ Emergency broadcast messaging for critical alerts
+	• Integration with User Roles:
+		○ CFI messaging for lesson scheduling and progress updates
+		○ Maintenance personnel direct communication for aircraft issues
+		○ Administrative announcements from flight operations
+		○ Member directory integration for easy contact selection
+		○ Role-based message routing and priority handling
+3. Technical Requirements
+3.1 Technology Stack
+Frontend
+	• Next.js with TypeScript: React framework with server-side rendering, static generation, and type safety
+	• Styling Framework:
+		○ Tailwind CSS: Utility-first CSS framework for rapid, consistent styling
+		○ shadcn/ui: Modern React component library built on Radix UI primitives
+		○ Radix UI: Headless, accessible components for complex interactions
+	• Icons: Material Symbols, Hero Icons, Lucide React for comprehensive icon coverage
+	• Animation: Framer Motion for smooth, performant animations and transitions
+	• Typography: Modern sans serif fonts (Inter, Geist, Manrope) for optimal readability
+	• Calendar System Features:
+		○ Multi-view calendar (Monthly, Weekly, Daily, Agenda)
+		○ Resource-column daily view with filterable aircraft/resources
+		○ Complete drag-and-drop functionality for booking management
+		○ Real-time booking conflict detection and prevention
+		○ Touch-compatible drag operations for mobile devices
+		○ Snap-to-grid time alignment with configurable intervals
+	• Progressive Web App: Mobile-responsive, offline capabilities
+	• Modern UI/UX: Aviation-themed, intuitive design with Carolina Sky Blue color scheme
+	• Mobile-First Design: Hamburger navigation in upper left, optimized for mobile devices
+	• Admin Customizable: Brand name, colors, and logo can be configured by administrators
+Backend
+	• Node.js: Firebase Cloud Functions
+	• Firestore: Primary database for all data storage
+	• Firebase Authentication: User management and security
+	• Firebase Email: Automated notification services
+Integrations
+	• Google Calendar API: One-way sync for all bookings and resources
+	• n8n Workflows: Post-flight automation and data processing
+	• Weather APIs: Optional METAR/TAF integration
+	• Analytics Tools: Usage and performance monitoring
+3.2 Performance Requirements
+	• Support for 1,000+ simultaneous bookings
+	• Real-time calendar updates
+	• Sub-second response times for booking operations
+	• Offline capability for critical booking functions
+	• Cross-device synchronization
+3.3 Security and Compliance Requirements
+	• Aviation Data Protection: Secure pilot and aircraft information
+	• Payment Security: PCI DSS compliance for payment processing
+	• Role-Based Access Control: Granular permission system
+	• Audit Trails: Complete booking and modification history
+	• Data Backup: Automated daily backups with disaster recovery
+4. Administrative Dashboard
+4.0 Admin Dashboard Overview
+	• Comprehensive System Management: Centralized control panel for all administrative functions
+	• Real-Time System Monitoring:
+		○ Live system statistics (total users, active aircraft, monthly revenue, system health)
+		○ System activity feed with real-time updates
+		○ Performance metrics and operational dashboards
+		○ Emergency protocol access and system alerts
+	• Quick Actions Interface:
+		○ Rapid access to common administrative tasks
+		○ Direct links to user creation, aircraft registration, role management
+		○ System-wide announcement broadcasting capabilities
+		○ Payment processing and financial management shortcuts
+	• Administrative Controls:
+		○ Role management with real-time permission updates
+		○ System configuration and global settings access
+		○ User management with role assignment capabilities
+		○ Financial oversight with payment processing controls
+	• Security and Audit Features:
+		○ Complete system activity logging and monitoring
+		○ Admin-level emergency access controls
+		○ System backup and recovery management
+		○ Compliance monitoring and regulatory reporting
+
+4.1 Resource Management Interface
+	• Aircraft Management: 
+		○ Add/edit aircraft with specifications
+		○ Certification tracking and alerts
+		○ Maintenance scheduling integration
+		○ Insurance and registration management
+	• Human Resource Management:
+		○ Instructor resource designation and availability settings
+		○ CFI/DPE resource scheduling and rate configuration
+		○ Personnel resource conflict management
+		○ Resource authorization matrix (which instructors can use which aircraft)
+		○ Instructor availability blocks and time-off management
+	• Facility Resource Management: 
+		○ Classroom and equipment scheduling
+		○ Facility booking capabilities
+		○ Equipment resource availability tracking
+	• Calendar Management Controls:
+		○ Resource column visibility defaults
+		○ Booking time slot configuration (15, 30, 60 minute intervals)
+		○ Drag-and-drop permission settings by user role
+		○ Conflict resolution rules and override permissions
+		○ Calendar view defaults per user type
+4.2 User and Membership Administration
+	• Membership Management: 
+		○ Create/modify membership tiers
+		○ Set pricing matrices by membership level
+		○ Manage membership benefits and restrictions
+	• Pilot Certification Management: 
+		○ Track currency and endorsements
+		○ Automated expiration alerts
+		○ Endorsement approval workflows
+	• User Administration: 
+		○ Member registration and approval
+		○ Role assignment and permissions
+		○ Resource designation assignment (enable/disable user as bookable resource)
+		○ Instructor resource rate configuration
+		○ User availability schedule management
+		○ Deactivation and suspension capabilities
+	• Advanced Role Management:
+		○ Visual role creation interface with granular permission selection
+		○ Role duplication and template management
+		○ Real-time permission updates and role assignment
+		○ Screen-level access control with preview capabilities
+		○ Role-based dashboard customization and feature visibility
+		○ Audit trail for role changes and permission modifications
+4.3 Financial Management
+	• Payment Configuration: 
+		○ Stripe, Zelle, and PayPal API setup
+		○ Rate management by resource and membership
+		○ Human resource billing rate configuration
+		○ Multi-resource billing combinations setup
+		○ Billing cycle configuration
+	• Financial Reporting: 
+		○ Revenue tracking by aircraft and instructor
+		○ Human resource utilization and revenue reports
+		○ Instructor payment tracking and distribution
+		○ Multi-resource booking financial analysis
+		○ Membership dues management
+		○ Outstanding balance monitoring
+4.4 Global Settings and Configuration
+	• Organization Settings: 
+		○ Flight school/club name and branding
+		○ Contact information and locations
+		○ Operating hours and policies
+	• System Configuration: 
+		○ Booking interval settings (default 30 minutes)
+		○ Notification preferences
+		○ Integration API keys
+		○ Backup and maintenance schedules
+4.5 Compliance and Safety Dashboard
+	• Expiration Monitoring: Centralized view of all approaching deadlines
+	• Maintenance Tracking: Aircraft status and scheduling
+	• Currency Dashboard: Pilot qualification overview
+	• Safety Reporting: Incident tracking and analysis
+5. Integration and Automation
+5.1 Google Calendar Integration
+	• One-Way Sync: All bookings automatically sync to Google Calendar
+	• Resource-Specific Calendars: Separate calendars per aircraft/resource
+	• Real-Time Updates: Immediate synchronization of changes
+5.2 n8n Workflow Automation
+	• Post-Flight Processing: 
+		○ Hobbs time calculation and billing
+		○ Pilot logbook updates
+		○ Maintenance hour tracking
+	• Compliance Automation: 
+		○ Currency expiration alerts
+		○ Certification renewal reminders
+	• Financial Workflows: 
+		○ Automated billing processes
+		○ Payment reconciliation
+		○ Late fee processing
+5.3 Weather and Safety Integration
+	• Weather Data: Optional METAR/TAF display for flight planning
+	• NOTAM Integration: Airfield and airspace notifications
+	• Safety Alerts: Weather minimums and aircraft limitations
+6. Aviation-Specific Features
+6.1 Flight Operations
+	• Pre-Flight Planning: Weather, NOTAMs, and aircraft status
+	• Flight Following: Optional position tracking integration
+	• Post-Flight Reporting: Hobbs/Tach time, fuel usage, squawks
+6.2 Training Management
+	• Lesson Scheduling: Structured training program support
+	• Progress Tracking: Student advancement monitoring
+	• Endorsement Workflow: Instructor approval processes
+	• Checkride Coordination: DPE scheduling and preparation
+6.3 Maintenance Integration
+	• Squawk Reporting: Pilot discrepancy reporting
+	• Maintenance Scheduling: Preventive maintenance planning
+	• Aircraft Status: Real-time airworthiness tracking
+	• Parts and Service: Vendor management integration
+7. Success Metrics
+	• Operational Metrics: 
+		○ Aircraft utilization rates
+		○ Booking completion rates
+		○ Payment processing success
+		○ System uptime and availability
+	• Safety Metrics: 
+		○ Currency compliance rates
+		○ Maintenance on-time completion
+		○ Incident reduction tracking
+	• Financial Metrics: 
+		○ Revenue per aircraft hour
+		○ Membership retention rates
+		○ Payment collection efficiency
+	• User Experience: 
+		○ User adoption and engagement
+		○ Mobile app usage statistics
+		○ Customer satisfaction scores
+	• Calendar System Metrics:
+		○ Drag-and-drop operation success rates
+		○ Calendar view usage distribution (Monthly/Weekly/Daily)
+		○ Resource filtering usage patterns
+		○ Booking modification frequency via drag operations
+		○ Time spent in different calendar views
+		○ Conflict resolution effectiveness
+	• Administrative System Metrics:
+		○ Role management usage and permission change frequency
+		○ Admin dashboard engagement and quick action utilization
+		○ Message system usage by role type and communication patterns
+		○ System configuration changes and customization adoption
+		○ Security incident tracking and role-based access violations
+8. Security and Compliance
+8.1 Aviation Regulatory Compliance
+	• FAA Regulations: Part 61, 91, and 141 compliance support
+	• Record Keeping: Required pilot and aircraft documentation
+	• Audit Preparation: Regulatory inspection readiness
+8.2 Data Security
+	• Encryption: All data encrypted in transit and at rest
+	• Access Controls: Multi-factor authentication options
+	• Privacy Protection: GDPR and CCPA compliance
+	• Incident Response: Security breach procedures
+9. Implementation Timeline
+MVP Priority Pages (Completed):
+	• Authentication/Login: Google OAuth integration with mobile-first design
+	• Calendar/Booking Interface: Drag-and-drop functionality with real-time updates
+	• User Profile: Pilot certification tracking and currency monitoring
+	• Membership Management: 4-tier system with admin controls
+	• Payments: Multi-gateway support with transaction history
+	• Settings: Admin customization panel
+	• Aircraft Management: Fleet management with compliance tracking
+	• Admin Dashboard: Complete system overview with role management and analytics
+	• Role Management: Advanced permission system with visual role creation interface
+	• Message Center: Real-time user-to-user messaging with role-based filtering
+
+	• Phase 1: Core booking system and user management (8-10 weeks)
+	• Phase 2: Payment integration and basic reporting (4-6 weeks)
+	• Phase 3: Advanced aviation features and compliance tracking (6-8 weeks)
+	• Phase 4: Mobile optimization and advanced integrations (4-6 weeks)
+10. Future Enhancements
+	• Mobile Native Apps: iOS and Android applications
+	• Advanced Analytics: Predictive maintenance and usage analytics
+	• Fleet Management: Multi-location aircraft management
+	• Pilot Training LMS: Integrated learning management system
+	• Insurance Integration: Automated policy management and claims
+
+End of Document
+This PRD represents a comprehensive aviation booking and resource management system designed to meet the specific needs of flight training organizations, flying clubs, and aircraft operators while maintaining regulatory compliance and operational efficiency.

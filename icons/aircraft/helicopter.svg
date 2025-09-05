@@ -1,0 +1,36 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .heli-body { fill: #56B4E9; stroke: #4A90E2; stroke-width: 0.5; }
+      .heli-rotor { fill: none; stroke: #4A90E2; stroke-width: 0.8; }
+      .heli-tail { fill: #56B4E9; stroke: #4A90E2; stroke-width: 0.4; }
+      .landing-gear { fill: none; stroke: #365B7D; stroke-width: 0.6; }
+    </style>
+  </defs>
+  
+  <!-- Main body -->
+  <ellipse cx="10" cy="14" rx="4" ry="2.5" class="heli-body"/>
+  
+  <!-- Cockpit -->
+  <circle cx="10" cy="12" r="2.5" class="heli-body"/>
+  
+  <!-- Tail boom -->
+  <rect x="14" y="13" width="6" height="1.5" rx="0.7" class="heli-tail"/>
+  
+  <!-- Tail rotor -->
+  <circle cx="20.5" cy="13.7" r="1.5" class="heli-rotor"/>
+  <line x1="19" y1="13.7" x2="22" y2="13.7" class="heli-rotor"/>
+  <line x1="20.5" y1="12.2" x2="20.5" y2="15.2" class="heli-rotor"/>
+  
+  <!-- Main rotor hub -->
+  <circle cx="10" cy="9" r="0.8" fill="#4A90E2"/>
+  
+  <!-- Main rotor blades -->
+  <line x1="3" y1="9" x2="17" y2="9" class="heli-rotor"/>
+  <line x1="10" y1="2" x2="10" y2="16" class="heli-rotor"/>
+  
+  <!-- Landing skids -->
+  <line x1="7" y1="17" x2="13" y2="17" class="landing-gear"/>
+  <line x1="7" y1="16" x2="7" y2="17.5" class="landing-gear"/>
+  <line x1="13" y1="16" x2="13" y2="17.5" class="landing-gear"/>
+</svg>

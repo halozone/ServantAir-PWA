@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7fafc;
+            color: #2d3748;
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary-color: #56B4E9;
+            --secondary-color: #4A90E2;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+        }
+
+        /* Mobile First Layout */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hamburger-menu {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 2px 0;
+        }
+
+        .hamburger-line {
+            width: 100%;
+            height: 2px;
+            background: #4a5568;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-mobile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon-mobile {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--danger-color) 0%, #c53030 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text-mobile {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .user-avatar-mobile {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--danger-color) 0%, #c53030 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .admin-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ffd700;
+            color: #000;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 4px;
+            border: 1px solid white;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            padding: 24px;
+        }
+
+        .sidebar-overlay.open {
+            left: 0;
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 32px;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #c53030 100%);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            color: #a0aec0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-link {
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+
+        .nav-section {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #4a5568;
+        }
+
+        .nav-section-title {
+            color: #718096;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding: 0 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            min-width: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-crown {
+            color: #ffd700;
+            font-size: 24px;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            margin-top: 4px;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(86, 180, 233, 0.4);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .secondary-btn:hover {
+            background: #f7fafc;
+        }
+
+        .danger-btn {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #c53030 100%);
+            color: white;
+        }
+
+        .danger-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(229, 62, 62, 0.4);
+        }
+
+        /* Quick Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .stat-change.positive {
+            color: var(--success-color);
+        }
+
+        .stat-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Admin Sections */
+        .admin-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .admin-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-body {
+            padding: 24px;
+        }
+
+        /* Role Management */
+        .role-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .role-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .role-item:hover {
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        .role-info {
+            flex: 1;
+        }
+
+        .role-name {
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .role-description {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            margin-right: 12px;
+        }
+
+        .role-badge.admin {
+            background: var(--danger-color);
+        }
+
+        .role-badge.flightline {
+            background: var(--info-color);
+        }
+
+        .role-badge.mechanic {
+            background: var(--warning-color);
+        }
+
+        .role-badge.treasurer {
+            background: var(--success-color);
+        }
+
+        .role-badge.pilot {
+            background: var(--primary-color);
+        }
+
+        .role-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mini-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .edit-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .delete-btn {
+            background: #fed7d7;
+            color: var(--danger-color);
+            border: 1px solid #feb2b2;
+        }
+
+        .delete-btn:hover {
+            background: #fbb6ce;
+        }
+
+        /* System Activity */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 2px;
+            font-size: 14px;
+        }
+
+        .activity-description {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: #a0aec0;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .quick-action {
+            padding: 20px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .quick-action-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .quick-action-description {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+
+            .app-container {
+                flex-direction: row;
+                overflow: hidden;
+            }
+
+            .sidebar-overlay {
+                position: relative;
+                left: 0;
+                z-index: auto;
+                flex-shrink: 0;
+                width: 280px;
+            }
+
+            .sidebar-backdrop {
+                display: none;
+            }
+
+            .main-content {
+                padding: 32px;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                width: calc(100vw - 280px);
+                max-width: calc(100vw - 280px);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .admin-sections {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-sections {
+                grid-template-columns: 1fr;
+            }
+
+            .role-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .role-actions {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation will be loaded here by JavaScript -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        <span class="admin-crown">👑</span>
+                        Admin Dashboard
+                    </h1>
+                    <div class="page-subtitle">Complete system overview and management controls</div>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn secondary-btn" id="reportsBtn">
+                        📊 Generate Reports
+                    </button>
+                    <button class="action-btn primary-btn" id="quickActionsBtn">
+                        ➕ Quick Actions
+                    </button>
+                    <button class="action-btn danger-btn" id="emergencyBtn">
+                        🚨 Emergency
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Users</div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">👥</div>
+                    </div>
+                    <div class="stat-value">247</div>
+                    <div class="stat-change positive">+12 this month</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Active Aircraft</div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--success-color) 0%, #38a169 100%);">✈️</div>
+                    </div>
+                    <div class="stat-value">18</div>
+                    <div class="stat-change">2 in maintenance</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Monthly Revenue</div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning-color) 0%, #dd6b20 100%);">💰</div>
+                    </div>
+                    <div class="stat-value">$45,230</div>
+                    <div class="stat-change positive">+8.2% vs last month</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">System Health</div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--success-color) 0%, #38a169 100%);">💚</div>
+                    </div>
+                    <div class="stat-value">98.7%</div>
+                    <div class="stat-change">Excellent uptime</div>
+                </div>
+            </div>
+
+            <!-- Admin Management Sections -->
+            <div class="admin-sections">
+                <!-- Role Management -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            🛡️ Role Management
+                        </h3>
+                        <button class="mini-btn edit-btn" id="manageAllRoles">Manage All</button>
+                    </div>
+                    <div class="section-body">
+                        <div class="role-list">
+                            <div class="role-item">
+                                <div class="role-info">
+                                    <div class="role-name">Administrator</div>
+                                    <div class="role-description">Full system access and control</div>
+                                </div>
+                                <div class="role-badge admin">Admin</div>
+                                <div class="role-actions">
+                                    <button class="mini-btn edit-btn" data-role="admin">Edit</button>
+                                </div>
+                            </div>
+                            
+                            <div class="role-item">
+                                <div class="role-info">
+                                    <div class="role-name">FlightLine Manager</div>
+                                    <div class="role-description">Members, aircraft, maintenance oversight</div>
+                                </div>
+                                <div class="role-badge flightline">FlightLine</div>
+                                <div class="role-actions">
+                                    <button class="mini-btn edit-btn" data-role="flightline">Edit</button>
+                                    <button class="mini-btn delete-btn" data-role="flightline">Delete</button>
+                                </div>
+                            </div>
+                            
+                            <div class="role-item">
+                                <div class="role-info">
+                                    <div class="role-name">Mechanic</div>
+                                    <div class="role-description">Aircraft status and maintenance logs</div>
+                                </div>
+                                <div class="role-badge mechanic">Mechanic</div>
+                                <div class="role-actions">
+                                    <button class="mini-btn edit-btn" data-role="mechanic">Edit</button>
+                                    <button class="mini-btn delete-btn" data-role="mechanic">Delete</button>
+                                </div>
+                            </div>
+                            
+                            <div class="role-item">
+                                <div class="role-info">
+                                    <div class="role-name">Treasurer</div>
+                                    <div class="role-description">Financial management and billing</div>
+                                </div>
+                                <div class="role-badge treasurer">Treasurer</div>
+                                <div class="role-actions">
+                                    <button class="mini-btn edit-btn" data-role="treasurer">Edit</button>
+                                    <button class="mini-btn delete-btn" data-role="treasurer">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent System Activity -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            📊 System Activity
+                        </h3>
+                        <button class="mini-btn edit-btn" id="viewAllActivity">View All</button>
+                    </div>
+                    <div class="section-body">
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background: var(--success-color);">✅</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">New user registration</div>
+                                    <div class="activity-description">John Smith registered as Student Pilot</div>
+                                    <div class="activity-time">2 minutes ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background: var(--warning-color);">🔧</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Maintenance scheduled</div>
+                                    <div class="activity-description">N123AB - Annual inspection due</div>
+                                    <div class="activity-time">15 minutes ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background: var(--primary-color);">💰</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Payment processed</div>
+                                    <div class="activity-description">$275 flight training payment</div>
+                                    <div class="activity-time">1 hour ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background: var(--info-color);">📅</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Booking created</div>
+                                    <div class="activity-description">Training flight N456CD - Sarah Wilson</div>
+                                    <div class="activity-time">2 hours ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background: var(--danger-color);">⚠️</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">System alert</div>
+                                    <div class="activity-description">High booking volume detected</div>
+                                    <div class="activity-time">3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="admin-section" style="grid-column: 1 / -1;">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            ⚡ Quick Actions
+                        </h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="quick-actions">
+                            <a href="membership.html" class="quick-action">
+                                <div class="quick-action-icon">👥</div>
+                                <div class="quick-action-title">Add New User</div>
+                                <div class="quick-action-description">Create member account</div>
+                            </a>
+                            
+                            <a href="aircraft.html" class="quick-action">
+                                <div class="quick-action-icon">✈️</div>
+                                <div class="quick-action-title">Add Aircraft</div>
+                                <div class="quick-action-description">Register new aircraft</div>
+                            </a>
+                            
+                            <a href="roles.html" class="quick-action">
+                                <div class="quick-action-icon">🛡️</div>
+                                <div class="quick-action-title">Create Role</div>
+                                <div class="quick-action-description">Define permissions</div>
+                            </a>
+                            
+                            <a href="messages.html" class="quick-action">
+                                <div class="quick-action-icon">📢</div>
+                                <div class="quick-action-title">Send Announcement</div>
+                                <div class="quick-action-description">Broadcast message</div>
+                            </a>
+                            
+                            <a href="payments.html" class="quick-action">
+                                <div class="quick-action-icon">💳</div>
+                                <div class="quick-action-title">Process Payment</div>
+                                <div class="quick-action-description">Manual billing</div>
+                            </a>
+                            
+                            <a href="settings.html" class="quick-action">
+                                <div class="quick-action-icon">⚙️</div>
+                                <div class="quick-action-title">System Settings</div>
+                                <div class="quick-action-description">Configure system</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile menu functionality
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        
+        hamburgerMenu.addEventListener('click', () => {
+            sidebarOverlay.classList.toggle('open');
+            sidebarBackdrop.classList.toggle('show');
+        });
+        
+        sidebarBackdrop.addEventListener('click', () => {
+            sidebarOverlay.classList.remove('open');
+            sidebarBackdrop.classList.remove('show');
+        });
+
+        // Sample admin functions
+        function manageRole(action, roleId) {
+            console.log(`${action} role:`, roleId);
+            // In production, this would call an API
+            alert(`${action} role functionality would be implemented here`);
+        }
+
+        // Add event listeners to role action buttons
+        document.querySelectorAll('.edit-btn[data-role]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const role = e.target.dataset.role;
+                manageRole('Edit', role);
+            });
+        });
+
+        document.querySelectorAll('.delete-btn[data-role]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const role = e.target.dataset.role;
+                
+                if (confirm(`Are you sure you want to delete the ${role} role?`)) {
+                    manageRole('Delete', role);
+                }
+            });
+        });
+
+        // Header action buttons
+        document.getElementById('reportsBtn').addEventListener('click', () => {
+            alert('Reports generation functionality would be implemented here');
+        });
+
+        document.getElementById('quickActionsBtn').addEventListener('click', () => {
+            alert('Quick actions menu would be implemented here');
+        });
+
+        document.getElementById('emergencyBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to access emergency protocols?')) {
+                alert('Emergency protocols would be implemented here');
+            }
+        });
+
+        // Other admin buttons
+        document.getElementById('manageAllRoles').addEventListener('click', () => {
+            window.location.href = 'roles.html';
+        });
+
+        document.getElementById('viewAllActivity').addEventListener('click', () => {
+            alert('System activity log would be implemented here');
+        });
+
+        // Animation on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.stat-card, .admin-section, .page-header');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+    
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js"></script>
+</body>
+</html> 

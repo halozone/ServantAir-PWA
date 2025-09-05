@@ -1,0 +1,44 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .map { fill: #e6f7ff; stroke: #56B4E9; stroke-width: 0.5; }
+      .route { fill: none; stroke: #e53e3e; stroke-width: 1.5; stroke-dasharray: 2,1; }
+      .waypoint { fill: #e53e3e; }
+      .aircraft { fill: #56B4E9; stroke: #4A90E2; stroke-width: 0.4; }
+      .compass { fill: #4A90E2; stroke: #365B7D; stroke-width: 0.5; }
+    </style>
+  </defs>
+  
+  <!-- Sectional chart/map background -->
+  <rect x="2" y="2" width="20" height="15" rx="1" class="map"/>
+  
+  <!-- Grid lines (sectional chart style) -->
+  <line x1="7" y1="2" x2="7" y2="17" stroke="#56B4E9" stroke-width="0.3" opacity="0.5"/>
+  <line x1="12" y1="2" x2="12" y2="17" stroke="#56B4E9" stroke-width="0.3" opacity="0.5"/>
+  <line x1="17" y1="2" x2="17" y2="17" stroke="#56B4E9" stroke-width="0.3" opacity="0.5"/>
+  <line x1="2" y1="7" x2="22" y2="7" stroke="#56B4E9" stroke-width="0.3" opacity="0.5"/>
+  <line x1="2" y1="12" x2="22" y2="12" stroke="#56B4E9" stroke-width="0.3" opacity="0.5"/>
+  
+  <!-- Flight route -->
+  <path d="M4 14 Q8 8 12 10 Q16 6 20 8" class="route"/>
+  
+  <!-- Waypoints -->
+  <circle cx="4" cy="14" r="1" class="waypoint"/>
+  <circle cx="12" cy="10" r="1" class="waypoint"/>
+  <circle cx="20" cy="8" r="1" class="waypoint"/>
+  
+  <!-- Airport symbols -->
+  <circle cx="4" cy="14" r="2" fill="none" stroke="#4A90E2" stroke-width="0.5"/>
+  <circle cx="20" cy="8" r="2" fill="none" stroke="#4A90E2" stroke-width="0.5"/>
+  
+  <!-- Small aircraft icon on route -->
+  <g transform="translate(12,10) rotate(30)">
+    <ellipse cx="0" cy="0" rx="2" ry="0.4" class="aircraft"/>
+    <ellipse cx="0" cy="0" rx="0.6" ry="1.5" class="aircraft"/>
+  </g>
+  
+  <!-- Navigation compass -->
+  <circle cx="18" cy="20" r="3" class="compass"/>
+  <line x1="18" y1="17.5" x2="18" y2="18.5" stroke="white" stroke-width="0.8"/>
+  <text x="18" y="21" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="1.5" font-weight="bold">N</text>
+</svg>

@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7fafc;
+            color: #2d3748;
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary-color: #56B4E9;
+            --secondary-color: #4A90E2;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+        }
+
+        /* Mobile First Layout */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: #f7fafc;
+            overflow: hidden;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hamburger-menu {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 2px 0;
+        }
+
+        .hamburger-line {
+            width: 100%;
+            height: 2px;
+            background: #4a5568;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-mobile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon-mobile {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--info-color) 0%, #2c5aa0 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text-mobile {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .user-avatar-mobile {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            padding: 24px;
+        }
+
+        .sidebar-overlay.open {
+            left: 0;
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 32px;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--info-color) 0%, #2c5aa0 100%);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            color: #a0aec0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-link {
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            min-width: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            margin-top: 4px;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(86, 180, 233, 0.4);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .secondary-btn:hover {
+            background: #f7fafc;
+        }
+
+        /* Role Cards Grid */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .role-header {
+            padding: 24px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .role-info {
+            flex: 1;
+        }
+
+        .role-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .role-description {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .role-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .role-badge.admin {
+            background: var(--danger-color);
+        }
+
+        .role-badge.flightline {
+            background: var(--info-color);
+        }
+
+        .role-badge.mechanic {
+            background: var(--warning-color);
+        }
+
+        .role-badge.treasurer {
+            background: var(--success-color);
+        }
+
+        .role-badge.pilot {
+            background: var(--primary-color);
+        }
+
+        .role-badge.custom {
+            background: #9f7aea;
+        }
+
+        .role-body {
+            padding: 24px;
+        }
+
+        .permission-section {
+            margin-bottom: 20px;
+        }
+
+        .permission-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 12px;
+        }
+
+        .permission-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .permission-status {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .permission-status.allowed {
+            background: var(--success-color);
+        }
+
+        .permission-status.denied {
+            background: #e2e8f0;
+            color: #a0aec0;
+        }
+
+        .role-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .mini-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+        }
+
+        .edit-btn {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .edit-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .delete-btn {
+            background: #fed7d7;
+            color: var(--danger-color);
+            border: 1px solid #feb2b2;
+        }
+
+        .delete-btn:hover {
+            background: #fbb6ce;
+        }
+
+        .duplicate-btn {
+            background: #bee3f8;
+            color: var(--info-color);
+            border: 1px solid #90cdf4;
+        }
+
+        .duplicate-btn:hover {
+            background: #90cdf4;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f7fafc;
+            border-radius: 50%;
+            color: #4a5568;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .permission-group {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .permission-group-title {
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .checkbox.checked {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+
+            .app-container {
+                flex-direction: row;
+                overflow: hidden;
+            }
+
+            .sidebar-overlay {
+                position: relative;
+                left: 0;
+                z-index: auto;
+                flex-shrink: 0;
+                width: 280px;
+            }
+
+            .sidebar-backdrop {
+                display: none;
+            }
+
+            .main-content {
+                padding: 32px;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                width: calc(100vw - 280px);
+                max-width: calc(100vw - 280px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .role-actions {
+                flex-direction: column;
+            }
+
+            .permissions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation will be loaded here by JavaScript -->
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        🛡️ Role Management
+                    </h1>
+                    <div class="page-subtitle">Create and manage user roles with custom permissions</div>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn secondary-btn" id="importRoles">
+                        📥 Import Roles
+                    </button>
+                    <button class="action-btn primary-btn" id="createRole">
+                        ➕ Create New Role
+                    </button>
+                </div>
+            </div>
+
+            <!-- Roles Grid -->
+            <div class="roles-grid" id="rolesGrid">
+                <!-- Roles will be populated by JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Create/Edit Role Modal -->
+    <div class="modal-overlay" id="roleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Create New Role</h3>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="roleForm">
+                    <div class="form-group">
+                        <label class="form-label">Role Name *</label>
+                        <input type="text" class="form-input" id="roleName" placeholder="Enter role name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input form-textarea" id="roleDescription" placeholder="Describe this role's purpose and responsibilities"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Badge Color</label>
+                        <select class="form-input" id="roleColor">
+                            <option value="admin">Red (Admin)</option>
+                            <option value="flightline">Blue (FlightLine)</option>
+                            <option value="mechanic">Orange (Mechanic)</option>
+                            <option value="treasurer">Green (Treasurer)</option>
+                            <option value="pilot">Sky Blue (Pilot)</option>
+                            <option value="custom">Purple (Custom)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Screen Access Permissions</label>
+                        <div class="permissions-grid">
+                            <div class="permission-group">
+                                <div class="permission-group-title">Core Access</div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="dashboard"></div>
+                                    <label class="checkbox-label">Dashboard</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="calendar"></div>
+                                    <label class="checkbox-label">Calendar</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="profile"></div>
+                                    <label class="checkbox-label">Profile</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="messages"></div>
+                                    <label class="checkbox-label">Messages</label>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-group">
+                                <div class="permission-group-title">Fleet Management</div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="aircraft-view"></div>
+                                    <label class="checkbox-label">View Aircraft</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="aircraft-edit"></div>
+                                    <label class="checkbox-label">Edit Aircraft</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="maintenance"></div>
+                                    <label class="checkbox-label">Maintenance Logs</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="compliance"></div>
+                                    <label class="checkbox-label">Compliance Tracking</label>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-group">
+                                <div class="permission-group-title">User Management</div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="members-view"></div>
+                                    <label class="checkbox-label">View Members</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="members-edit"></div>
+                                    <label class="checkbox-label">Edit Members</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="membership"></div>
+                                    <label class="checkbox-label">Membership Mgmt</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="roles"></div>
+                                    <label class="checkbox-label">Role Management</label>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-group">
+                                <div class="permission-group-title">Financial</div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="payments-view"></div>
+                                    <label class="checkbox-label">View Payments</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="payments-process"></div>
+                                    <label class="checkbox-label">Process Payments</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="refunds"></div>
+                                    <label class="checkbox-label">Issue Refunds</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="billing"></div>
+                                    <label class="checkbox-label">Billing Management</label>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-group">
+                                <div class="permission-group-title">System Admin</div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="settings"></div>
+                                    <label class="checkbox-label">System Settings</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="reports"></div>
+                                    <label class="checkbox-label">Reports & Analytics</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="admin-dashboard"></div>
+                                    <label class="checkbox-label">Admin Dashboard</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox" data-permission="system-logs"></div>
+                                    <label class="checkbox-label">System Logs</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveBtn">Save Role</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Predefined roles data
+        const rolesData = {
+            admin: {
+                name: 'Administrator',
+                description: 'Full system access and control',
+                color: 'admin',
+                permissions: ['dashboard', 'calendar', 'profile', 'messages', 'aircraft-view', 'aircraft-edit', 'maintenance', 'compliance', 'members-view', 'members-edit', 'membership', 'roles', 'payments-view', 'payments-process', 'refunds', 'billing', 'settings', 'reports', 'admin-dashboard', 'system-logs']
+            },
+            flightline: {
+                name: 'FlightLine Manager',
+                description: 'Members, aircraft, maintenance oversight',
+                color: 'flightline',
+                permissions: ['dashboard', 'calendar', 'profile', 'messages', 'aircraft-view', 'aircraft-edit', 'maintenance', 'compliance', 'members-view', 'members-edit', 'membership']
+            },
+            mechanic: {
+                name: 'Mechanic',
+                description: 'Aircraft status and maintenance logs',
+                color: 'mechanic',
+                permissions: ['dashboard', 'profile', 'messages', 'aircraft-view', 'maintenance', 'compliance']
+            },
+            treasurer: {
+                name: 'Treasurer',
+                description: 'Financial management and billing',
+                color: 'treasurer',
+                permissions: ['dashboard', 'profile', 'messages', 'payments-view', 'payments-process', 'refunds', 'billing', 'members-view']
+            },
+            pilot: {
+                name: 'Pilot/Student/Instructor',
+                description: 'Standard flight operations access',
+                color: 'pilot',
+                permissions: ['dashboard', 'calendar', 'profile', 'messages', 'aircraft-view', 'members-view']
+            }
+        };
+
+        let currentEditingRole = null;
+
+        // Mobile menu functionality now handled by load-navigation.js
+
+        // Modal functionality
+        const roleModal = document.getElementById('roleModal');
+        const createRoleBtn = document.getElementById('createRole');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const roleForm = document.getElementById('roleForm');
+
+        createRoleBtn.addEventListener('click', () => {
+            openModal();
+        });
+
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        function openModal(role = null) {
+            currentEditingRole = role;
+            const modalTitle = document.getElementById('modalTitle');
+            
+            if (role) {
+                modalTitle.textContent = 'Edit Role';
+                populateForm(role);
+            } else {
+                modalTitle.textContent = 'Create New Role';
+                resetForm();
+            }
+            
+            roleModal.classList.add('show');
+        }
+
+        function closeModal() {
+            roleModal.classList.remove('show');
+            resetForm();
+            currentEditingRole = null;
+        }
+
+        function populateForm(role) {
+            document.getElementById('roleName').value = role.name;
+            document.getElementById('roleDescription').value = role.description;
+            document.getElementById('roleColor').value = role.color;
+
+            // Reset all checkboxes
+            document.querySelectorAll('.checkbox').forEach(checkbox => {
+                checkbox.classList.remove('checked');
+            });
+
+            // Check permissions
+            role.permissions.forEach(permission => {
+                const checkbox = document.querySelector(`[data-permission="${permission}"]`);
+                if (checkbox) {
+                    checkbox.classList.add('checked');
+                }
+            });
+        }
+
+        function resetForm() {
+            roleForm.reset();
+            document.querySelectorAll('.checkbox').forEach(checkbox => {
+                checkbox.classList.remove('checked');
+            });
+        }
+
+        // Checkbox functionality
+        document.querySelectorAll('.checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', () => {
+                checkbox.classList.toggle('checked');
+            });
+        });
+
+        // Save role
+        saveBtn.addEventListener('click', () => {
+            const name = document.getElementById('roleName').value;
+            const description = document.getElementById('roleDescription').value;
+            const color = document.getElementById('roleColor').value;
+            
+            if (!name.trim()) {
+                alert('Please enter a role name');
+                return;
+            }
+
+            const permissions = [];
+            document.querySelectorAll('.checkbox.checked').forEach(checkbox => {
+                permissions.push(checkbox.dataset.permission);
+            });
+
+            const roleData = {
+                name: name,
+                description: description,
+                color: color,
+                permissions: permissions
+            };
+
+            if (currentEditingRole) {
+                // Update existing role
+                const roleId = currentEditingRole.id;
+                console.log('Updating role:', roleId, roleData);
+                alert('Role updated successfully!');
+            } else {
+                // Create new role
+                console.log('Creating new role:', roleData);
+                alert('Role created successfully!');
+            }
+
+            closeModal();
+            renderRoles();
+        });
+
+        // Render roles
+        function renderRoles() {
+            const rolesGrid = document.getElementById('rolesGrid');
+            rolesGrid.innerHTML = '';
+
+            Object.entries(rolesData).forEach(([id, role]) => {
+                const roleCard = createRoleCard(id, role);
+                rolesGrid.appendChild(roleCard);
+            });
+
+            // Animation after roles are rendered
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.role-card, .page-header');
+                cards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.6s ease-out';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 50);
+        }
+
+        function createRoleCard(id, role) {
+            const card = document.createElement('div');
+            card.className = 'role-card';
+            
+            card.innerHTML = `
+                <div class="role-header">
+                    <div class="role-info">
+                        <div class="role-name">${role.name}</div>
+                        <div class="role-description">${role.description}</div>
+                    </div>
+                    <div class="role-badge ${role.color}">${role.color.charAt(0).toUpperCase() + role.color.slice(1)}</div>
+                </div>
+                <div class="role-body">
+                    <div class="permission-section">
+                        <div class="permission-title">Core Permissions (${role.permissions.length})</div>
+                        <div class="permission-list">
+                            ${getPermissionSummary(role.permissions)}
+                        </div>
+                    </div>
+                    <div class="role-actions">
+                        <button class="mini-btn edit-btn" onclick="editRole('${id}')">Edit</button>
+                        <button class="mini-btn duplicate-btn" onclick="duplicateRole('${id}')">Duplicate</button>
+                        ${id !== 'admin' ? `<button class="mini-btn delete-btn" onclick="deleteRole('${id}')">Delete</button>` : ''}
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function getPermissionSummary(permissions) {
+            const summaryItems = [
+                { key: 'dashboard', label: 'Dashboard Access' },
+                { key: 'calendar', label: 'Calendar Access' },
+                { key: 'aircraft-view', label: 'Aircraft Viewing' },
+                { key: 'aircraft-edit', label: 'Aircraft Management' },
+                { key: 'maintenance', label: 'Maintenance Logs' },
+                { key: 'members-view', label: 'Member Directory' },
+                { key: 'payments-view', label: 'Payment Access' },
+                { key: 'admin-dashboard', label: 'Admin Dashboard' }
+            ];
+
+            return summaryItems.slice(0, 6).map(item => {
+                const hasPermission = permissions.includes(item.key);
+                return `
+                    <div class="permission-item">
+                        <div class="permission-status ${hasPermission ? 'allowed' : 'denied'}">
+                            ${hasPermission ? '✓' : '×'}
+                        </div>
+                        ${item.label}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Role actions
+        function editRole(roleId) {
+            const role = { id: roleId, ...rolesData[roleId] };
+            openModal(role);
+        }
+
+        function duplicateRole(roleId) {
+            const role = rolesData[roleId];
+            const newRole = {
+                ...role,
+                name: role.name + ' (Copy)'
+            };
+            openModal({ id: null, ...newRole });
+        }
+
+        function deleteRole(roleId) {
+            if (confirm(`Are you sure you want to delete the ${rolesData[roleId].name} role?`)) {
+                delete rolesData[roleId];
+                renderRoles();
+                alert('Role deleted successfully!');
+            }
+        }
+
+        // Import roles
+        document.getElementById('importRoles').addEventListener('click', () => {
+            alert('Role import functionality would be implemented here');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRoles();
+        });
+    </script>
+    
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js"></script>
+</body>
+</html> 

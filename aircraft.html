@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7fafc;
+            color: #2d3748;
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary-color: #56B4E9;
+            --secondary-color: #4A90E2;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: #f7fafc;
+            overflow: hidden;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hamburger-menu {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 2px 0;
+        }
+
+        .hamburger-line {
+            width: 100%;
+            height: 2px;
+            background: #4a5568;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-mobile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon-mobile {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text-mobile {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        /* Sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            padding: 24px;
+        }
+
+        .sidebar-overlay.open {
+            left: 0;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 32px;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            color: #a0aec0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-link {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .add-aircraft-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-aircraft-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(86, 180, 233, 0.4);
+        }
+
+        /* Fleet Overview */
+        .fleet-stats {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--success-color);
+        }
+
+        /* Aircraft Grid */
+        .aircraft-grid {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .aircraft-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .aircraft-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .aircraft-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .aircraft-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+
+        .aircraft-id {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .aircraft-type {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .aircraft-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .aircraft-status.available {
+            background: rgba(72, 187, 120, 0.2);
+            color: #38a169;
+        }
+
+        .aircraft-status.maintenance {
+            background: rgba(237, 137, 54, 0.2);
+            color: #dd6b20;
+        }
+
+        .aircraft-status.booked {
+            background: rgba(229, 62, 62, 0.2);
+            color: #c53030;
+        }
+
+        .aircraft-body {
+            padding: 24px;
+        }
+
+        .aircraft-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .spec-item {
+            text-align: center;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+
+        .spec-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .spec-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .airworthiness-sections {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+
+        .cert-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f7fafc;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border-left: 3px solid #e2e8f0;
+            font-size: 12px;
+        }
+
+        .cert-item.current {
+            border-left-color: var(--success-color);
+            background: #f0fff4;
+        }
+
+        .cert-item.warning {
+            border-left-color: var(--warning-color);
+            background: #fffbf0;
+        }
+
+        .cert-item.expired {
+            border-left-color: var(--danger-color);
+            background: #fef5f5;
+        }
+
+        .cert-info {
+            flex: 1;
+        }
+
+        .cert-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+
+        .cert-date {
+            font-size: 10px;
+            color: #718096;
+        }
+
+        .cert-status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .cert-status-icon.current {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .cert-status-icon.warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .cert-status-icon.expired {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .aircraft-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(86, 180, 233, 0.4);
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+
+            .app-container {
+                flex-direction: row;
+                overflow: hidden;
+            }
+
+            .sidebar-overlay {
+                position: relative;
+                left: 0;
+                z-index: auto;
+            }
+
+            .main-content {
+                padding: 32px;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                width: calc(100vw - 280px);
+                max-width: calc(100vw - 280px);
+            }
+
+            .fleet-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .aircraft-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .fleet-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .aircraft-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .aircraft-specs {
+                grid-template-columns: 1fr;
+            }
+
+            .aircraft-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .modal-body {
+            padding: 32px;
+            max-height: calc(90vh - 140px);
+            overflow-y: auto;
+        }
+
+        /* Form Styles */
+        .form-section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .form-section .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-input,
+        .form-select {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(86, 180, 233, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(86, 180, 233, 0.4);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: #64748b;
+            border: 2px solid #e5e7eb;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        /* Responsive Modal */
+        @media (max-width: 768px) {
+            .modal {
+                max-width: 95vw;
+                margin: 10px;
+            }
+
+            .modal-header {
+                padding: 20px 24px;
+            }
+
+            .modal-body {
+                padding: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .primary-btn,
+            .secondary-btn {
+                width: 100%;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(86, 180, 233, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        /* Aircraft Details Styles */
+        .aircraft-details {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .detail-section h3 {
+            color: #2d3748;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .status-available {
+            color: #38a169;
+        }
+
+        .status-maintenance {
+            color: #ed8936;
+        }
+
+        .maintenance-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .timeline-date {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        /* Maintenance Form Styles */
+        .maintenance-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #56B4E9;
+            box-shadow: 0 0 0 3px rgba(86, 180, 233, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation will be loaded here by JavaScript -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+        
+                    <p style="color: #718096; margin-top: 8px;">Manage your aircraft and track certifications</p>
+                </div>
+                <button class="add-aircraft-btn">+ Add Aircraft</button>
+            </div>
+
+            <!-- Fleet Statistics -->
+            <div class="fleet-stats">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Aircraft</div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">✈️</div>
+                    </div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-change">+1 this month</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Available</div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--success-color) 0%, #38a169 100%);">✅</div>
+                    </div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-change">75% availability</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">In Maintenance</div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning-color) 0%, #dd6b20 100%);">🔧</div>
+                    </div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-change">Scheduled this week</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Utilization</div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);">📊</div>
+                    </div>
+                    <div class="stat-value">87%</div>
+                    <div class="stat-change">+5% vs last month</div>
+                </div>
+            </div>
+
+            <!-- Aircraft Grid -->
+            <div class="aircraft-grid">
+                <!-- Aircraft 1 -->
+                <div class="aircraft-card">
+                    <div class="aircraft-header">
+                        <div class="aircraft-id">N123AB</div>
+                        <div class="aircraft-type">Cessna 172 Skyhawk</div>
+                        <div class="aircraft-status available">Available</div>
+                    </div>
+                    <div class="aircraft-body">
+                        <div class="aircraft-specs">
+                            <div class="spec-item">
+                                <div class="spec-value">1,247</div>
+                                <div class="spec-label">Total Hours</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">$110</div>
+                                <div class="spec-label">Hourly Rate</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">45</div>
+                                <div class="spec-label">Hours This Month</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">2019</div>
+                                <div class="spec-label">Year</div>
+                            </div>
+                        </div>
+                        
+                        <div class="airworthiness-sections">
+                            <!-- Documentation & Certification -->
+                            <div class="section-title">📋 Documentation & Certification</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Airworthiness Certificate</div>
+                                    <div class="cert-date">Valid • Displayed in aircraft</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Registration Certificate</div>
+                                    <div class="cert-date">Valid • Current and onboard</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Weight & Balance Report</div>
+                                    <div class="cert-date">Updated 03/15/2024</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            
+                            <!-- Maintenance & Inspection Compliance -->
+                            <div class="section-title">🔧 Maintenance & Inspection</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Annual Inspection</div>
+                                    <div class="cert-date">Due: 08/15/2025</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item warning">
+                                <div class="cert-info">
+                                    <div class="cert-name">100-Hour Inspection</div>
+                                    <div class="cert-date">Due: 12/05/2024</div>
+                                </div>
+                                <div class="cert-status-icon warning">⚠</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">All ADs Compliance</div>
+                                    <div class="cert-date">Current • No open ADs</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            
+                            <!-- Physical Condition & Systems -->
+                            <div class="section-title">🛠️ Physical & Systems</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Pitot Static Check</div>
+                                    <div class="cert-date">Due: 06/20/2026</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Transponder Check</div>
+                                    <div class="cert-date">Due: 06/20/2026</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">ELT Battery</div>
+                                    <div class="cert-date">Due: 03/01/2026</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                        </div>
+                        
+                        <div class="aircraft-actions">
+                            <button class="action-btn primary">Book Now</button>
+                            <button class="action-btn" onclick="showAircraftDetails('N123AB')">View Details</button>
+                            <button class="action-btn maintenance-btn">Maintenance</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aircraft 2 -->
+                <div class="aircraft-card">
+                    <div class="aircraft-header">
+                        <div class="aircraft-id">N456CD</div>
+                        <div class="aircraft-type">Piper Cherokee</div>
+                        <div class="aircraft-status maintenance">Maintenance</div>
+                    </div>
+                    <div class="aircraft-body">
+                        <div class="aircraft-specs">
+                            <div class="spec-item">
+                                <div class="spec-value">2,156</div>
+                                <div class="spec-label">Total Hours</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">$115</div>
+                                <div class="spec-label">Hourly Rate</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">38</div>
+                                <div class="spec-label">Hours This Month</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">2017</div>
+                                <div class="spec-label">Year</div>
+                            </div>
+                        </div>
+                        
+                        <div class="airworthiness-sections">
+                            <!-- Documentation & Certification -->
+                            <div class="section-title">📋 Documentation & Certification</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Airworthiness Certificate</div>
+                                    <div class="cert-date">Valid • Displayed in aircraft</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Type Certificate Compliance</div>
+                                    <div class="cert-date">Current • All STCs recorded</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            
+                            <!-- Maintenance & Inspection Compliance -->
+                            <div class="section-title">🔧 Maintenance & Inspection</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Annual Inspection</div>
+                                    <div class="cert-date">Due: 05/22/2025</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">100-Hour Inspection</div>
+                                    <div class="cert-date">Due: 01/18/2025</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item expired">
+                                <div class="cert-info">
+                                    <div class="cert-name">ELT Battery</div>
+                                    <div class="cert-date">Due: 10/15/2024 (OVERDUE)</div>
+                                </div>
+                                <div class="cert-status-icon expired">✗</div>
+                            </div>
+                            
+                            <!-- Physical Condition & Systems -->
+                            <div class="section-title">🛠️ Physical & Systems</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Engine Life-Limited Parts</div>
+                                    <div class="cert-date">Within limits • 1,247 hours</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Control Surfaces</div>
+                                    <div class="cert-date">Inspected 11/01/2024</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                        </div>
+                        
+                        <div class="aircraft-actions">
+                            <button class="action-btn" disabled>Unavailable</button>
+                            <button class="action-btn" onclick="showAircraftDetails('N456CD')">View Details</button>
+                            <button class="action-btn primary maintenance-btn">Schedule Maint.</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aircraft 3 -->
+                <div class="aircraft-card">
+                    <div class="aircraft-header">
+                        <div class="aircraft-id">N789EF</div>
+                        <div class="aircraft-type">Cessna 182 Skylane</div>
+                        <div class="aircraft-status booked">Booked</div>
+                    </div>
+                    <div class="aircraft-body">
+                        <div class="aircraft-specs">
+                            <div class="spec-item">
+                                <div class="spec-value">3,024</div>
+                                <div class="spec-label">Total Hours</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">$130</div>
+                                <div class="spec-label">Hourly Rate</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">52</div>
+                                <div class="spec-label">Hours This Month</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">2020</div>
+                                <div class="spec-label">Year</div>
+                            </div>
+                        </div>
+                        
+                        <div class="airworthiness-sections">
+                            <!-- Documentation & Certification -->
+                            <div class="section-title">📋 Documentation & Certification</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Airworthiness Certificate</div>
+                                    <div class="cert-date">Valid • Standard Category</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Registration Certificate</div>
+                                    <div class="cert-date">Current • On board</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Equipment List (FAR 91.205)</div>
+                                    <div class="cert-date">VFR Day/Night compliant</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            
+                            <!-- Maintenance & Inspection Compliance -->
+                            <div class="section-title">🔧 Maintenance & Inspection</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Annual Inspection</div>
+                                    <div class="cert-date">Due: 09/12/2025</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">100-Hour Inspection</div>
+                                    <div class="cert-date">Due: 02/28/2025</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Pitot Static Check</div>
+                                    <div class="cert-date">Due: 04/18/2026</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Transponder Check</div>
+                                    <div class="cert-date">Due: 04/18/2026</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            
+                            <!-- Operational Readiness -->
+                            <div class="section-title">✈️ Operational Readiness</div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Maintenance Records</div>
+                                    <div class="cert-date">Complete logbooks • Current</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                            <div class="cert-item current">
+                                <div class="cert-info">
+                                    <div class="cert-name">Emergency Equipment</div>
+                                    <div class="cert-date">ELT, First Aid kit serviceable</div>
+                                </div>
+                                <div class="cert-status-icon current">✓</div>
+                            </div>
+                        </div>
+                        
+                        <div class="aircraft-actions">
+                            <button class="action-btn">Join Waitlist</button>
+                            <button class="action-btn">View Details</button>
+                            <button class="action-btn">Maintenance</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Aircraft Modal -->
+    <div class="modal-overlay" id="addAircraftModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Aircraft</h3>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addAircraftForm">
+                    <!-- Aircraft Identification -->
+                    <div class="form-section">
+                        <h4 class="section-title">Aircraft Identification</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Tail Number (Registration) *</label>
+                                <input type="text" class="form-input" id="tailNumber" placeholder="N123AB" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Aircraft Type/Model *</label>
+                                <input type="text" class="form-input" id="aircraftModel" placeholder="Cessna 172" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Manufacturer *</label>
+                                <select class="form-select" id="manufacturer" required>
+                                    <option value="">Select Manufacturer</option>
+                                    <option value="Cessna">Cessna</option>
+                                    <option value="Piper">Piper</option>
+                                    <option value="Beechcraft">Beechcraft</option>
+                                    <option value="Mooney">Mooney</option>
+                                    <option value="Cirrus">Cirrus</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Year *</label>
+                                <input type="number" class="form-input" id="year" min="1903" max="2025" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aircraft Specifications -->
+                    <div class="form-section">
+                        <h4 class="section-title">Specifications</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Engine Type *</label>
+                                <select class="form-select" id="engineType" required>
+                                    <option value="">Select Engine Type</option>
+                                    <option value="Single Piston">Single Piston</option>
+                                    <option value="Twin Piston">Twin Piston</option>
+                                    <option value="Turboprop">Turboprop</option>
+                                    <option value="Jet">Jet</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Maximum Seats *</label>
+                                <input type="number" class="form-input" id="maxSeats" min="1" max="20" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Maximum Weight (lbs) *</label>
+                                <input type="number" class="form-input" id="maxWeight" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fuel Capacity (gallons) *</label>
+                                <input type="number" class="form-input" id="fuelCapacity" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operations -->
+                    <div class="form-section">
+                        <h4 class="section-title">Operations</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Hourly Rate ($) *</label>
+                                <input type="number" class="form-input" id="hourlyRate" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Home Base *</label>
+                                <input type="text" class="form-input" id="homeBase" placeholder="KPIT" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Current Total Hours</label>
+                                <input type="number" class="form-input" id="totalHours" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Availability Status</label>
+                                <select class="form-select" id="availabilityStatus">
+                                    <option value="available">Available</option>
+                                    <option value="maintenance">In Maintenance</option>
+                                    <option value="reserved">Reserved</option>
+                                    <option value="out-of-service">Out of Service</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Insurance & Documentation -->
+                    <div class="form-section">
+                        <h4 class="section-title">Insurance & Documentation</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Insurance Company</label>
+                                <input type="text" class="form-input" id="insuranceCompany" placeholder="Aviation Insurance Corp">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Policy Number</label>
+                                <input type="text" class="form-input" id="policyNumber">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Insurance Expiration</label>
+                                <input type="date" class="form-input" id="insuranceExpiration">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Annual Inspection Due</label>
+                                <input type="date" class="form-input" id="annualInspectionDue">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equipment & Avionics -->
+                    <div class="form-section">
+                        <h4 class="section-title">Equipment & Avionics</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">IFR Capable</label>
+                                <select class="form-select" id="ifrCapable">
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">GPS Type</label>
+                                <select class="form-select" id="gpsType">
+                                    <option value="none">None</option>
+                                    <option value="vfr">VFR GPS</option>
+                                    <option value="ifr">IFR GPS</option>
+                                    <option value="waas">WAAS GPS</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Autopilot</label>
+                                <select class="form-select" id="autopilot">
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Complex Aircraft</label>
+                                <select class="form-select" id="complexAircraft">
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes (Retractable gear, controllable prop, or flaps)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Additional Equipment</label>
+                            <textarea class="form-input" id="additionalEquipment" rows="3" placeholder="List any additional equipment, avionics, or special features..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Requirements & Limitations -->
+                    <div class="form-section">
+                        <h4 class="section-title">Requirements & Limitations</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Minimum Pilot Certification</label>
+                                <select class="form-select" id="minCertification">
+                                    <option value="student">Student Pilot</option>
+                                    <option value="sport">Sport Pilot</option>
+                                    <option value="recreational">Recreational Pilot</option>
+                                    <option value="private">Private Pilot</option>
+                                    <option value="commercial">Commercial Pilot</option>
+                                    <option value="atp">Airline Transport Pilot</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">High Performance</label>
+                                <select class="form-select" id="highPerformance">
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes (>200 HP)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Operating Limitations</label>
+                            <textarea class="form-input" id="operatingLimitations" rows="3" placeholder="List any operating limitations, endorsement requirements, or special conditions..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="primary-btn">Add Aircraft</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu functionality
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        
+        hamburgerMenu.addEventListener('click', () => {
+            sidebarOverlay.classList.toggle('open');
+            if (sidebarOverlay.classList.contains('open')) {
+                sidebarBackdrop.style.display = 'block';
+                setTimeout(() => sidebarBackdrop.style.opacity = '1', 10);
+            } else {
+                sidebarBackdrop.style.opacity = '0';
+                setTimeout(() => sidebarBackdrop.style.display = 'none', 300);
+            }
+        });
+        
+        sidebarBackdrop.addEventListener('click', () => {
+            sidebarOverlay.classList.remove('open');
+            sidebarBackdrop.style.opacity = '0';
+            setTimeout(() => sidebarBackdrop.style.display = 'none', 300);
+        });
+
+        // Aircraft action buttons
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const action = e.target.textContent;
+                const aircraftId = e.target.closest('.aircraft-card').querySelector('.aircraft-id').textContent;
+                
+                if (!e.target.disabled) {
+                    alert(`${action} functionality for ${aircraftId} would be implemented here`);
+                }
+            });
+        });
+
+        // Modal functionality
+        const addAircraftModal = document.getElementById('addAircraftModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const addAircraftForm = document.getElementById('addAircraftForm');
+
+        // Add aircraft button - open modal
+        document.querySelector('.add-aircraft-btn').addEventListener('click', () => {
+            addAircraftModal.classList.add('show');
+        });
+
+        // Close modal functions
+        function closeModal() {
+            addAircraftModal.classList.remove('show');
+            addAircraftForm.reset(); // Clear form when closing
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Close modal when clicking backdrop
+        addAircraftModal.addEventListener('click', (e) => {
+            if (e.target === addAircraftModal) {
+                closeModal();
+            }
+        });
+
+        // Form submission
+        addAircraftForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(addAircraftForm);
+            const aircraftData = {};
+            
+            // Get all form values
+            const inputs = addAircraftForm.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                aircraftData[input.id] = input.value;
+            });
+            
+            console.log('New aircraft data:', aircraftData);
+            
+            // In a real application, you would send this data to your backend
+            alert('Aircraft added successfully! (In production, this would save to database)');
+            
+            closeModal();
+        });
+
+        // Function to determine status based on date
+        function getStatusFromDate(dateString) {
+            const today = new Date();
+            const dueDate = new Date(dateString);
+            const diffTime = dueDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                return 'expired'; // Past due
+            } else if (diffDays <= 10) {
+                return 'warning'; // Within 10 days
+            } else {
+                return 'current'; // More than 10 days away
+            }
+        }
+
+        // Initialize airworthiness status
+        function initializeAirworthinessStatus() {
+            const certItems = document.querySelectorAll('.cert-item');
+            
+            certItems.forEach(item => {
+                const dateElement = item.querySelector('.cert-date');
+                const iconElement = item.querySelector('.cert-status-icon');
+                
+                // Skip if no date element or it doesn't contain a due date
+                if (!dateElement || !dateElement.textContent.includes('Due:')) {
+                    return;
+                }
+
+                // Extract date from text - handle MM/DD/YYYY format
+                const dateText = dateElement.textContent;
+                const dateMatch = dateText.match(/Due:\s*(\d{2}\/\d{2}\/\d{4})/);
+                
+                if (dateMatch) {
+                    const dateString = dateMatch[1];
+                    const status = getStatusFromDate(dateString);
+                    
+                    // Remove existing status classes
+                    item.classList.remove('current', 'warning', 'expired');
+                    iconElement.classList.remove('current', 'warning', 'expired');
+                    
+                    // Add new status
+                    item.classList.add(status);
+                    iconElement.classList.add(status);
+                    
+                    // Update icon content
+                    if (status === 'expired') {
+                        iconElement.textContent = '✗';
+                    } else if (status === 'warning') {
+                        iconElement.textContent = '⚠';
+                    } else {
+                        iconElement.textContent = '✓';
+                    }
+                    
+                    // Update date text to show days remaining/overdue
+                    if (status === 'expired') {
+                        const today = new Date();
+                        const dueDate = new Date(dateString);
+                        const diffTime = today - dueDate;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        dateElement.innerHTML = `Due: ${dateString} <span style="color: #e53e3e; font-weight: bold;">(${diffDays} days overdue)</span>`;
+                    } else if (status === 'warning') {
+                        const today = new Date();
+                        const dueDate = new Date(dateString);
+                        const diffTime = dueDate - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        dateElement.innerHTML = `Due: ${dateString} <span style="color: #d69e2e; font-weight: bold;">(${diffDays} days)</span>`;
+                    }
+                }
+            });
+        }
+
+        // Animation on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize airworthiness status based on dates
+            initializeAirworthinessStatus();
+            
+            const cards = document.querySelectorAll('.aircraft-card, .stat-card, .page-header');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Aircraft Details Modal
+        function showAircraftDetails(aircraftId) {
+            const aircraft = getAircraftData(aircraftId);
+            const modalBody = document.getElementById('aircraftDetailsBody');
+            
+            modalBody.innerHTML = `
+                <div class="aircraft-details">
+                    <div class="detail-section">
+                        <h3>📋 Aircraft Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Registration</div>
+                                <div class="detail-value">${aircraft.registration}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Type</div>
+                                <div class="detail-value">${aircraft.type}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Year</div>
+                                <div class="detail-value">${aircraft.year}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Total Hours</div>
+                                <div class="detail-value">${aircraft.totalHours}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Hourly Rate</div>
+                                <div class="detail-value">$${aircraft.hourlyRate}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value status-${aircraft.status}">${aircraft.status}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>🔧 Maintenance History</h3>
+                        <div class="maintenance-timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">12/15/2024</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">100-Hour Inspection</div>
+                                    <div class="timeline-description">Completed by John Smith, A&P</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">08/20/2024</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">Annual Inspection</div>
+                                    <div class="timeline-description">Completed by ABC Aviation</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">06/10/2024</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">Oil Change</div>
+                                    <div class="timeline-description">50-hour oil change service</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>📊 Flight Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">${aircraft.hoursThisMonth}</div>
+                                <div class="stat-label">Hours This Month</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${aircraft.hoursThisYear}</div>
+                                <div class="stat-label">Hours This Year</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${aircraft.avgFlightTime}</div>
+                                <div class="stat-label">Avg Flight Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            openModal('aircraftDetailsModal');
+        }
+
+        // Maintenance Modal
+        function showMaintenanceModal(aircraftId) {
+            const aircraft = getAircraftData(aircraftId);
+            const modalBody = document.getElementById('maintenanceModalBody');
+            
+            modalBody.innerHTML = `
+                <div class="maintenance-form">
+                    <div class="form-group">
+                        <label class="form-label">Maintenance Type</label>
+                        <select class="form-select" id="maintenanceType">
+                            <option value="">Select maintenance type</option>
+                            <option value="100-hour">100-Hour Inspection</option>
+                            <option value="annual">Annual Inspection</option>
+                            <option value="oil-change">Oil Change</option>
+                            <option value="tire-change">Tire Change</option>
+                            <option value="brake-service">Brake Service</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="maintenanceDescription" placeholder="Describe the maintenance work to be performed..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Estimated Duration</label>
+                        <input type="text" class="form-input" id="maintenanceDuration" placeholder="e.g., 2-3 hours">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Parts Required</label>
+                        <textarea class="form-textarea" id="maintenanceParts" placeholder="List any parts that need to be ordered..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="maintenancePriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            openModal('maintenanceModal');
+        }
+
+        // Get aircraft data (mock function)
+        function getAircraftData(aircraftId) {
+            const aircraftData = {
+                'N123AB': {
+                    registration: 'N123AB',
+                    type: 'Cessna 172 Skyhawk',
+                    year: '2019',
+                    totalHours: '1,247',
+                    hourlyRate: '110',
+                    status: 'available',
+                    hoursThisMonth: '45',
+                    hoursThisYear: '320',
+                    avgFlightTime: '1.8h'
+                },
+                'N456CD': {
+                    registration: 'N456CD',
+                    type: 'Piper Cherokee',
+                    year: '2017',
+                    totalHours: '2,156',
+                    hourlyRate: '115',
+                    status: 'maintenance',
+                    hoursThisMonth: '38',
+                    hoursThisYear: '280',
+                    avgFlightTime: '2.1h'
+                }
+            };
+            
+            return aircraftData[aircraftId] || {};
+        }
+
+        // Check if user is mechanic (mock function)
+        function isUserMechanic() {
+            // In production, this would check the user's role from authentication
+            return true; // For demo purposes, assume user is mechanic
+        }
+
+        // Update action buttons based on user role
+        function updateActionButtons() {
+            const maintenanceButtons = document.querySelectorAll('.maintenance-btn');
+            const isMechanic = isUserMechanic();
+            
+            maintenanceButtons.forEach(button => {
+                if (isMechanic) {
+                    button.style.display = 'inline-block';
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const aircraftId = button.closest('.aircraft-card').querySelector('.aircraft-id').textContent;
+                        showMaintenanceModal(aircraftId);
+                    });
+                } else {
+                    button.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize action buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            updateActionButtons();
+        });
+    </script>
+
+    <!-- Aircraft Details Modal -->
+    <div id="aircraftDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Aircraft Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="aircraftDetailsBody">
+                <!-- Aircraft details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('aircraftDetailsModal')">Close</button>
+                <button class="btn btn-primary">Edit Aircraft</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Modal -->
+    <div id="maintenanceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Schedule Maintenance</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="maintenanceModalBody">
+                <!-- Maintenance form will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('maintenanceModal')">Cancel</button>
+                <button class="btn btn-primary">Schedule Maintenance</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js?v=1"></script>
+</body>
+</html> 

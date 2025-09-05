@@ -1,0 +1,24 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .pilot { fill: #56B4E9; stroke: #4A90E2; stroke-width: 0.5; }
+      .aircraft { fill: #4A90E2; stroke: #365B7D; stroke-width: 0.4; }
+      .solo-badge { fill: #48bb78; stroke: #38a169; stroke-width: 0.3; }
+    </style>
+  </defs>
+  
+  <!-- Solo pilot figure -->
+  <circle cx="12" cy="6" r="2.5" class="pilot"/>
+  <rect x="10" y="8.5" width="4" height="5" rx="0.8" class="pilot"/>
+  
+  <!-- Wings on pilot (indicating solo achievement) -->
+  <path d="M8 10 L10 9 L10 11 Z" class="aircraft"/>
+  <path d="M16 10 L14 9 L14 11 Z" class="aircraft"/>
+  
+  <!-- Solo badge/certificate -->
+  <circle cx="12" cy="18" r="3" class="solo-badge"/>
+  <path d="M10.5 18 L11.5 19 L13.5 17" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- "1" indicating single pilot -->
+  <text x="12" y="7" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="2" font-weight="bold">1</text>
+</svg>

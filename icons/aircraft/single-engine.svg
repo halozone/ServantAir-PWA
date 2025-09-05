@@ -1,0 +1,28 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .aircraft-body { fill: #56B4E9; stroke: #4A90E2; stroke-width: 0.5; }
+      .aircraft-wing { fill: #56B4E9; stroke: #4A90E2; stroke-width: 0.5; }
+      .aircraft-prop { fill: #4A90E2; stroke: #365B7D; stroke-width: 0.3; }
+    </style>
+  </defs>
+  
+  <!-- Main fuselage -->
+  <ellipse cx="12" cy="12" rx="8" ry="1.5" class="aircraft-body"/>
+  
+  <!-- Wings -->
+  <ellipse cx="12" cy="12" rx="2" ry="6" class="aircraft-wing"/>
+  
+  <!-- Tail -->
+  <path d="M20 12 L22 10 L22 14 Z" class="aircraft-body"/>
+  
+  <!-- Vertical stabilizer -->
+  <path d="M20 12 L22 8 L21 12 Z" class="aircraft-body"/>
+  
+  <!-- Propeller hub -->
+  <circle cx="4" cy="12" r="1" class="aircraft-prop"/>
+  
+  <!-- Propeller blades -->
+  <ellipse cx="4" cy="12" rx="0.3" ry="3" class="aircraft-prop"/>
+  <ellipse cx="4" cy="12" rx="3" ry="0.3" class="aircraft-prop"/>
+</svg>

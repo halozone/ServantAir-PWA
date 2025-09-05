@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Line - Servant Air Ministries</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7fafc;
+            color: #2d3748;
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary-color: #56B4E9;
+            --secondary-color: #4A90E2;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: #f7fafc;
+            overflow: hidden;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hamburger-menu {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 2px 0;
+        }
+
+        .hamburger-line {
+            width: 100%;
+            height: 2px;
+            background: #4a5568;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-mobile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon-mobile {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text-mobile {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .user-avatar-mobile {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-overlay.open {
+            left: 0;
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-backdrop.show {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .sidebar-logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-subtitle {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        .sidebar-nav {
+            padding: 24px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            color: #a0aec0;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+            padding: 0 24px;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            color: #e2e8f0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        /* Quick Actions Grid */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .action-icon.booking {
+            background: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+        }
+
+        .action-icon.status {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .action-icon.payment {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .action-icon.maintenance {
+            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+        }
+
+        .action-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .action-description {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Aircraft Status Section */
+        .aircraft-status-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 20px;
+        }
+
+        .aircraft-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .aircraft-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .aircraft-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 25px -5px rgba(86, 180, 233, 0.2);
+        }
+
+        .aircraft-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .aircraft-id {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .aircraft-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .aircraft-status.available {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .aircraft-status.maintenance {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .aircraft-status.in-use {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .aircraft-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .aircraft-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(86, 180, 233, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #56B4E9;
+            box-shadow: 0 0 0 3px rgba(86, 180, 233, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+
+            .app-container {
+                flex-direction: row;
+            }
+
+            .sidebar-overlay {
+                position: relative;
+                left: 0;
+                z-index: auto;
+            }
+
+            .sidebar-backdrop {
+                display: none;
+            }
+
+            .main-content {
+                padding: 32px;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                width: calc(100vw - 280px);
+                max-width: calc(100vw - 280px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .aircraft-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .aircraft-details {
+                grid-template-columns: 1fr;
+            }
+
+            .aircraft-actions {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation will be loaded here by JavaScript -->
+
+        <!-- Navigation will be loaded here by JavaScript -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Flight Line</h1>
+                <p class="page-subtitle">Book aircraft, check status, make payments, and log maintenance</p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="action-card" onclick="openModal('bookingModal')">
+                    <div class="action-header">
+                        <div class="action-icon booking">📅</div>
+                        <div>
+                            <div class="action-title">Book Aircraft</div>
+                            <div class="action-description">Schedule your next flight with available aircraft</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-card" onclick="openModal('statusModal')">
+                    <div class="action-header">
+                        <div class="action-icon status">🔍</div>
+                        <div>
+                            <div class="action-title">Check Aircraft Status</div>
+                            <div class="action-description">View real-time availability and maintenance status</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-card" onclick="openModal('paymentModal')">
+                    <div class="action-header">
+                        <div class="action-icon payment">💳</div>
+                        <div>
+                            <div class="action-title">Make Payment</div>
+                            <div class="action-description">Pay for completed flights and services</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-card" onclick="openModal('maintenanceModal')">
+                    <div class="action-header">
+                        <div class="action-icon maintenance">🔧</div>
+                        <div>
+                            <div class="action-title">Log Maintenance</div>
+                            <div class="action-description">Report issues or log post-flight maintenance items</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aircraft Status Section -->
+            <div class="aircraft-status-section">
+                <h2 class="section-title">Current Aircraft Status</h2>
+                <div class="aircraft-grid">
+                    <div class="aircraft-card">
+                        <div class="aircraft-header">
+                            <div class="aircraft-id">N123AB</div>
+                            <div class="aircraft-status available">Available</div>
+                        </div>
+                        <div class="aircraft-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Type</div>
+                                <div class="detail-value">Cessna 172</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Rate</div>
+                                <div class="detail-value">$110/hour</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Next Available</div>
+                                <div class="detail-value">Now</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Fuel</div>
+                                <div class="detail-value">Full</div>
+                            </div>
+                        </div>
+                        <div class="aircraft-actions">
+                            <button class="btn btn-primary" onclick="bookAircraft('N123AB')">Book Now</button>
+                            <button class="btn btn-secondary" onclick="viewAircraftDetails('N123AB')">Details</button>
+                        </div>
+                    </div>
+
+                    <div class="aircraft-card">
+                        <div class="aircraft-header">
+                            <div class="aircraft-id">N456CD</div>
+                            <div class="aircraft-status maintenance">Maintenance</div>
+                        </div>
+                        <div class="aircraft-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Type</div>
+                                <div class="detail-value">Piper Cherokee</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Rate</div>
+                                <div class="detail-value">$115/hour</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Expected Return</div>
+                                <div class="detail-value">Dec 20, 2024</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Issue</div>
+                                <div class="detail-value">ELT Battery</div>
+                            </div>
+                        </div>
+                        <div class="aircraft-actions">
+                            <button class="btn btn-secondary" disabled>Unavailable</button>
+                            <button class="btn btn-secondary" onclick="viewAircraftDetails('N456CD')">Details</button>
+                        </div>
+                    </div>
+
+                    <div class="aircraft-card">
+                        <div class="aircraft-header">
+                            <div class="aircraft-id">N789EF</div>
+                            <div class="aircraft-status in-use">In Use</div>
+                        </div>
+                        <div class="aircraft-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Type</div>
+                                <div class="detail-value">Diamond DA40</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Rate</div>
+                                <div class="detail-value">$125/hour</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Return Time</div>
+                                <div class="detail-value">2:30 PM</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Pilot</div>
+                                <div class="detail-value">Jane Smith</div>
+                            </div>
+                        </div>
+                        <div class="aircraft-actions">
+                            <button class="btn btn-secondary" onclick="viewAircraftDetails('N789EF')">Details</button>
+                            <button class="btn btn-primary" onclick="waitlistAircraft('N789EF')">Join Waitlist</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Aircraft Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Book Aircraft</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label class="form-label">Aircraft</label>
+                        <select class="form-select" id="bookingAircraft" required>
+                            <option value="">Select aircraft</option>
+                            <option value="N123AB">N123AB - Cessna 172 (Available)</option>
+                            <option value="N789EF">N789EF - Diamond DA40 (Available after 2:30 PM)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="bookingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Time</label>
+                        <input type="time" class="form-input" id="bookingStartTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duration (hours)</label>
+                        <input type="number" class="form-input" id="bookingDuration" min="0.5" max="8" step="0.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Flight Type</label>
+                        <select class="form-select" id="bookingType" required>
+                            <option value="">Select flight type</option>
+                            <option value="training">Training</option>
+                            <option value="solo">Solo</option>
+                            <option value="cross-country">Cross Country</option>
+                            <option value="pattern">Pattern Work</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-textarea" id="bookingNotes" placeholder="Any special requirements or notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('bookingModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitBooking()">Book Aircraft</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aircraft Status Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Aircraft Status Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="statusModalBody">
+                    <!-- Status details will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('statusModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Make Payment</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label class="form-label">Flight to Pay For</label>
+                        <select class="form-select" id="paymentFlight" required>
+                            <option value="">Select completed flight</option>
+                            <option value="flight1">N123AB - Training Flight (Dec 15, 2024) - $165.00</option>
+                            <option value="flight2">N456CD - Solo Flight (Dec 12, 2024) - $230.00</option>
+                            <option value="flight3">N789EF - Cross Country (Dec 10, 2024) - $375.00</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-select" id="paymentMethod" required>
+                            <option value="">Select payment method</option>
+                            <option value="credit">Credit Card</option>
+                            <option value="debit">Debit Card</option>
+                            <option value="bank">Bank Transfer</option>
+                            <option value="cash">Cash</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="text" class="form-input" id="paymentAmount" readonly>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('paymentModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitPayment()">Process Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Log Modal -->
+    <div id="maintenanceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Log Maintenance Item</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="maintenanceForm">
+                    <div class="form-group">
+                        <label class="form-label">Aircraft</label>
+                        <select class="form-select" id="maintenanceAircraft" required>
+                            <option value="">Select aircraft</option>
+                            <option value="N123AB">N123AB - Cessna 172</option>
+                            <option value="N456CD">N456CD - Piper Cherokee</option>
+                            <option value="N789EF">N789EF - Diamond DA40</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Issue Type</label>
+                        <select class="form-select" id="maintenanceType" required>
+                            <option value="">Select issue type</option>
+                            <option value="squawk">Squawk (Minor Issue)</option>
+                            <option value="maintenance">Maintenance Required</option>
+                            <option value="inspection">Inspection Finding</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="maintenanceDescription" placeholder="Describe the issue or maintenance item..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="maintenancePriority" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent (Ground Aircraft)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Flight Date (if applicable)</label>
+                        <input type="date" class="form-input" id="maintenanceFlightDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('maintenanceModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitMaintenance()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Aircraft functions
+        function bookAircraft(aircraftId) {
+            document.getElementById('bookingAircraft').value = aircraftId;
+            openModal('bookingModal');
+        }
+
+        function viewAircraftDetails(aircraftId) {
+            const aircraftData = getAircraftData(aircraftId);
+            const modalBody = document.getElementById('statusModalBody');
+            
+            modalBody.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #2d3748; margin-bottom: 16px;">${aircraftData.registration} - ${aircraftData.type}</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">Status</div>
+                            <div style="font-weight: 600; color: #2d3748;">${aircraftData.status}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">Hourly Rate</div>
+                            <div style="font-weight: 600; color: #2d3748;">$${aircraftData.rate}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">Total Hours</div>
+                            <div style="font-weight: 600; color: #2d3748;">${aircraftData.totalHours}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">Next Available</div>
+                            <div style="font-weight: 600; color: #2d3748;">${aircraftData.nextAvailable}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #2d3748; margin-bottom: 12px;">Recent Maintenance</h4>
+                    <div style="background: #f7fafc; padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 14px; color: #2d3748;">${aircraftData.lastMaintenance}</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 style="color: #2d3748; margin-bottom: 12px;">Upcoming Inspections</h4>
+                    <div style="background: #f7fafc; padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 14px; color: #2d3748;">${aircraftData.nextInspection}</div>
+                    </div>
+                </div>
+            `;
+            
+            openModal('statusModal');
+        }
+
+        function waitlistAircraft(aircraftId) {
+            alert(`Added to waitlist for ${aircraftId}. You'll be notified when it becomes available.`);
+        }
+
+        // Form submission functions
+        function submitBooking() {
+            const form = document.getElementById('bookingForm');
+            if (form.checkValidity()) {
+                alert('Aircraft booking submitted successfully!');
+                closeModal('bookingModal');
+                form.reset();
+            } else {
+                form.reportValidity();
+            }
+        }
+
+        function submitPayment() {
+            const form = document.getElementById('paymentForm');
+            if (form.checkValidity()) {
+                alert('Payment processed successfully!');
+                closeModal('paymentModal');
+                form.reset();
+            } else {
+                form.reportValidity();
+            }
+        }
+
+        function submitMaintenance() {
+            const form = document.getElementById('maintenanceForm');
+            if (form.checkValidity()) {
+                alert('Maintenance report submitted successfully!');
+                closeModal('maintenanceModal');
+                form.reset();
+            } else {
+                form.reportValidity();
+            }
+        }
+
+        // Get aircraft data (mock function)
+        function getAircraftData(aircraftId) {
+            const aircraftData = {
+                'N123AB': {
+                    registration: 'N123AB',
+                    type: 'Cessna 172 Skyhawk',
+                    status: 'Available',
+                    rate: '110',
+                    totalHours: '1,247',
+                    nextAvailable: 'Now',
+                    lastMaintenance: '100-hour inspection completed on Dec 10, 2024',
+                    nextInspection: 'Annual inspection due on Aug 15, 2025'
+                },
+                'N456CD': {
+                    registration: 'N456CD',
+                    type: 'Piper Cherokee',
+                    status: 'Maintenance',
+                    rate: '115',
+                    totalHours: '2,156',
+                    nextAvailable: 'Dec 20, 2024',
+                    lastMaintenance: 'ELT battery replacement on Dec 15, 2024',
+                    nextInspection: '100-hour inspection due on Jan 18, 2025'
+                },
+                'N789EF': {
+                    registration: 'N789EF',
+                    type: 'Diamond DA40',
+                    status: 'In Use',
+                    rate: '125',
+                    totalHours: '890',
+                    nextAvailable: '2:30 PM today',
+                    lastMaintenance: 'Oil change completed on Dec 12, 2024',
+                    nextInspection: 'Annual inspection due on Jun 20, 2025'
+                }
+            };
+            
+            return aircraftData[aircraftId] || {};
+        }
+
+        // Modal event handlers
+        document.addEventListener('DOMContentLoaded', () => {
+            // Close modal when clicking on X or outside
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeModal(this.id);
+                    }
+                });
+            });
+
+            // Close modal when clicking X button
+            const closeButtons = document.querySelectorAll('.close');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    closeModal(modal.id);
+                });
+            });
+
+            // Set today's date as default for booking
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookingDate').value = today;
+        });
+
+        // Animation on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.action-card, .aircraft-card, .page-header');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+    
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js?v=1"></script>
+</body>
+</html> 

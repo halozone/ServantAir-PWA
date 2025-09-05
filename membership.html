@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7fafc;
+            color: #2d3748;
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hamburger-menu {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 2px 0;
+        }
+
+        .hamburger-line {
+            width: 100%;
+            height: 2px;
+            background: #4a5568;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-mobile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon-mobile {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text-mobile {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .user-avatar-mobile {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            padding: 24px;
+        }
+
+        .sidebar-overlay.open {
+            left: 0;
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 32px;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            color: #a0aec0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-link {
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        /* Membership Tiers */
+        .membership-tiers {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .tier-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tier-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tier-card.featured {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+        }
+
+        .tier-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tier-header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-top: 20px;
+        }
+
+        .tier-card.featured .tier-header {
+            padding-top: 40px;
+        }
+
+        .tier-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+            color: white;
+        }
+
+        .tier-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .tier-description {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .tier-pricing {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .tier-price {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a202c;
+            line-height: 1;
+        }
+
+        .tier-price-period {
+            color: #718096;
+            font-size: 16px;
+            margin-top: 4px;
+        }
+
+        .tier-features {
+            margin-bottom: 32px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .feature-icon.disabled {
+            background: #e2e8f0;
+            color: #a0aec0;
+        }
+
+        .feature-text {
+            color: #4a5568;
+        }
+
+        .feature-text.disabled {
+            color: #a0aec0;
+        }
+
+        .tier-button {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+        }
+
+        .tier-button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tier-button.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tier-button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
+        }
+
+        .tier-button.current {
+            background: var(--success-color);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Member Management */
+        .member-management {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .add-member-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-member-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(102, 126, 234, 0.4);
+        }
+
+        .member-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .member-item:hover {
+            background: #edf2f7;
+        }
+
+        .member-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .member-details {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .member-tier {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .member-tier.student {
+            background: #e6fffa;
+            color: #234e52;
+        }
+
+        .member-tier.private {
+            background: #e6f7ff;
+            color: #003a8c;
+        }
+
+        .member-tier.commercial {
+            background: #fff7e6;
+            color: #ad6800;
+        }
+
+        .member-tier.instructor {
+            background: #f6ffed;
+            color: #389e0d;
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a5568;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #cbd5e0;
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+
+            .app-container {
+                flex-direction: row;
+            }
+
+            .sidebar-overlay {
+                position: relative;
+                left: 0;
+                z-index: auto;
+            }
+
+            .sidebar-backdrop {
+                display: none;
+            }
+
+            .main-content {
+                padding: 32px;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                width: calc(100vw - 280px);
+                max-width: calc(100vw - 280px);
+            }
+
+            .membership-tiers {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .member-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .membership-tiers {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tier-card {
+                padding: 24px 20px;
+            }
+
+            .tier-price {
+                font-size: 36px;
+            }
+
+            .member-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .member-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation will be loaded here by JavaScript -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+    
+                <p class="page-subtitle">Choose the perfect plan for your aviation journey</p>
+            </div>
+
+            <!-- Membership Tiers -->
+            <div class="membership-tiers">
+                <!-- Student Pilot -->
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <div class="tier-icon">🎓</div>
+                        <h3 class="tier-name">Student Pilot</h3>
+                        <p class="tier-description">Perfect for aspiring aviators starting their journey</p>
+                    </div>
+                    
+                    <div class="tier-pricing">
+                        <div class="tier-price">$99</div>
+                        <div class="tier-price-period">per month</div>
+                    </div>
+                    
+                    <div class="tier-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Dual instruction flights</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Ground school access</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Training aircraft rates: $120/hr</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">CFI rates: $45/hr</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon disabled">✗</div>
+                            <div class="feature-text disabled">Solo privileges</div>
+                        </div>
+                    </div>
+                    
+                    <button class="tier-button">Choose Plan</button>
+                </div>
+
+                <!-- Private Pilot -->
+                <div class="tier-card featured">
+                    <div class="tier-header">
+                        <div class="tier-icon">✈️</div>
+                        <h3 class="tier-name">Private Pilot</h3>
+                        <p class="tier-description">For licensed pilots ready to explore</p>
+                    </div>
+                    
+                    <div class="tier-pricing">
+                        <div class="tier-price">$149</div>
+                        <div class="tier-price-period">per month</div>
+                    </div>
+                    
+                    <div class="tier-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Solo flight privileges</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">All aircraft access</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Aircraft rates: $110/hr</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Weekend priority booking</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Guest passenger privileges</div>
+                        </div>
+                    </div>
+                    
+                    <button class="tier-button current">Current Plan</button>
+                </div>
+
+                <!-- Commercial Pilot -->
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <div class="tier-icon">🚁</div>
+                        <h3 class="tier-name">Commercial</h3>
+                        <p class="tier-description">Advanced pilots building commercial hours</p>
+                    </div>
+                    
+                    <div class="tier-pricing">
+                        <div class="tier-price">$199</div>
+                        <div class="tier-price-period">per month</div>
+                    </div>
+                    
+                    <div class="tier-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Commercial privileges</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Complex aircraft access</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Aircraft rates: $95/hr</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Priority scheduling</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Multi-day reservations</div>
+                        </div>
+                    </div>
+                    
+                    <button class="tier-button">Upgrade</button>
+                </div>
+
+                <!-- CFI -->
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <div class="tier-icon">👨‍🏫</div>
+                        <h3 class="tier-name">CFI</h3>
+                        <p class="tier-description">Certified flight instructors sharing knowledge</p>
+                    </div>
+                    
+                    <div class="tier-pricing">
+                        <div class="tier-price">$249</div>
+                        <div class="tier-price-period">per month</div>
+                    </div>
+                    
+                    <div class="tier-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Instruction privileges</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">All aircraft access</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Aircraft rates: $85/hr</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Instructor earnings: $45/hr</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-text">Admin dashboard access</div>
+                        </div>
+                    </div>
+                    
+                    <button class="tier-button">Apply</button>
+                </div>
+            </div>
+
+            <!-- Member Management -->
+            <div class="member-management">
+                <div class="section-header">
+                    <h2 class="section-title">Active Members</h2>
+                    <button class="add-member-btn">+ Add Member</button>
+                </div>
+                
+                <div class="member-list">
+                    <div class="member-item">
+                        <div class="member-avatar">JD</div>
+                        <div class="member-info">
+                            <div class="member-name">John Doe</div>
+                            <div class="member-details">john.doe@aviation.com • Joined March 2023</div>
+                        </div>
+                        <div class="member-tier private">Private Pilot</div>
+                        <div class="member-actions">
+                            <button class="action-btn" title="Edit">✏️</button>
+                            <button class="action-btn" title="View Profile">👤</button>
+                            <button class="action-btn" title="Message">💬</button>
+                        </div>
+                    </div>
+                    
+                    <div class="member-item">
+                        <div class="member-avatar">SW</div>
+                        <div class="member-info">
+                            <div class="member-name">Sarah Wilson</div>
+                            <div class="member-details">sarah.wilson@aviation.com • Joined January 2023</div>
+                        </div>
+                        <div class="member-tier instructor">CFI</div>
+                        <div class="member-actions">
+                            <button class="action-btn" title="Edit">✏️</button>
+                            <button class="action-btn" title="View Profile">👤</button>
+                            <button class="action-btn" title="Message">💬</button>
+                        </div>
+                    </div>
+                    
+                    <div class="member-item">
+                        <div class="member-info">
+                            <div class="member-name">Mike Johnson</div>
+                            <div class="member-details">mike.johnson@aviation.com • Joined June 2024</div>
+                        </div>
+                        <div class="member-tier student">Student</div>
+                        <div class="member-actions">
+                            <button class="action-btn" title="Edit">✏️</button>
+                            <button class="action-btn" title="View Profile">👤</button>
+                            <button class="action-btn" title="Message">💬</button>
+                        </div>
+                    </div>
+                    
+                    <div class="member-item">
+                        <div class="member-avatar">AS</div>
+                        <div class="member-info">
+                            <div class="member-name">Amy Smith</div>
+                            <div class="member-details">amy.smith@aviation.com • Joined August 2024</div>
+                        </div>
+                        <div class="member-tier commercial">Commercial</div>
+                        <div class="member-actions">
+                            <button class="action-btn" title="Edit">✏️</button>
+                            <button class="action-btn" title="View Profile">👤</button>
+                            <button class="action-btn" title="Message">💬</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile menu functionality
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        
+        hamburgerMenu.addEventListener('click', () => {
+            sidebarOverlay.classList.toggle('open');
+            sidebarBackdrop.classList.toggle('show');
+        });
+        
+        sidebarBackdrop.addEventListener('click', () => {
+            sidebarOverlay.classList.remove('open');
+            sidebarBackdrop.classList.remove('show');
+        });
+
+        // Tier button functionality
+        document.querySelectorAll('.tier-button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tierName = e.target.closest('.tier-card').querySelector('.tier-name').textContent;
+                const buttonText = e.target.textContent;
+                
+                if (buttonText === 'Current Plan') {
+                    alert('You are already on this plan');
+                } else {
+                    alert(`${buttonText} ${tierName} plan functionality would be implemented here`);
+                }
+            });
+        });
+
+        // Member action buttons
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const action = e.target.getAttribute('title');
+                const memberName = e.target.closest('.member-item').querySelector('.member-name').textContent;
+                alert(`${action} ${memberName} functionality would be implemented here`);
+            });
+        });
+
+        // Add member button
+        document.querySelector('.add-member-btn').addEventListener('click', () => {
+            alert('Add new member functionality would open a modal here');
+        });
+
+        // Animation on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.tier-card, .page-header, .member-management');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+    
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js"></script>
+</body>
+</html> 

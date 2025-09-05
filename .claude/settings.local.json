@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(claude mcp:*)",
+      "Bash(mkdir:*)",
+      "Bash(echo $APPDATA)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(git clone:*)",
+      "Bash(git config:*)",
+      "Bash(npm install:*)",
+      "Bash(npm config:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx:*)",
+      "Bash(claude-code --version)",
+      "Read(//c/Users/haloz/**)",
+      "Bash(timeout 120 npx playwright install chromium)",
+      "Bash(node:*)",
+      "Bash(start calendar.html)",
+      "Bash(taskkill:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "shadcn",
+    "playwright",
+    "superdesign",
+    "firecrawl",
+    "figma"
+  ]
+}

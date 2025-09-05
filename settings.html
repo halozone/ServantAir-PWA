@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7fafc;
+            color: #2d3748;
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary-color: #56B4E9;
+            --secondary-color: #4A90E2;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: #f7fafc;
+            overflow: hidden;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hamburger-menu {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 2px 0;
+        }
+
+        .hamburger-line {
+            width: 100%;
+            height: 2px;
+            background: #4a5568;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-mobile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon-mobile {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text-mobile {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        /* Sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            padding: 24px;
+        }
+
+        .sidebar-overlay.open {
+            left: 0;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 32px;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            color: #a0aec0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-link {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .settings-content {
+            display: grid;
+            gap: 24px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(86, 180, 233, 0.1);
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(86, 180, 233, 0.4);
+        }
+
+        .color-picker {
+            width: 60px;
+            height: 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .preview-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+
+            .app-container {
+                flex-direction: row;
+            }
+
+            .sidebar-overlay {
+                position: relative;
+                left: 0;
+                z-index: auto;
+            }
+
+            .main-content {
+                padding: 32px;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                width: calc(100vw - 280px);
+                max-width: calc(100vw - 280px);
+            }
+
+            .settings-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation will be loaded here by JavaScript -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+    
+                <p class="page-subtitle">Configure your aviation management system</p>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Branding Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Branding</h2>
+                    </div>
+                    
+                    <form id="brandingForm">
+                        <div class="form-group">
+                            <label class="form-label">Organization Name</label>
+                            <input type="text" class="form-input" id="brandName" value="SkyBook" placeholder="Enter organization name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Primary Color</label>
+                            <input type="color" class="color-picker" id="primaryColor" value="#56B4E9">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Secondary Color</label>
+                            <input type="color" class="color-picker" id="secondaryColor" value="#4A90E2">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Logo Icon</label>
+                            <input type="text" class="form-input" id="logoIcon" value="✈" placeholder="Enter emoji or text">
+                        </div>
+                        
+                        <div class="preview-card" id="previewCard">
+                            <div style="font-size: 24px; margin-bottom: 8px;" id="previewIcon">✈</div>
+                            <div style="font-size: 20px; font-weight: 700;" id="previewName">SkyBook</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Live Preview</div>
+                        </div>
+                        
+                        <button type="submit" class="primary-btn" style="margin-top: 20px;">Save Branding</button>
+                    </form>
+                </div>
+
+                <!-- System Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h2 class="card-title">System Configuration</h2>
+                    </div>
+                    
+                    <form id="systemForm">
+                        <div class="form-group">
+                            <label class="form-label">Default Booking Interval</label>
+                            <select class="form-select" id="bookingInterval">
+                                <option value="15">15 minutes</option>
+                                <option value="30" selected>30 minutes</option>
+                                <option value="60">1 hour</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Time Zone</label>
+                            <select class="form-select" id="timeZone">
+                                <option value="PST">Pacific Standard Time</option>
+                                <option value="MST">Mountain Standard Time</option>
+                                <option value="CST">Central Standard Time</option>
+                                <option value="EST">Eastern Standard Time</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Currency</label>
+                            <select class="form-select" id="currency">
+                                <option value="USD">USD ($)</option>
+                                <option value="CAD">CAD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="primary-btn">Save System Settings</button>
+                    </form>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Notifications</h2>
+                    </div>
+                    
+                    <form id="notificationForm">
+                        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="margin-bottom: 0;">Email Notifications</label>
+                            <label class="switch">
+                                <input type="checkbox" id="emailNotifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="margin-bottom: 0;">SMS Notifications</label>
+                            <label class="switch">
+                                <input type="checkbox" id="smsNotifications">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="margin-bottom: 0;">Weather Alerts</label>
+                            <label class="switch">
+                                <input type="checkbox" id="weatherAlerts" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="margin-bottom: 0;">Maintenance Reminders</label>
+                            <label class="switch">
+                                <input type="checkbox" id="maintenanceReminders" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="primary-btn">Save Notification Settings</button>
+                    </form>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Security</h2>
+                    </div>
+                    
+                    <form id="securityForm">
+                        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="margin-bottom: 0;">Two-Factor Authentication</label>
+                            <label class="switch">
+                                <input type="checkbox" id="twoFactor">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Session Timeout (minutes)</label>
+                            <select class="form-select" id="sessionTimeout">
+                                <option value="30">30 minutes</option>
+                                <option value="60" selected>1 hour</option>
+                                <option value="120">2 hours</option>
+                                <option value="480">8 hours</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="margin-bottom: 0;">Audit Logging</label>
+                            <label class="switch">
+                                <input type="checkbox" id="auditLogging" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="primary-btn">Save Security Settings</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile menu functionality
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        
+        hamburgerMenu.addEventListener('click', () => {
+            sidebarOverlay.classList.toggle('open');
+            sidebarBackdrop.classList.toggle('show');
+        });
+        
+        sidebarBackdrop.addEventListener('click', () => {
+            sidebarOverlay.classList.remove('open');
+            sidebarBackdrop.classList.remove('show');
+        });
+
+        // Live preview functionality
+        function updatePreview() {
+            const brandName = document.getElementById('brandName').value;
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            const logoIcon = document.getElementById('logoIcon').value;
+            
+            // Update preview card
+            document.getElementById('previewName').textContent = brandName;
+            document.getElementById('previewIcon').textContent = logoIcon;
+            document.getElementById('previewCard').style.background = 
+                `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`;
+            
+            // Update CSS variables
+            document.documentElement.style.setProperty('--primary-color', primaryColor);
+            document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+            
+            // Update brand names throughout the page
+            document.getElementById('mobileBrandName').textContent = brandName;
+            document.getElementById('sidebarBrandName').textContent = brandName;
+            
+            // Update logo icons
+            document.querySelectorAll('.logo-icon-mobile').forEach(icon => {
+                icon.textContent = logoIcon;
+            });
+        }
+
+        // Add event listeners for live preview
+        document.getElementById('brandName').addEventListener('input', updatePreview);
+        document.getElementById('primaryColor').addEventListener('input', updatePreview);
+        document.getElementById('secondaryColor').addEventListener('input', updatePreview);
+        document.getElementById('logoIcon').addEventListener('input', updatePreview);
+
+        // Form submission handlers
+        document.getElementById('brandingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Save to localStorage for persistence
+            const settings = {
+                brandName: document.getElementById('brandName').value,
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value,
+                logoIcon: document.getElementById('logoIcon').value
+            };
+            
+            localStorage.setItem('brandingSettings', JSON.stringify(settings));
+            alert('Branding settings saved successfully!');
+        });
+
+        document.getElementById('systemForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('System settings saved successfully!');
+        });
+
+        document.getElementById('notificationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Notification settings saved successfully!');
+        });
+
+        document.getElementById('securityForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Security settings saved successfully!');
+        });
+
+        // Load saved settings
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedSettings = localStorage.getItem('brandingSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                document.getElementById('brandName').value = settings.brandName || 'SkyBook';
+                document.getElementById('primaryColor').value = settings.primaryColor || '#56B4E9';
+                document.getElementById('secondaryColor').value = settings.secondaryColor || '#4A90E2';
+                document.getElementById('logoIcon').value = settings.logoIcon || '✈';
+                updatePreview();
+            }
+        });
+    </script>
+    
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js"></script>
+</body>
+</html> 
