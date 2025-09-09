@@ -1,0 +1,25 @@
+<!-- Solo Flight Icon (Single Pilot) -->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pilot Figure -->
+  <circle cx="12" cy="6" r="2.5" fill="#10B981"/>
+  <path d="M12 8.5L12 17" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M9 13L15 13" stroke="#10B981" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Pilot Wings Badge -->
+  <path d="M8 6L16 6" stroke="#F59E0B" stroke-width="1" stroke-linecap="round"/>
+  <path d="M9 5.5L9 6.5" stroke="#F59E0B" stroke-width="0.5"/>
+  <path d="M15 5.5L15 6.5" stroke="#F59E0B" stroke-width="0.5"/>
+  
+  <!-- Freedom/Independence Symbol (Wings) -->
+  <path d="M4 10L12 8L20 10" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Solo Achievement Star -->
+  <path d="M12 3L12.6 4.2L14 4L13.2 5.2L14.4 6L13 5.8L12 7L11 5.8L9.6 6L10.8 5.2L10 4L11.4 4.2Z" fill="#F59E0B"/>
+  
+  <!-- Ground Reference -->
+  <path d="M4 20L20 20" stroke="#94A3B8" stroke-width="1" stroke-linecap="round"/>
+  
+  <!-- Feet/Ground Contact -->
+  <circle cx="10" cy="19" r="1" fill="#10B981"/>
+  <circle cx="14" cy="19" r="1" fill="#10B981"/>
+</svg>

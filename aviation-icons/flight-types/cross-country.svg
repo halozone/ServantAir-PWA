@@ -1,0 +1,39 @@
+<!-- Cross Country Flight Icon -->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Flight Path -->
+  <path d="M3 8L12 12L21 6" stroke="#56B4E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2,1"/>
+  
+  <!-- Origin Airport -->
+  <circle cx="3" cy="8" r="2" fill="#10B981"/>
+  <path d="M1 8L5 8" stroke="white" stroke-width="0.8"/>
+  <path d="M3 6L3 10" stroke="white" stroke-width="0.8"/>
+  
+  <!-- Destination Airport -->
+  <circle cx="21" cy="6" r="2" fill="#EF4444"/>
+  <path d="M19 6L23 6" stroke="white" stroke-width="0.8"/>
+  <path d="M21 4L21 8" stroke="white" stroke-width="0.8"/>
+  
+  <!-- Aircraft in Flight -->
+  <g transform="translate(12,12) rotate(15)">
+    <path d="M0 0L0 -3" stroke="#56B4E9" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M-2 -1L2 -1" stroke="#56B4E9" stroke-width="1.2" stroke-linecap="round"/>
+    <circle cx="0" cy="-3" r="0.5" fill="#56B4E9"/>
+  </g>
+  
+  <!-- Navigation Chart/Map -->
+  <rect x="8" y="16" width="8" height="5" rx="0.5" fill="white" stroke="#64748B" stroke-width="1"/>
+  
+  <!-- Chart Grid -->
+  <path d="M9 17L15 17M9 18L15 18M9 19L15 19M9 20L15 20" stroke="#CBD5E1" stroke-width="0.3"/>
+  <path d="M10 16.5L10 20.5M11 16.5L11 20.5M12 16.5L12 20.5M13 16.5L13 20.5M14 16.5L14 20.5" stroke="#CBD5E1" stroke-width="0.3"/>
+  
+  <!-- Route Line on Chart -->
+  <path d="M9 19L15 17.5" stroke="#EF4444" stroke-width="0.8" stroke-linecap="round"/>
+  
+  <!-- Distance Indicators -->
+  <text x="12" y="14" text-anchor="middle" font-family="Arial" font-size="3" fill="#64748B">XC</text>
+  
+  <!-- Waypoint -->
+  <circle cx="12" cy="9" r="1.5" fill="none" stroke="#F59E0B" stroke-width="1"/>
+  <circle cx="12" cy="9" r="0.5" fill="#F59E0B"/>
+</svg>

@@ -322,10 +322,10 @@
             font-size: 18px;
         }
 
-        /* Main Content */
+        /* Main Content - Maximized for calendar viewing */
         .main-content {
             flex: 1;
-            padding: 20px;
+            padding: 8px;
             min-width: 0; /* Allow shrinking */
             width: 100%;
             max-width: 100%;
@@ -558,16 +558,24 @@
 
         /* Basic Filter Pills */
         .filter-pill {
-            padding: 10px 16px;
+            padding: 12px 20px;
             border: 2px solid var(--border-light);
             border-radius: 24px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition-normal);
             white-space: nowrap;
             background: var(--bg-secondary);
             color: var(--text-secondary);
+            min-height: 48px;
+            min-width: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             position: relative;
             display: flex;
             min-height: 44px;
@@ -591,21 +599,7 @@
             box-shadow: var(--shadow-lg);
         }
 
-        /* Aviation-focused filter pill icons */
-        .filter-pill[data-filter="all"]::before {
-            content: '📋';
-            margin-right: 2px;
-        }
-
-        .filter-pill[data-filter="my-bookings"]::before {
-            content: '👨‍✈️';
-            margin-right: 2px;
-        }
-
-        .filter-pill[data-filter="available-timeframe"]::before {
-            content: '🟢';
-            margin-right: 2px;
-        }
+        /* Icons removed from filter pills for professional appearance */
 
         /* Split Button Pills */
         .split-button-pill {
@@ -641,8 +635,8 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 12px;
-            font-size: 12px;
+            padding: 12px 20px;
+            font-size: 14px;
             font-weight: 500;
             border: none;
             background: transparent;
@@ -1134,8 +1128,9 @@
             }
             
             .filter-pill {
-                min-height: 36px;
-                padding: 8px 12px;
+                min-height: 48px;
+                padding: 10px 16px;
+                font-size: 13px;
             }
             
             /* Mobile Popover Styles */
@@ -1262,10 +1257,10 @@
             }
             
             .filter-pill {
-                font-size: 11px;
-                padding: 8px 12px;
-                min-height: 44px;
-                min-width: 44px;
+                font-size: 12px;
+                padding: 10px 16px;
+                min-height: 48px;
+                min-width: 48px;
             }
             
             .more-filters-toggle {
@@ -1394,6 +1389,30 @@
             color: var(--text-inverse);
             transition: var(--transition-normal);
         }
+        
+        /* Unified event card styling - common base for all resource bookings */
+        .resource-booking {
+            /* Base styling already defined above - extends this for all types */
+        }
+        
+        /* Event type differentiators - only color variations */
+        .resource-booking.instructor-booking {
+            /* Override background for instructor overlay bookings */
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        .resource-booking.instructor-booking::before {
+            content: '👨‍✈️';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 14px;
+            z-index: 10;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
 
         /* Booking Content Styling */
         .booking-content {
@@ -1420,6 +1439,21 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .booking-notes {
+            font-size: 10px; /* Same as .booking-details */
+            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.75);
+            margin-top: 2px;
+            font-style: italic;
+            max-height: 24px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.2;
         }
 
         /* Booking Tooltip */
@@ -1467,18 +1501,6 @@
             font-weight: 600;
         }
 
-        /* 15-minute grid lines */
-        .time-row::after {
-            content: '';
-            position: absolute;
-            left: 80px;
-            right: 0;
-            top: 50%;
-            height: 1px;
-            background: rgba(148, 163, 184, 0.2);
-            pointer-events: none;
-            z-index: 1;
-        }
 
         /* Hide 15-min line on last row */
         .time-row:last-child::after {
@@ -1491,17 +1513,8 @@
             cursor: pointer;
         }
 
-        .resource-slot:hover:not(.occupied)::after {
-            content: '+';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #3b82f6;
-            font-size: 18px;
-            font-weight: 600;
-            opacity: 0.6;
-        }
+        /* Removed CSS hover + indicator - using JavaScript createHoverCreatePreview instead */
+        /* .resource-slot:hover:not(.occupied)::after { removed } */
 
         /* Enhanced Aviation Conflict Indicators */
         .resource-booking.conflict {
@@ -1600,6 +1613,40 @@
             box-shadow: inset 0 0 0 2px rgba(72, 187, 120, 0.4);
         }
         
+        /* 30-minute precision drop preview */
+        .half-hour-preview {
+            position: absolute;
+            background: rgba(72, 187, 120, 0.3);
+            border: 2px solid #48bb78;
+            border-radius: 5px; /* Match booking card border radius */
+            pointer-events: none;
+            z-index: 50;
+            transition: all 0.1s ease;
+            box-shadow: 0 2px 4px rgba(72, 187, 120, 0.3);
+        }
+        
+        /* Hover preview for new events */
+        .hover-create-preview {
+            position: absolute;
+            background: rgba(148, 163, 184, 0.15);
+            border: 1px dashed #94a3b8;
+            border-radius: 5px; /* Match booking card border radius */
+            pointer-events: none;
+            z-index: 40;
+            transition: all 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #64748b;
+        }
+        
+        .hover-create-preview::before {
+            content: '+';
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
         .drop-conflict {
             background: rgba(239, 68, 68, 0.25);
             border: 3px solid var(--danger-color);
@@ -1674,9 +1721,7 @@
                 max-width: 200px;
             }
             
-            .resource-slot:hover:not(.occupied)::after {
-                font-size: 16px;
-            }
+            /* .resource-slot:hover:not(.occupied)::after { removed } */
         }
 
         .calendar-nav {
@@ -1824,11 +1869,12 @@
             padding: 12px;
         }
 
-        /* Day View Styles */
+        /* Day View Styles - Full Width for Maximum Viewing Area */
         .calendar-grid.day-view {
             display: block;
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
         }
 
         .day-detail-view {
@@ -2042,10 +2088,24 @@
             display: flex;
             overflow-x: auto;
             scrollbar-width: none;
+            position: relative;
         }
 
         .resource-slots-container::-webkit-scrollbar {
             display: none;
+        }
+        
+        /* Clip events that extend into time column */
+        .resource-slots-container::before {
+            content: '';
+            position: absolute;
+            left: -80px; /* Width of time column */
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            background: white;
+            z-index: 100;
+            pointer-events: none;
         }
 
         .resource-slot {
@@ -2061,6 +2121,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        
+        
+        /* Magnetic snap zones for 30-minute increments */
+        .resource-slot::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .resource-slot:hover {
@@ -2095,8 +2168,8 @@
         }
 
         .resource-slot.drop-target {
-            background: rgba(72, 187, 120, 0.2);
-            border: 2px solid #48bb78;
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid #48bb78;
         }
 
         .resource-slot.drop-conflict {
@@ -2140,8 +2213,8 @@
         /* Agenda View Styles */
         .agenda-view {
             padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 100%;
         }
 
         .agenda-header h2 {
@@ -2263,7 +2336,7 @@
 
         .resource-booking .booking-header {
             padding: 4px 6px 2px 6px;
-            background: rgba(0, 0, 0, 0.1);
+            background: transparent;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -2299,6 +2372,16 @@
             text-overflow: ellipsis;
             font-weight: 400;
             opacity: 0.9;
+        }
+        
+        .resource-booking .booking-aircraft {
+            font-size: 9px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+            opacity: 0.95;
+            font-family: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
         }
 
         /* Flight Instructor Information */
@@ -2613,7 +2696,7 @@
             }
 
             .main-content {
-                padding: 32px;
+                padding: 12px;
                 flex: 1;
                 min-width: 0;
                 overflow: hidden;
@@ -2677,114 +2760,7 @@
             }
         }
 
-        /* High Contrast Cockpit Mode */
-        .high-contrast {
-            --bg-primary: var(--hc-bg);
-            --bg-secondary: var(--hc-bg-secondary);
-            --bg-elevated: var(--hc-bg-elevated);
-            --text-primary: var(--hc-text);
-            --text-secondary: var(--hc-text-secondary);
-            --border-light: var(--hc-border);
-            --border-medium: var(--hc-border-strong);
-            --primary-color: var(--hc-primary);
-            --success-color: var(--hc-primary);
-            --warning-color: var(--hc-warning);
-            --danger-color: var(--hc-danger);
-        }
         
-        .high-contrast .resource-booking.training {
-            background: var(--hc-primary) !important;
-            color: var(--hc-bg) !important;
-            border: 2px solid var(--hc-text) !important;
-        }
-        
-        .high-contrast .resource-booking.maintenance {
-            background: var(--hc-warning) !important;
-            color: var(--hc-bg) !important;
-            border: 2px solid var(--hc-bg) !important;
-        }
-        
-        .high-contrast .resource-booking.checkride {
-            background: var(--hc-danger) !important;
-            color: var(--hc-text) !important;
-            border: 2px solid var(--hc-text) !important;
-        }
-        
-        .high-contrast .resource-booking.solo {
-            background: var(--hc-primary) !important;
-            color: var(--hc-bg) !important;
-            border: 2px solid var(--hc-bg) !important;
-        }
-        
-        /* High contrast filter pills */
-        .high-contrast .filter-pill {
-            background: var(--hc-bg-secondary);
-            border: 2px solid var(--hc-border-strong);
-            color: var(--hc-text);
-        }
-        
-        .high-contrast .filter-pill.active {
-            background: var(--hc-primary);
-            color: var(--hc-bg);
-            border-color: var(--hc-text);
-        }
-        
-        /* High contrast navigation */
-        .high-contrast .nav-btn {
-            background: var(--hc-bg-elevated);
-            border: 2px solid var(--hc-border-strong);
-            color: var(--hc-text);
-        }
-        
-        .high-contrast .nav-btn:hover {
-            background: var(--hc-primary);
-            color: var(--hc-bg);
-        }
-        
-        /* High contrast conflict indicators */
-        .high-contrast .resource-booking.conflict {
-            background: var(--hc-danger) !important;
-            border: 4px solid var(--hc-text) !important;
-            animation: hcConflictAlert 1s infinite;
-        }
-        
-        @keyframes hcConflictAlert {
-            0%, 100% { box-shadow: 0 0 0 0 var(--hc-danger); }
-            50% { box-shadow: 0 0 0 8px transparent; }
-        }
-        
-        /* High contrast mode toggle button */
-        .contrast-mode-toggle {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            background: var(--bg-secondary);
-            border: 2px solid var(--border-medium);
-            border-radius: 8px;
-            padding: 10px 14px;
-            cursor: pointer;
-            z-index: 10000;
-            font-size: 12px;
-            font-weight: 600;
-            transition: var(--transition-normal);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            min-width: 48px;
-            min-height: 48px;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .contrast-mode-toggle:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .high-contrast .contrast-mode-toggle {
-            background: var(--hc-primary);
-            color: var(--hc-bg);
-            border-color: var(--hc-text);
-        }
 
         @media (max-width: 768px) {
             .calendar-title {
@@ -2800,9 +2776,91 @@
                 gap: 15px;
             }
         }
+
+        /* Toast Notification System */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #1f2937;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            max-width: 350px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+            transform: translateX(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.hide {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+
+        .toast.error {
+            background: #ef4444;
+            border-left: 4px solid #dc2626;
+        }
+
+        .toast.warning {
+            background: #f59e0b;
+            color: #1f2937;
+            border-left: 4px solid #d97706;
+        }
+
+        .toast.success {
+            background: #10b981;
+            border-left: 4px solid #059669;
+        }
+
+        .toast.info {
+            background: #3b82f6;
+            border-left: 4px solid #2563eb;
+        }
+
+        .toast-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <div class="app-container">
         <!-- Navigation will be loaded here by JavaScript -->
         
@@ -2833,10 +2891,6 @@
                     <div class="essential-filters">
                         <button class="filter-pill active" data-filter="all">All</button>
                         <button class="filter-pill" data-filter="my-bookings">My Bookings</button>
-                        <button class="filter-pill" data-filter="available-timeframe">
-                            <span class="pill-text">Available</span>
-                            <span class="result-summary">5 of 5</span>
-                        </button>
                         
                         <div class="split-button-pill aircraft-pill" style="position: relative;">
                             <button class="pill-main" data-type="aircraft" onclick="toggleAircraftFilter()">
@@ -2933,12 +2987,6 @@
         <div class="drag-delete-zone" id="dragDeleteZone">
             🗑️
         </div>
-        
-        <!-- High Contrast Mode Toggle -->
-        <button class="contrast-mode-toggle" id="contrastToggle" onclick="toggleHighContrast()">
-            <span id="contrastIcon">🌞</span>
-            <span id="contrastText">Cockpit Mode</span>
-        </button>
     </div>
 
     <!-- Booking Modal -->
@@ -2971,11 +3019,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Start Time</label>
-                            <input type="time" class="form-input" id="startTime" name="startTime" required>
+                            <input type="time" class="form-input" id="startTime" name="startTime" step="1800" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">End Time</label>
-                            <input type="time" class="form-input" id="endTime" name="endTime" required>
+                            <input type="time" class="form-input" id="endTime" name="endTime" step="1800" required>
                         </div>
                     </div>
                     
@@ -2996,11 +3044,8 @@
                         <label class="form-label">Instructor <span style="color: #e53e3e;">*</span></label>
                         <select class="form-select" id="instructor" name="instructor">
                             <option value="">Select instructor</option>
-                            <option value="cfi-sarah">Sarah Wilson (CFI)</option>
-                            <option value="cfi-michael">Michael Brown (CFI)</option>
-                            <option value="cfi-lisa">Lisa Davis (CFII)</option>
-                            <option value="dpe-robert">Robert Taylor (DPE)</option>
-                            <option value="cfi-james">James Anderson (CFI)</option>
+                            <option value="CFI-1">John Smith (CFI)</option>
+                            <option value="CFI-2">Sarah Wilson (CFII)</option>
                         </select>
                     </div>
                     
@@ -3024,11 +3069,11 @@
         // Sample booking data
         // Load bookings from localStorage or use default data
         const defaultBookings = [
-            { id: 1, date: '2024-11-15', aircraft: 'N123AB', type: 'training', pilot: 'John Doe', startTime: '09:00', endTime: '11:00' },
-            { id: 2, date: '2024-11-15', aircraft: 'N456CD', type: 'solo', pilot: 'Jane Smith', startTime: '14:00', endTime: '16:00' },
-            { id: 3, date: '2024-11-16', aircraft: 'N789EF', type: 'maintenance', pilot: 'Maintenance', startTime: '08:00', endTime: '17:00' },
-            { id: 4, date: '2024-11-18', aircraft: 'N123AB', type: 'checkride', pilot: 'Mike Johnson', startTime: '10:00', endTime: '12:00' },
-            { id: 5, date: '2024-11-20', aircraft: 'N456CD', type: 'cross-country', pilot: 'Sarah Wilson', startTime: '13:00', endTime: '17:00' }
+            { id: 1, date: '2024-11-15', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'training', pilot: 'John Doe', instructor: 'CFI-1', instructorName: 'John Smith (CFI)', startTime: '09:00', endTime: '11:00' },
+            { id: 2, date: '2024-11-15', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'solo', pilot: 'Jane Smith', startTime: '14:00', endTime: '16:00' },
+            { id: 3, date: '2024-11-16', aircraft: 'N789EF', aircraftName: 'N789EF - Cessna 182', type: 'maintenance', pilot: 'Maintenance', startTime: '08:00', endTime: '17:00' },
+            { id: 4, date: '2024-11-18', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'checkride', pilot: 'Mike Johnson', instructor: 'CFI-2', instructorName: 'Sarah Wilson (CFII)', startTime: '10:00', endTime: '12:00' },
+            { id: 5, date: '2024-11-20', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'cross-country', pilot: 'Sarah Wilson', startTime: '13:00', endTime: '17:00' }
         ];
         
         let bookings = JSON.parse(localStorage.getItem('servantair_bookings')) || defaultBookings;
@@ -3038,6 +3083,17 @@
             localStorage.setItem('servantair_bookings', JSON.stringify(bookings));
             console.log('Bookings saved to localStorage:', bookings.length);
         }
+        
+        // Reset to default demo data (useful for testing)
+        function resetDemoData() {
+            bookings = [...defaultBookings];
+            saveBookings();
+            renderView();
+            console.log('Demo data reset to defaults');
+        }
+        
+        // Make reset function available in console for testing
+        window.resetDemoData = resetDemoData;
 
         // Sample aircraft/resources
         const resources = [
@@ -3108,6 +3164,24 @@
             }
             updateFilterUI();
             renderView();
+        }
+
+        // Clear all filters and reset to default state
+        function clearAllFilters() {
+            // Reset all filter states to defaults
+            filterState.primaryFilters.clear();
+            filterState.primaryFilters.add('all');
+            filterState.aircraft.clear();
+            filterState.aircraft.add('all');
+            filterState.instructors.clear();
+            filterState.instructors.add('all');
+            
+            // Update the UI
+            updateFilterUI();
+            renderView();
+            
+            // Show success toast
+            showSuccessToast('Filters Cleared', 'All filters have been reset to show everything.');
         }
 
         // Aircraft Filter Functions
@@ -3187,15 +3261,23 @@
         }
 
         function toggleAircraftSelection(aircraftId) {
-            // Remove 'all' if individual selection is made
+            // Special handling when 'all' is currently selected
             if (filterState.aircraft.has('all')) {
+                // User wants to deselect one item from "All" - select all OTHER aircraft
                 filterState.aircraft.clear();
-            }
-            
-            if (filterState.aircraft.has(aircraftId)) {
-                filterState.aircraft.delete(aircraftId);
+                const allAircraft = resources.filter(r => r.type === 'aircraft');
+                allAircraft.forEach(aircraft => {
+                    if (aircraft.id !== aircraftId) {
+                        filterState.aircraft.add(aircraft.id);
+                    }
+                });
             } else {
-                filterState.aircraft.add(aircraftId);
+                // Normal toggle behavior
+                if (filterState.aircraft.has(aircraftId)) {
+                    filterState.aircraft.delete(aircraftId);
+                } else {
+                    filterState.aircraft.add(aircraftId);
+                }
             }
             
             updateAircraftSelectionSummary();
@@ -3341,14 +3423,23 @@
         }
 
         function toggleInstructorSelection(instructorId) {
+            // Special handling when 'all' is currently selected
             if (filterState.instructors.has('all')) {
+                // User wants to deselect one item from "All" - select all OTHER instructors
                 filterState.instructors.clear();
-            }
-            
-            if (filterState.instructors.has(instructorId)) {
-                filterState.instructors.delete(instructorId);
+                const allInstructors = resources.filter(r => r.type === 'instructor');
+                allInstructors.forEach(instructor => {
+                    if (instructor.id !== instructorId) {
+                        filterState.instructors.add(instructor.id);
+                    }
+                });
             } else {
-                filterState.instructors.add(instructorId);
+                // Normal toggle behavior
+                if (filterState.instructors.has(instructorId)) {
+                    filterState.instructors.delete(instructorId);
+                } else {
+                    filterState.instructors.add(instructorId);
+                }
             }
             
             updateInstructorSelectionSummary();
@@ -3896,17 +3987,26 @@
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
             
-            for (let hour = 6; hour <= 22; hour++) {
+            for (let hour = 6; hour <= 23; hour++) {
                 const timeStr = `${String(hour).padStart(2, '0')}:00`;
                 
-                // Add current hour class if viewing today and this is current hour
+                // Standard time row class - no hour highlighting since we use precise red line
                 let timeRowClass = 'time-row';
-                if (isToday && hour === currentHour) {
-                    timeRowClass += ' current-hour';
-                }
                 
                 slotsHtml += `<div class="${timeRowClass}" data-hour="${hour}" id="time-row-${hour}">`;
                 slotsHtml += `<div class="time-label" id="time-label-${hour}">${timeStr}</div>`;
+                
+                // Add 30-minute divider line
+                slotsHtml += `<div class="half-hour-divider" style="
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+                    right: 0;
+                    height: 1px;
+                    background: var(--gray-300);
+                    z-index: 1;
+                    opacity: 0.6;
+                "></div>`;
                 
                 // Create scrollable resource slots container
                 slotsHtml += '<div class="resource-slots-container">';
@@ -3924,6 +4024,11 @@
             slotsHtml += '</div>';
             
             dayElement.innerHTML = headerHtml + slotsHtml;
+            
+            // Add current time indicator if viewing today
+            if (isToday) {
+                addCurrentTimeIndicator();
+            }
             
             // Add existing bookings to their slots
             console.log('=== DAY VIEW BOOKING PROCESSING ===');
@@ -4003,21 +4108,15 @@
                     
                     // Enhanced booking content with better styling
                     const instructorInfo = booking.instructor ? ` w/ ${booking.instructorName || 'Instructor'}` : '';
+                    const notesInfo = booking.notes ? `<div class="booking-notes">${booking.notes}</div>` : '';
                     bookingElement.innerHTML = `
                         <div class="booking-content">
                             <div class="booking-title">${booking.pilot || 'Flight'}</div>
                             <div class="booking-details">${booking.startTime}-${booking.endTime}${instructorInfo}</div>
+                            ${notesInfo}
                         </div>
                     `;
                     
-                    // Add hover tooltip functionality
-                    bookingElement.addEventListener('mouseenter', function(e) {
-                        showBookingTooltip(e, booking);
-                    });
-                    
-                    bookingElement.addEventListener('mouseleave', function() {
-                        hideBookingTooltip();
-                    });
                 
                     // Add double-tap/double-click handler for event editing
                     let lastTap = 0;
@@ -4130,19 +4229,83 @@
                                 // Remove any background styling that might interfere
                                 slot.style.background = 'transparent';
                             } else {
-                                // For instructor slots, add occupied class and indicator
+                                // For instructor slots, create a full booking element
+                                if (hour === startHour) { // Only create once for the first hour
+                                    const instructorBooking = document.createElement('div');
+                                    instructorBooking.className = `resource-booking ${booking.type} instructor-booking`;
+                                    
+                                    // Calculate position and dimensions with fractional hour support
+                                    const startTime = getHourFromTime(booking.startTime);
+                                    const endTime = getHourFromTime(booking.endTime);
+                                    const duration = endTime - startTime;
+                                    const totalHeight = duration * 60; // 60px per hour slot
+                                    
+                                    // Find the column index for instructor
+                                    const filteredResources = getFilteredResources();
+                                    const instructorResourceIndex = filteredResources.findIndex(r => r.id === currentResourceId);
+                                    
+                                    if (instructorResourceIndex !== -1) {
+                                        const columnWidth = 180; // From CSS
+                                        const leftOffset = 80 + (instructorResourceIndex * columnWidth); // 80px for time label
+                                        
+                                        // Store resource info for scroll synchronization
+                                        instructorBooking.dataset.resourceIndex = instructorResourceIndex;
+                                        instructorBooking.dataset.resourceId = currentResourceId;
+                                        
+                                        instructorBooking.style.cssText = `
+                                            position: absolute;
+                                            top: ${(startTime - 6) * 60}px;
+                                            left: ${leftOffset}px;
+                                            width: ${columnWidth}px;
+                                            height: ${totalHeight - 4}px;
+                                            z-index: 99;
+                                            pointer-events: auto;
+                                            border: none;
+                                            box-sizing: border-box;
+                                            padding: 2px;
+                                            will-change: transform;
+                                            transform: translateZ(0);
+                                            transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                                            opacity: 0.8;
+                                            border-left: 4px solid var(--primary-color);
+                                        `;
+                                        
+                                        // Instructor-specific content - show aircraft and pilot
+                                        const aircraftInfo = booking.aircraftName || booking.aircraft;
+                                        const notesInfo = booking.notes ? `<div class="booking-notes">${booking.notes}</div>` : '';
+                                        instructorBooking.innerHTML = `
+                                            <div class="booking-content">
+                                                <div class="booking-title">👨‍✈️ ${booking.pilot || 'Flight'}</div>
+                                                <div class="booking-details">${booking.startTime}-${booking.endTime}</div>
+                                                <div class="booking-aircraft">${aircraftInfo}</div>
+                                                ${notesInfo}
+                                            </div>
+                                        `;
+                                        
+                                        // Add the same event handlers as the main booking
+                                        instructorBooking.addEventListener('mouseenter', () => {
+                                            instructorBooking.style.transform = 'translateZ(0) scale(1.02)';
+                                            instructorBooking.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                                        });
+                                        
+                                        instructorBooking.addEventListener('mouseleave', () => {
+                                            instructorBooking.style.transform = 'translateZ(0) scale(1)';
+                                            instructorBooking.style.boxShadow = '';
+                                        });
+                                        
+                                        
+                                        // Add edit functionality
+                                        instructorBooking.addEventListener('dblclick', (e) => {
+                                            e.stopPropagation();
+                                            editBooking(booking, resourceId); // Edit the original booking
+                                        });
+                                        
+                                        resourceTimeGrid.appendChild(instructorBooking);
+                                    }
+                                }
+                                
+                                // Still mark the slots as occupied
                                 slot.classList.add('occupied');
-                                const instructorIndicator = document.createElement('div');
-                                instructorIndicator.className = 'instructor-indicator';
-                                instructorIndicator.innerHTML = '👨‍✈️';
-                                instructorIndicator.style.cssText = `
-                                    position: absolute;
-                                    top: 2px;
-                                    right: 2px;
-                                    font-size: 12px;
-                                    z-index: 5;
-                                `;
-                                slot.appendChild(instructorIndicator);
                             }
                         }
                     }
@@ -4173,6 +4336,10 @@
                 slot.addEventListener('mouseenter', handleMouseEnter);
                 slot.addEventListener('mouseup', handleMouseUp);
                 
+                // Add hover preview for 30-minute positioning
+                slot.addEventListener('mousemove', handleSlotMouseMove);
+                slot.addEventListener('mouseleave', handleSlotMouseLeave);
+                
                 // Double-click event for flight creation
                 slot.addEventListener('dblclick', handleDoubleClick);
                 
@@ -4200,7 +4367,7 @@
         let createFlightPopup = null;
         let initialTouchPos = { x: 0, y: 0 };
         let hasMovedDuringPress = false;
-        const LONG_PRESS_DELAY = 500; // 500ms long press
+        const LONG_PRESS_DELAY = 200; // 200ms long press - more responsive
         const MOVEMENT_THRESHOLD = 10; // pixels of movement to cancel press
         
         // Event drag state
@@ -4232,9 +4399,25 @@
         
         let timeGranularity = settings.timeGranularity;
 
+        // Helper function to check if resource is an instructor
+        function isInstructorResource(resourceId) {
+            const resource = resources.find(r => r.id === resourceId);
+            return resource && resource.type === 'instructor';
+        }
+        
         // Mouse drag handlers
         function handleMouseDown(e) {
             if (e.target.classList.contains('occupied')) return;
+            
+            // Prevent direct booking on instructor columns
+            const resourceId = e.target.dataset.resource;
+            if (isInstructorResource(resourceId)) {
+                showErrorToast(
+                    'Cannot Book Instructor Directly',
+                    'Instructors can only be booked when reserving an aircraft. Please select an aircraft first, then choose an instructor.'
+                );
+                return;
+            }
             
             e.preventDefault();
             
@@ -4243,18 +4426,22 @@
             initialTouchPos.y = e.clientY;
             hasMovedDuringPress = false;
             
+            // For mouse users: enable immediate drag-to-create with shorter delay
+            // For touch users: keep longer delay to avoid accidental creation
+            const delay = e.type === 'mousedown' ? 100 : LONG_PRESS_DELAY;
+            
             // Start press and hold timer for "Create flight" popup
             pressTimer = setTimeout(() => {
                 if (!hasMovedDuringPress) {
                     isLongPress = true;
                     showCreateFlightPopup(e);
-                    // After showing popup, enable drag creation
+                    // After showing popup, enable drag creation with precise 30-minute positioning
                     isDragging = true;
-                    dragStartTime = parseInt(e.target.dataset.hour);
+                    dragStartTime = getHalfHourFromPosition(e, e.target);
                     dragStartResource = e.target.dataset.resource;
                     e.target.classList.add('drag-start');
                 }
-            }, LONG_PRESS_DELAY);
+            }, delay);
         }
 
         function handleMouseEnter(e) {
@@ -4275,11 +4462,13 @@
 
             if (!isDragging) return;
             
-            const endTime = parseInt(e.target.dataset.hour);
+            const endTime = getHalfHourFromPosition(e, e.target);
             const resource = e.target.dataset.resource;
             
-            if (resource === dragStartResource && endTime !== dragStartTime) {
-                createBookingFromDrag(dragStartTime, endTime + 1, resource, e.target.dataset.date);
+            if (resource === dragStartResource && Math.abs(endTime - dragStartTime) >= 0.5) {
+                // Ensure minimum 30-minute duration
+                const actualEndTime = endTime < dragStartTime ? endTime : endTime + 0.5;
+                createBookingFromDrag(dragStartTime, actualEndTime, resource, e.target.dataset.date);
             }
             
             resetDragState();
@@ -4361,9 +4550,9 @@
                     e.preventDefault(); // Only prevent default when actually creating
                     isLongPress = true;
                     showCreateFlightPopup(e);
-                    // Enable drag creation for touch
+                    // Enable drag creation for touch with precise positioning
                     isDragging = true;
-                    dragStartTime = parseInt(e.target.dataset.hour);
+                    dragStartTime = getHalfHourFromPosition(e.touches[0], e.target);
                     dragStartResource = e.target.dataset.resource;
                     e.target.classList.add('drag-start');
                 }
@@ -4475,17 +4664,147 @@
                 
                 if (targetElement && targetElement.classList.contains('resource-slot')) {
                     const targetResourceId = targetElement.dataset.resource;
-                    const targetHour = parseInt(targetElement.dataset.hour);
+                    const targetHour = getHalfHourFromPosition(e, targetElement); // Use precise 30-minute positioning
                     const targetDate = targetElement.dataset.date;
                     
                     // Check if this slot would be available for the dragged booking
                     const duration = getDurationHours(draggedBooking.startTime, draggedBooking.endTime);
-                    const wouldBeAvailable = isSlotAvailable(targetResourceId, targetHour, duration, targetDate, draggedBooking.id);
+                    const endHour = targetHour + duration;
                     
-                    if (wouldBeAvailable) {
-                        targetElement.classList.add('drop-target');
+                    // RESTRICTION: Prevent aircraft bookings from being moved to instructor columns
+                    const targetResource = resources.find(r => r.id === targetResourceId);
+                    if (draggedBooking.aircraft && targetResource && targetResource.type === 'instructor') {
+                        // Show red shadow to indicate this is not allowed
+                        if (calendarShadowElement) {
+                            calendarShadowElement.style.background = 'rgba(239, 68, 68, 0.3)';
+                            calendarShadowElement.style.borderColor = '#EF4444';
+                            calendarShadowElement.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
+                        }
+                        return; // Skip all other processing for instructor columns
+                    }
+                    
+                    // Comprehensive conflict checking (exclude self)
+                    let hasConflict = false;
+                    let conflictReason = '';
+                    let allConflictingBookings = [];
+                    
+                    // 1. Check aircraft/resource conflicts (exclude self)
+                    const aircraftConflicts = bookings.filter(booking => {
+                        if (booking.id === draggedBooking.id) return false; // Don't check against self
+                        if (booking.date !== targetDate) return false;
+                        if (booking.aircraft !== targetResourceId) return false;
+                        
+                        const bookingStart = getHourFromTime(booking.startTime);
+                        const bookingEnd = getHourFromTime(booking.endTime);
+                        return timeSlotOverlaps(targetHour, endHour, bookingStart, bookingEnd);
+                    });
+                    
+                    if (aircraftConflicts.length > 0) {
+                        hasConflict = true;
+                        conflictReason = 'Aircraft unavailable';
+                        allConflictingBookings = allConflictingBookings.concat(aircraftConflicts);
+                    }
+                    
+                    // 2. Check pilot conflicts (exclude self)
+                    let pilotConflicts = [];
+                    if (draggedBooking.pilot) {
+                        pilotConflicts = bookings.filter(booking => {
+                            if (booking.id === draggedBooking.id) return false; // Don't check against self
+                            if (booking.date !== targetDate) return false;
+                            if (booking.pilot !== draggedBooking.pilot) return false;
+                            
+                            const bookingStart = getHourFromTime(booking.startTime);
+                            const bookingEnd = getHourFromTime(booking.endTime);
+                            return timeSlotOverlaps(targetHour, endHour, bookingStart, bookingEnd);
+                        });
+                        
+                        if (pilotConflicts.length > 0) {
+                            if (!hasConflict) {
+                                hasConflict = true;
+                                conflictReason = 'Pilot double-booked';
+                            }
+                            allConflictingBookings = allConflictingBookings.concat(pilotConflicts);
+                        }
+                    }
+                    
+                    // 3. Check instructor conflicts (exclude self)
+                    let instructorConflicts = [];
+                    if (draggedBooking.instructor) {
+                        instructorConflicts = bookings.filter(booking => {
+                            if (booking.id === draggedBooking.id) return false; // Don't check against self
+                            if (booking.date !== targetDate) return false;
+                            if (booking.instructor !== draggedBooking.instructor) return false;
+                            
+                            const bookingStart = getHourFromTime(booking.startTime);
+                            const bookingEnd = getHourFromTime(booking.endTime);
+                            return timeSlotOverlaps(targetHour, endHour, bookingStart, bookingEnd);
+                        });
+                        
+                        if (instructorConflicts.length > 0) {
+                            if (!hasConflict) {
+                                hasConflict = true;
+                                conflictReason = 'Instructor conflict';
+                            }
+                            allConflictingBookings = allConflictingBookings.concat(instructorConflicts);
+                        }
+                    }
+                    
+                    // Remove duplicates from conflicting bookings array
+                    allConflictingBookings = [...new Set(allConflictingBookings)];
+                    
+                    // Clear previous previews and classes
+                    clearAllPreviews();
+                    document.querySelectorAll('.drop-target, .drop-conflict').forEach(el => {
+                        el.classList.remove('drop-target', 'drop-conflict');
+                    });
+                    
+                    if (!hasConflict) {
+                        // Remove green highlighting - we only use shadow preview
+                        // targetElement.classList.add('drop-target');
+                        // createHalfHourPreview(targetElement, targetHour, duration, false);
                     } else {
-                        targetElement.classList.add('drop-conflict');
+                        // Make the dragged element red to show it's in conflict
+                        if (draggedElement) {
+                            draggedElement.style.backgroundColor = 'rgba(239, 68, 68, 0.8)';
+                            draggedElement.style.borderColor = '#ef4444';
+                            draggedElement.classList.add('being-dragged-conflict');
+                        }
+                        
+                        // Try to find the closest available time slot for automatic conflict resolution
+                        const alternativeSlot = findClosestAvailableSlot(
+                            targetDate, 
+                            targetResourceId, 
+                            targetHour, 
+                            duration, 
+                            draggedBooking
+                        );
+                        
+                        if (alternativeSlot) {
+                            // Show preview at the alternative slot with a helpful message
+                            const altSlotElement = document.querySelector(`[data-hour="${Math.floor(alternativeSlot.startTime)}"][data-resource="${targetResourceId}"]`);
+                            if (altSlotElement) {
+                                // Remove alternative slot highlighting - we only use shadow preview
+                                // altSlotElement.classList.add('drop-target');
+                                // createHalfHourPreview(altSlotElement, alternativeSlot.startTime, duration, false);
+                                
+                                // Show a helpful message about the alternative
+                                const altPreview = altSlotElement.querySelector('.half-hour-preview');
+                                if (altPreview) {
+                                    const altTime = formatTime(alternativeSlot.startTime);
+                                    const endTime = formatTime(alternativeSlot.endTime);
+                                    altPreview.innerHTML = `
+                                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #10B981; font-weight: bold; font-size: 10px; line-height: 1.2;">
+                                            ✨ Suggested<br>
+                                            <div style="font-size: 8px;">${altTime}-${endTime}</div>
+                                        </div>
+                                    `;
+                                }
+                            }
+                        } else {
+                            targetElement.classList.add('drop-conflict');
+                            // Show conflict warning with full duration, reason, and highlight conflicting bookings
+                            createHalfHourPreview(targetElement, targetHour, duration, true, conflictReason, allConflictingBookings);
+                        }
                     }
                 }
             }
@@ -4525,6 +4844,12 @@
                         ghostElement.remove();
                         ghostElement = null;
                     }
+                    // Clean up time indicators and calendar shadow
+                    document.querySelectorAll('.ghost-time-indicator').forEach(el => el.remove());
+                    if (calendarShadowElement) {
+                        calendarShadowElement.remove();
+                        calendarShadowElement = null;
+                    }
                 }, 200);
             }
             
@@ -4551,6 +4876,9 @@
                 el.classList.remove('drop-conflict');
             });
             
+            // Clear all preview elements when drag ends
+            clearAllPreviews();
+            
             // Handle drop
             if (targetElement && targetElement.id === 'dragDeleteZone') {
                 // Delete the booking
@@ -4559,32 +4887,84 @@
                 }
             } else if (targetElement && targetElement.classList.contains('resource-slot')) {
                 const newResourceId = targetElement.dataset.resource;
-                const newHour = parseInt(targetElement.dataset.hour);
+                const newHour = getHalfHourFromPosition(e, targetElement); // Use precise 15-minute positioning
                 const newDate = targetElement.dataset.date;
                 
-                // Check if the target slot is available (excluding the booking being dragged)
+                // RESTRICTION: Prevent aircraft bookings from being moved to instructor columns
+                const newResource = resources.find(r => r.id === newResourceId);
+                if (draggedBooking.aircraft && newResource && newResource.type === 'instructor') {
+                    // Bounce back with instructor restriction message
+                    addBounceAnimation(targetElement);
+                    
+                    // Show toast notification about the restriction
+                    setTimeout(() => {
+                        const resourceName = newResource.name;
+                        showErrorToast(
+                            'Cannot Move to Instructor Column',
+                            `${resourceName} is a resource-only column. Aircraft bookings cannot be moved to instructor columns.`
+                        );
+                    }, 300);
+                    
+                    // Reset state and return
+                    setTimeout(() => {
+                        isDraggingEvent = false;
+                        draggedBooking = null;
+                        draggedElement = null;
+                        originalResourceId = null;
+                        isInitialLoad = false;
+                    }, 250);
+                    return;
+                }
+                
+                // Check for conflicts using enhanced detection (allows dropping back to original position)
                 const duration = getDurationHours(draggedBooking.startTime, draggedBooking.endTime);
-                const isAvailable = isSlotAvailable(newResourceId, newHour, duration, newDate, draggedBooking.id);
+                const hasConflict = checkDragConflicts(newResourceId, newHour, duration, newDate || getCurrentDateString());
                 
                 // Capture booking data before animation to prevent null reference
                 const bookingToMove = draggedBooking;
                 const originalResource = originalResourceId;
                 
-                if (isAvailable) {
-                    // Add magnetic drop effect with spring physics
+                if (!hasConflict) {
+                    // No conflicts - allow the drop (including back to original position)
                     addDropAnimation(targetElement, () => {
                         moveBooking(bookingToMove, originalResource, newResourceId, newHour, newDate);
                     });
                 } else {
-                    // Find next available slot with bounce feedback
-                    const nextSlot = findNextAvailableSlot(newResourceId, newHour, newDate, bookingToMove);
-                    if (nextSlot) {
+                    // Conflict detected - find nearest available slot
+                    const nearestSlot = findNearestAvailableSlot(newResourceId, newHour, duration, newDate || getCurrentDateString());
+                    
+                    if (nearestSlot) {
+                        // Auto-suggest nearest available time
+                        const suggestedHour = nearestSlot.hour;
+                        const direction = nearestSlot.type === 'forward' ? 'next' : 'previous';
+                        
+                        // Determine the type of conflict
+                        const conflictType = getConflictType(newResourceId, newHour, duration, newDate || getCurrentDateString());
+                        
+                        // Move to the suggested slot automatically
                         addDropAnimation(targetElement, () => {
-                            moveBooking(bookingToMove, originalResource, nextSlot.resource, nextSlot.hour, nextSlot.date);
+                            moveBooking(bookingToMove, originalResource, newResourceId, suggestedHour, newDate);
+                            
+                            // Show brief notification about the conflict and auto-suggestion
+                            setTimeout(() => {
+                                const timeStr = formatTime(suggestedHour);
+                                showWarningToast(
+                                    'Scheduling Conflict Resolved',
+                                    `${conflictType} Auto-moved to ${direction} available slot at ${timeStr}.`
+                                );
+                            }, 300);
                         });
                     } else {
-                        // Add bounce-back animation for invalid drop
+                        // No available slots found - bounce back with feedback
                         addBounceAnimation(targetElement);
+                        
+                        // Show user-friendly message about why the move failed
+                        setTimeout(() => {
+                            showWarningToast(
+                                'No Available Time Slots',
+                                `No conflict-free slots found within 8 hours of ${formatTime(newHour)}. Try a different time or resource.`
+                            );
+                        }, 300);
                     }
                 }
             }
@@ -4628,6 +5008,40 @@
             
             return null; // No available slot found
         }
+        
+        // Find next available time for pilot (to avoid double-booking)
+        function findNextAvailableTimeForPilot(pilotName, date, duration, excludeBookingId = null) {
+            const durationInHours = duration; // Assuming duration is already in hours
+            
+            // Get all pilot's bookings for this date
+            const pilotBookings = bookings.filter(booking => {
+                return booking.pilot === pilotName && 
+                       booking.date === date && 
+                       (!excludeBookingId || booking.id !== excludeBookingId);
+            }).sort((a, b) => getHourFromTime(a.startTime) - getHourFromTime(b.startTime));
+            
+            // Try to find a slot starting from 6 AM
+            for (let startHour = 6; startHour <= 23 - durationInHours; startHour += 0.5) { // 30-minute increments
+                const endHour = startHour + durationInHours;
+                
+                // Check if this time slot conflicts with any of pilot's existing bookings
+                const hasConflict = pilotBookings.some(booking => {
+                    const bookingStart = getHourFromTime(booking.startTime);
+                    const bookingEnd = getHourFromTime(booking.endTime);
+                    return startHour < bookingEnd && endHour > bookingStart;
+                });
+                
+                if (!hasConflict) {
+                    return {
+                        startTime: startHour,
+                        endTime: endHour,
+                        date: date
+                    };
+                }
+            }
+            
+            return null; // No available slot found
+        }
 
         // Check if time slot is available
         function isSlotAvailable(resourceId, startHour, duration, date, excludeBookingId) {
@@ -4657,11 +5071,300 @@
         function timeSlotOverlaps(start1, end1, start2, end2) {
             return start1 < end2 && end1 > start2;
         }
+        
+        // Find the closest available time slot for automatic conflict resolution
+        function findClosestAvailableSlot(date, resourceId, preferredStartTime, duration, excludeBooking = null) {
+            const targetDate = formatDate(new Date(date));
+            
+            // Define search ranges - look both before and after the preferred time
+            const searchRanges = [
+                // First search after the preferred time (more intuitive)
+                { start: preferredStartTime, end: 23 - duration, step: 0.5 },
+                // Then search before the preferred time
+                { start: preferredStartTime - 0.5, end: 6, step: -0.5 }
+            ];
+            
+            for (const range of searchRanges) {
+                let currentTime = range.start;
+                
+                while ((range.step > 0 && currentTime <= range.end) || 
+                       (range.step < 0 && currentTime >= range.end)) {
+                    
+                    // Skip negative times or times too late
+                    if (currentTime < 6 || currentTime + duration > 22) {
+                        currentTime += range.step;
+                        continue;
+                    }
+                    
+                    const endTime = currentTime + duration;
+                    let isAvailable = true;
+                    
+                    // Check all bookings for conflicts (excluding the one being moved)
+                    for (const booking of bookings) {
+                        if (excludeBooking && booking.id === excludeBooking.id) continue;
+                        if (booking.date !== targetDate) continue;
+                        
+                        const bookingStart = getHourFromTime(booking.startTime);
+                        const bookingEnd = getHourFromTime(booking.endTime);
+                        
+                        // Check aircraft conflict
+                        if (booking.aircraft === resourceId && 
+                            timeSlotOverlaps(currentTime, endTime, bookingStart, bookingEnd)) {
+                            isAvailable = false;
+                            break;
+                        }
+                        
+                        // Check pilot conflict (if moving a booking with the same pilot)
+                        if (excludeBooking && excludeBooking.pilot && 
+                            booking.pilot === excludeBooking.pilot &&
+                            timeSlotOverlaps(currentTime, endTime, bookingStart, bookingEnd)) {
+                            isAvailable = false;
+                            break;
+                        }
+                        
+                        // Check instructor conflict (if moving a booking with the same instructor)
+                        if (excludeBooking && excludeBooking.instructor && 
+                            booking.instructor === excludeBooking.instructor &&
+                            timeSlotOverlaps(currentTime, endTime, bookingStart, bookingEnd)) {
+                            isAvailable = false;
+                            break;
+                        }
+                    }
+                    
+                    if (isAvailable) {
+                        return {
+                            startTime: currentTime,
+                            endTime: endTime,
+                            date: targetDate
+                        };
+                    }
+                    
+                    currentTime += range.step;
+                }
+            }
+            
+            return null; // No available slot found
+        }
 
         // Get hour from time string (e.g., "14:30" -> 14.5)
         function getHourFromTime(timeStr) {
             const [hours, minutes] = timeStr.split(':').map(Number);
             return hours + (minutes / 60);
+        }
+        
+        // Format time from hour number to time string (e.g., 14.5 -> "14:30")
+        function formatTime(hourNumber) {
+            const hours = Math.floor(hourNumber);
+            const minutes = Math.round((hourNumber - hours) * 60);
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+        
+        // Format date object to string (YYYY-MM-DD)
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // Snap time to 30-minute increments with magnetic attraction
+        function snapToThirtyMinutes(timeInHours) {
+            const totalMinutes = timeInHours * 60;
+            const snappedMinutes = Math.round(totalMinutes / 30) * 30;
+            return snappedMinutes / 60;
+        }
+        
+        // Get precise 30-minute slot from mouse position within resource slot
+        function getHalfHourFromPosition(e, slotElement) {
+            // ALWAYS use individual slot positioning for accuracy
+            const rect = slotElement.getBoundingClientRect();
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+            const relativeY = clientY - rect.top;
+            const slotHeight = rect.height; // Should be 60px for each hour
+            
+            // Calculate which half of the hour (0, 0.5)
+            // relativeY / slotHeight gives us position within the slot (0 to 1)
+            // Multiply by 2 and floor to get 30-minute increments: 0 or 1
+            const halfIndex = Math.floor((relativeY / slotHeight) * 2);
+            const baseHour = parseInt(slotElement.dataset.hour);
+            
+            // Convert to precise time with 30-minute resolution
+            const preciseTime = baseHour + (halfIndex * 0.5);
+            
+            // Debug logging to track the issue
+            console.log(`🐛 DEBUG: getHalfHourFromPosition`, {
+                baseHour,
+                relativeY: Math.round(relativeY),
+                slotHeight: Math.round(slotHeight),
+                halfIndex,
+                preciseTime,
+                resultTime: `${Math.floor(preciseTime)}:${(preciseTime % 1) === 0.5 ? '30' : '00'}`
+            });
+            
+            // Clamp to valid range (6 AM to midnight)
+            return Math.max(6, Math.min(23.5, preciseTime));
+        }
+        
+        // Create 30-minute precision preview box spanning multiple time slots as one continuous segment
+        function createHalfHourPreview(slotElement, halfHour, duration = 1, isConflict = false, conflictReason = '', conflictingBookings = []) {
+            // Clear all existing previews first
+            clearAllPreviews();
+            
+            const resourceId = slotElement.dataset.resource;
+            const endHour = halfHour + duration;
+            
+            // Create one continuous preview element that spans multiple slots
+            const startSlotHour = Math.floor(halfHour);
+            const endSlotHour = Math.floor(endHour - 0.001); // -0.001 to handle exact hour boundaries
+            
+            // Find the container that holds all time slots for this resource
+            const resourceColumn = document.querySelector(`[data-resource="${resourceId}"]`).closest('.resource-column');
+            if (!resourceColumn) return;
+            
+            // Calculate absolute positioning relative to the resource column
+            const firstSlot = document.querySelector(`[data-hour="${startSlotHour}"][data-resource="${resourceId}"]`);
+            if (!firstSlot) return;
+            
+            // Calculate the total height and position
+            const startOffset = (halfHour - startSlotHour) * 60; // pixels from start of first slot
+            const totalHeight = duration * 60 - 4; // -4px for margins
+            
+            const preview = document.createElement('div');
+            preview.className = 'half-hour-preview continuous-preview';
+            
+            // Position relative to the first slot
+            const firstSlotRect = firstSlot.getBoundingClientRect();
+            const columnRect = resourceColumn.getBoundingClientRect();
+            
+            const relativeTop = (firstSlotRect.top - columnRect.top) + startOffset + 2; // +2px to match booking offset
+            
+            preview.style.cssText = `
+                position: absolute;
+                top: ${relativeTop}px;
+                left: 2px;
+                right: 2px;
+                height: ${totalHeight}px;
+                border-radius: 5px;
+                pointer-events: none;
+                z-index: 50;
+                transition: all 0.1s ease;
+                box-shadow: 0 2px 4px rgba(72, 187, 120, 0.3);
+            `;
+            
+            if (isConflict) {
+                preview.style.background = 'rgba(239, 68, 68, 0.3)';
+                preview.style.borderColor = '#ef4444';
+                preview.style.border = '2px solid #ef4444';
+                preview.innerHTML = `
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #ef4444; font-weight: bold; font-size: 10px; line-height: 1.2;">
+                        ⚠️ CONFLICT<br>
+                        <div style="font-size: 8px;">${conflictReason}</div>
+                    </div>
+                `;
+                
+                // Highlight conflicting bookings in red
+                conflictingBookings.forEach(booking => {
+                    const conflictElement = document.querySelector(`[data-booking-id="${booking.id}"]`);
+                    if (conflictElement) {
+                        conflictElement.style.backgroundColor = 'rgba(239, 68, 68, 0.8)';
+                        conflictElement.style.borderColor = '#ef4444';
+                        conflictElement.classList.add('conflict-highlight');
+                    }
+                });
+            } else {
+                preview.style.background = 'rgba(72, 187, 120, 0.3)';
+                preview.style.borderColor = '#48bb78';
+                preview.style.border = '2px solid #48bb78';
+            }
+            
+            resourceColumn.appendChild(preview);
+        }
+        
+        // Create hover preview for new event creation
+        function createHoverCreatePreview(slotElement, halfHour) {
+            // Remove any existing hover previews in this slot
+            slotElement.querySelectorAll('.hover-create-preview').forEach(el => el.remove());
+            
+            const baseHour = parseInt(slotElement.dataset.hour);
+            const quarterOffset = halfHour - baseHour;
+            const topPosition = quarterOffset * 60 + 2; // +2px to match booking card offset
+            
+            const preview = document.createElement('div');
+            preview.className = 'hover-create-preview';
+            preview.style.top = topPosition + 'px';
+            preview.style.left = '2px'; // Match booking card left offset
+            preview.style.right = '2px'; // Match booking card right offset
+            preview.style.height = '26px'; // 30px - 4px for margins
+            
+            slotElement.appendChild(preview);
+            return preview;
+        }
+        
+        // Clear all preview elements and conflict highlights
+        function clearAllPreviews() {
+            document.querySelectorAll('.half-hour-preview, .hover-create-preview').forEach(el => el.remove());
+            // Clear conflict highlights
+            document.querySelectorAll('.conflict-highlight').forEach(el => {
+                el.classList.remove('conflict-highlight');
+                el.style.backgroundColor = '';
+                el.style.borderColor = '';
+            });
+            // Clear dragged element conflict styling
+            document.querySelectorAll('.being-dragged-conflict').forEach(el => {
+                el.classList.remove('being-dragged-conflict');
+                el.style.backgroundColor = '';
+                el.style.borderColor = '';
+            });
+        }
+        
+        // Handle slot mouse move for hover preview (only when not dragging)
+        function handleSlotMouseMove(e) {
+            // Don't show hover preview if we're currently dragging something
+            if (isDragging || isDraggingEvent) return;
+            
+            const slot = e.target;
+            if (!slot.classList.contains('resource-slot')) return;
+            
+            const resourceId = slot.dataset.resource;
+            
+            // Don't show hover preview on instructor columns
+            if (isInstructorResource(resourceId)) {
+                slot.querySelectorAll('.hover-create-preview').forEach(el => el.remove());
+                return;
+            }
+            
+            // Check if slot has existing booking that would conflict
+            const halfHour = getHalfHourFromPosition(e, slot);
+            const date = slot.dataset.date;
+            
+            // Check if this position is available (30-minute default duration)
+            const isAvailable = isSlotAvailable(resourceId, halfHour, 0.5, date, null);
+            
+            // Clear existing previews in this slot only
+            slot.querySelectorAll('.hover-create-preview').forEach(el => el.remove());
+            
+            if (isAvailable) {
+                // Show the + hover preview
+                createHoverCreatePreview(slot, halfHour);
+            }
+        }
+        
+        // Handle slot mouse leave to clear hover preview
+        function handleSlotMouseLeave(e) {
+            // Don't clear if we're dragging
+            if (isDragging || isDraggingEvent) return;
+            
+            const slot = e.target;
+            // Clear hover previews from this slot
+            slot.querySelectorAll('.hover-create-preview').forEach(el => el.remove());
+        }
+        
+        // Convert hours to time string with 30-minute precision
+        function hoursToTimeString(timeInHours) {
+            const snappedTime = snapToThirtyMinutes(timeInHours);
+            const hours = Math.floor(snappedTime);
+            const minutes = Math.round((snappedTime % 1) * 60);
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
         }
 
         // Get duration in hours
@@ -4716,20 +5419,19 @@
                 let newStartTime, newEndTime;
                 
                 if (resizeDirection === 'top') {
-                    // Resizing start time
-                    const hours = Math.floor(preciseTime);
-                    const minutes = Math.round((preciseTime % 1) * 60);
-                    newStartTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                    // Resizing start time - snap to 30-minute increments
+                    const snappedTime = snapToThirtyMinutes(preciseTime);
+                    newStartTime = hoursToTimeString(snappedTime);
                     newEndTime = resizeBooking.endTime;
-                    if (preciseTime >= currentEnd) return; // Invalid resize
+                    if (snappedTime >= currentEnd) return; // Invalid resize
                 } else {
-                    // Resizing end time - add minimum 30 minutes
-                    const endTime = preciseTime + 0.5;
-                    const hours = Math.floor(endTime);
-                    const minutes = Math.round((endTime % 1) * 60);
+                    // Resizing end time - snap to 30-minute increments with minimum 30 minutes
+                    const minEndTime = currentStart + 0.5; // 30 minutes minimum
+                    const targetEndTime = Math.max(preciseTime, minEndTime);
+                    const snappedEndTime = snapToThirtyMinutes(targetEndTime);
                     newStartTime = resizeBooking.startTime;
-                    newEndTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-                    if (endTime <= currentStart) return; // Invalid resize
+                    newEndTime = hoursToTimeString(snappedEndTime);
+                    if (snappedEndTime <= currentStart) return; // Invalid resize
                 }
                 
                 // Visual preview during resize
@@ -4765,16 +5467,16 @@
                 const preciseTime = slotHour + (minuteOffset / 60);
                 
                 if (resizeDirection === 'top') {
-                    // Resizing start time
-                    const hours = Math.floor(preciseTime);
-                    const minutes = Math.round((preciseTime % 1) * 60);
-                    resizeBooking.startTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                    // Resizing start time - snap to 30-minute increments
+                    const snappedTime = snapToThirtyMinutes(preciseTime);
+                    resizeBooking.startTime = hoursToTimeString(snappedTime);
                 } else {
-                    // Resizing end time - add minimum 30 minutes
-                    const endTime = preciseTime + 0.5;
-                    const hours = Math.floor(endTime);
-                    const minutes = Math.round((endTime % 1) * 60);
-                    resizeBooking.endTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                    // Resizing end time - snap to 30-minute increments with minimum 30 minutes
+                    const currentStart = getHourFromTime(resizeBooking.startTime);
+                    const minEndTime = currentStart + 0.5; // 30 minutes minimum
+                    const targetEndTime = Math.max(preciseTime, minEndTime);
+                    const snappedEndTime = snapToThirtyMinutes(targetEndTime);
+                    resizeBooking.endTime = hoursToTimeString(snappedEndTime);
                 }
                 
                 saveBookings(); // Persist changes
@@ -4806,9 +5508,21 @@
             }
             
             const duration = getDurationHours(booking.startTime, booking.endTime);
-            const newStartTime = `${String(newHour).padStart(2, '0')}:00`;
-            const newEndHour = newHour + Math.ceil(duration);
-            const newEndTime = `${String(newEndHour).padStart(2, '0')}:00`;
+            // Snap the new start time to 30-minute increments
+            const snappedStartTime = snapToThirtyMinutes(newHour);
+            const newStartTime = hoursToTimeString(snappedStartTime);
+            const newEndTime = hoursToTimeString(snappedStartTime + duration);
+            
+            // Debug logging to track the issue
+            console.log(`🐛 DEBUG: moveBooking`, {
+                originalTime: `${booking.startTime}-${booking.endTime}`,
+                inputNewHour: newHour,
+                snappedStartTime,
+                newStartTime,
+                newEndTime,
+                duration,
+                calculation: `${newHour} → snap(${snappedStartTime}) → ${newStartTime}`
+            });
             
             // Update booking data
             booking.date = newDate;
@@ -4964,6 +5678,16 @@
         function handleDoubleClick(e) {
             if (e.target.classList.contains('occupied')) return;
             
+            // Prevent direct booking on instructor columns
+            const resourceId = e.target.dataset.resource;
+            if (isInstructorResource(resourceId)) {
+                showErrorToast(
+                    'Cannot Book Instructor Directly',
+                    'Instructors can only be booked when reserving an aircraft. Please select an aircraft first, then choose an instructor.'
+                );
+                return;
+            }
+            
             e.preventDefault();
             e.stopPropagation();
             
@@ -5057,15 +5781,17 @@
 
         // Create booking functions
         function createBookingFromDrag(startHour, endHour, resourceId, date) {
-            const startTime = `${String(Math.min(startHour, endHour)).padStart(2, '0')}:00`;
-            const endTime = `${String(Math.max(startHour, endHour)).padStart(2, '0')}:00`;
+            const minHour = Math.min(startHour, endHour);
+            const maxHour = Math.max(startHour, endHour);
+            const startTime = hoursToTimeString(minHour);
+            const endTime = hoursToTimeString(maxHour);
             
             openBookingModal(resourceId, date, startTime, endTime);
         }
 
         function createBookingFromClick(startHour, endHour, resourceId, date) {
-            const startTime = `${String(startHour).padStart(2, '0')}:00`;
-            const endTime = `${String(endHour).padStart(2, '0')}:00`;
+            const startTime = hoursToTimeString(startHour);
+            const endTime = hoursToTimeString(endHour);
             
             openBookingModal(resourceId, date, startTime, endTime);
         }
@@ -5117,12 +5843,13 @@
             document.addEventListener('touchend', handleEventDragEnd, { passive: false });
         }
 
-        // Enhanced ghost element with GPU acceleration
+        // Enhanced ghost element - rotated card that follows mouse + calendar shadow preview
         function createGhostElement(originalElement, e) {
+            // Create the draggable ghost card (follows mouse with rotation)
             ghostElement = originalElement.cloneNode(true);
             ghostElement.className += ' drag-ghost';
             
-            // Enhanced styling with GPU acceleration
+            // Enhanced styling with rotation and GPU acceleration
             ghostElement.style.cssText = `
                 position: fixed;
                 pointer-events: none;
@@ -5139,14 +5866,17 @@
             ghostElement.style.width = `${rect.width}px`;
             ghostElement.style.height = `${rect.height}px`;
             
-            // Position ghost at cursor/touch with offset for better visibility
+            // Position ghost to follow mouse cursor
             updateGhostPosition(e);
             document.body.appendChild(ghostElement);
             
-            // Add subtle entrance animation
+            // Add entrance animation
             requestAnimationFrame(() => {
                 ghostElement.style.transform = 'translateZ(0) rotate(3deg) scale(1.05)';
             });
+            
+            // Create calendar shadow preview (separate element that shows where it will drop)
+            createCalendarShadowPreview();
         }
 
         // Enhanced ghost positioning with smooth GPU-accelerated movement
@@ -5163,10 +5893,341 @@
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             const clientY = e.clientY || (e.touches && e.touches[0].clientY);
             
-            // Use fixed positioning with proper coordinates
-            ghostElement.style.left = `${clientX - 60}px`;
-            ghostElement.style.top = `${clientY - 30}px`;
+            // Position the draggable ghost card to follow mouse cursor
+            const ghostWidth = parseInt(ghostElement.style.width) || 120;
+            ghostElement.style.left = `${clientX - ghostWidth/2}px`;
+            ghostElement.style.top = `${clientY - 20}px`; // Slightly above cursor
             ghostElement.style.transform = 'translateZ(0) rotate(3deg) scale(1.05)';
+            
+            // Update calendar shadow preview position
+            const targetElement = document.elementFromPoint(clientX, clientY);
+            if (targetElement && targetElement.classList.contains('resource-slot')) {
+                const targetResourceId = targetElement.dataset.resource;
+                const targetHour = getHalfHourFromPosition(e, targetElement);
+                const targetDate = targetElement.dataset.date || getCurrentDateString();
+                const duration = getDurationHours(draggedBooking.startTime, draggedBooking.endTime);
+                
+                // Check for conflicts during drag
+                const hasConflict = checkDragConflicts(targetResourceId, targetHour, duration, targetDate);
+                
+                updateCalendarShadowPreview(targetElement, targetHour, duration, hasConflict);
+            }
+        }
+
+        // Get the specific type of conflict that occurred
+        function getConflictType(targetResourceId, targetHour, duration, targetDate) {
+            const endHour = targetHour + duration;
+            
+            // Check all bookings for conflicts (excluding the one being dragged)
+            const conflictingBookings = bookings.filter(booking => {
+                if (booking.id === draggedBooking.id) return false; // Don't check against self
+                if (booking.date !== targetDate) return false;
+                
+                const bookingStart = getHourFromTime(booking.startTime);
+                const bookingEnd = getHourFromTime(booking.endTime);
+                
+                // Check if times overlap
+                return timeSlotOverlaps(targetHour, endHour, bookingStart, bookingEnd);
+            });
+            
+            // Determine the primary conflict type
+            for (const booking of conflictingBookings) {
+                // 1. Aircraft conflict
+                if (booking.aircraft === targetResourceId) {
+                    const aircraftResource = resources.find(r => r.id === targetResourceId);
+                    const aircraftName = aircraftResource ? aircraftResource.name : targetResourceId;
+                    return `${aircraftName} already booked.`;
+                }
+                
+                // 2. Pilot conflict
+                if (draggedBooking.pilot && booking.pilot === draggedBooking.pilot) {
+                    return `Pilot "${draggedBooking.pilot}" already has a flight scheduled.`;
+                }
+                
+                // 3. Instructor conflict
+                if (draggedBooking.instructor && booking.instructor === draggedBooking.instructor) {
+                    const instructorResource = resources.find(r => r.id === draggedBooking.instructor);
+                    const instructorName = instructorResource ? instructorResource.name : draggedBooking.instructor;
+                    return `Instructor ${instructorName} is already teaching.`;
+                }
+            }
+            
+            return "Scheduling conflict detected.";
+        }
+
+        // Enhanced conflict detection during drag
+        function checkDragConflicts(targetResourceId, targetHour, duration, targetDate) {
+            const endHour = targetHour + duration;
+            
+            // Check all bookings for conflicts (excluding the one being dragged)
+            const conflictingBookings = bookings.filter(booking => {
+                if (booking.id === draggedBooking.id) return false; // Don't check against self
+                if (booking.date !== targetDate) return false;
+                
+                const bookingStart = getHourFromTime(booking.startTime);
+                const bookingEnd = getHourFromTime(booking.endTime);
+                
+                // Check if times overlap
+                if (!timeSlotOverlaps(targetHour, endHour, bookingStart, bookingEnd)) return false;
+                
+                // 1. Aircraft conflict - only check if moving to the same aircraft
+                if (booking.aircraft === targetResourceId) return true;
+                
+                // 2. Pilot conflict - same pilot can't be in two places at once
+                if (draggedBooking.pilot && booking.pilot === draggedBooking.pilot) return true;
+                
+                // 3. Instructor conflict - only check if the dragged booking has an instructor and it matches
+                if (draggedBooking.instructor && booking.instructor === draggedBooking.instructor) return true;
+                
+                return false;
+            });
+            
+            return conflictingBookings.length > 0;
+        }
+
+        // Find nearest available slot for conflict resolution
+        function findNearestAvailableSlot(targetResourceId, requestedHour, duration, targetDate) {
+            const maxSearchRange = 8; // Search 8 hours forward/backward
+            
+            // Search forward first (next available time)
+            for (let offset = 0.5; offset <= maxSearchRange; offset += 0.5) { // 30-minute increments
+                const forwardHour = requestedHour + offset;
+                if (forwardHour + duration <= 24 && !checkDragConflicts(targetResourceId, forwardHour, duration, targetDate)) {
+                    return { hour: forwardHour, type: 'forward' };
+                }
+            }
+            
+            // Search backward (previous available time)
+            for (let offset = 0.5; offset <= maxSearchRange; offset += 0.5) { // 30-minute increments  
+                const backwardHour = requestedHour - offset;
+                if (backwardHour >= 6 && !checkDragConflicts(targetResourceId, backwardHour, duration, targetDate)) {
+                    return { hour: backwardHour, type: 'backward' };
+                }
+            }
+            
+            return null; // No available slot found within search range
+        }
+
+        // Calendar shadow preview variables
+        let calendarShadowElement = null;
+        
+        // Create calendar shadow preview that shows where booking will land
+        function createCalendarShadowPreview() {
+            calendarShadowElement = document.createElement('div');
+            calendarShadowElement.className = 'calendar-shadow-preview';
+            calendarShadowElement.style.cssText = `
+                position: absolute;
+                pointer-events: none;
+                z-index: 950;
+                opacity: 0.8;
+                background: rgba(86, 180, 233, 0.3);
+                border: 2px dashed #56B4E9;
+                border-radius: 8px;
+                display: none;
+                box-shadow: 0 4px 12px rgba(86, 180, 233, 0.4);
+            `;
+            
+            // Append to time grid container for proper positioning
+            const timeGrid = document.querySelector('.resource-time-grid');
+            if (timeGrid) {
+                timeGrid.appendChild(calendarShadowElement);
+            }
+        }
+        
+        // Update calendar shadow preview position and size
+        function updateCalendarShadowPreview(targetSlot, startHour, duration, hasConflict = false) {
+            if (!calendarShadowElement) return;
+            
+            // Get time grid container for positioning reference
+            const timeGrid = document.querySelector('.resource-time-grid');
+            if (!timeGrid) return;
+            
+            // Calculate positioning relative to target slot
+            const slotRect = targetSlot.getBoundingClientRect();
+            const gridRect = timeGrid.getBoundingClientRect();
+            
+            // Position horizontally: match the resource slot
+            const left = slotRect.left - gridRect.left;
+            const width = slotRect.width - 4;
+            
+            // Calculate vertical positioning: 60px per hour from 6 AM
+            const hoursSince6AM = Math.floor(startHour - 6);
+            const minutesInHour = (startHour % 1) * 60;
+            const topOffset = (hoursSince6AM * 60) + minutesInHour;
+            const heightPx = duration * 60; // 60px per hour
+            
+            // Position and show the shadow preview
+            calendarShadowElement.style.position = 'absolute';
+            calendarShadowElement.style.left = `${left + 2}px`;
+            calendarShadowElement.style.top = `${topOffset}px`;
+            calendarShadowElement.style.width = `${width}px`;
+            calendarShadowElement.style.height = `${heightPx}px`;
+            calendarShadowElement.style.display = 'block';
+            calendarShadowElement.style.zIndex = '950';
+            
+            // Update styling based on conflict status
+            if (hasConflict) {
+                calendarShadowElement.style.background = 'rgba(239, 68, 68, 0.3)';
+                calendarShadowElement.style.borderColor = '#EF4444';
+                calendarShadowElement.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
+            } else {
+                calendarShadowElement.style.background = 'rgba(86, 180, 233, 0.3)';
+                calendarShadowElement.style.borderColor = '#56B4E9';
+                calendarShadowElement.style.boxShadow = '0 4px 12px rgba(86, 180, 233, 0.4)';
+            }
+        }
+
+        // Position ghost to span across multiple hour rows showing full booking duration
+        function positionSpanningGhost(targetSlot, startHour, duration, resourceId) {
+            // Find the specific time row that contains this slot
+            const timeRow = targetSlot.closest('.time-slot');
+            if (!timeRow) return;
+            
+            // Get the slots container to position relative to
+            const slotsContainer = targetSlot.closest('.resource-slots-container');
+            if (!slotsContainer) return;
+            
+            // Calculate positioning within the time row structure
+            const slotRect = targetSlot.getBoundingClientRect();
+            const containerRect = slotsContainer.getBoundingClientRect();
+            
+            // Position relative to the slots container
+            const left = slotRect.left - containerRect.left;
+            const width = slotRect.width - 4; // Account for border
+            
+            // Calculate vertical positioning: 60px per hour in the time structure
+            const startMinuteInHour = Math.round((startHour % 1) * 60);
+            const hoursSince6AM = Math.floor(startHour - 6);
+            const topOffset = (hoursSince6AM * 60) + startMinuteInHour;
+            const heightPx = duration * 60; // 60px per hour
+            
+            // Position the ghost element within the container
+            ghostElement.style.position = 'absolute';
+            ghostElement.style.left = `${left + 2}px`;
+            ghostElement.style.top = `${topOffset}px`;
+            ghostElement.style.width = `${width}px`;
+            ghostElement.style.height = `${heightPx}px`;
+            ghostElement.style.display = 'block';
+            
+            // Append to the correct container if not already appended
+            if (!ghostElement.parentNode) {
+                slotsContainer.appendChild(ghostElement);
+            }
+            
+            // Add booking content preview
+            const startTime = formatTime(startHour);
+            const endTime = formatTime(startHour + duration);
+            
+            ghostElement.innerHTML = `
+                <div style="padding: 8px; color: #1e40af; font-weight: 600; font-size: 12px; text-align: center;">
+                    <div>${draggedBooking.title || 'Flight'}</div>
+                    <div style="margin-top: 4px; font-size: 10px;">${startTime} - ${endTime}</div>
+                    <div style="font-size: 9px; opacity: 0.8; margin-top: 2px;">${draggedBooking.pilot || ''}</div>
+                </div>
+            `;
+        }
+
+        // Add 30-minute precision indicators to ghost preview
+        function updateGhostTimeIndicators(startHour, duration) {
+            // Remove existing indicators
+            document.querySelectorAll('.ghost-time-indicator').forEach(el => el.remove());
+            
+            const endHour = startHour + duration;
+            
+            // Add start time indicator if it's on a 30-minute mark
+            if (startHour % 0.5 === 0) {
+                createTimeIndicator(startHour, 'start');
+            }
+            
+            // Add end time indicator if it's on a 30-minute mark  
+            if (endHour % 0.5 === 0) {
+                createTimeIndicator(endHour, 'end');
+            }
+        }
+
+        // Create individual time indicator
+        function createTimeIndicator(hour, type) {
+            const indicator = document.createElement('div');
+            indicator.className = 'ghost-time-indicator';
+            indicator.style.cssText = `
+                position: absolute;
+                left: -65px;
+                width: 60px;
+                height: 2px;
+                background: ${type === 'start' ? '#10b981' : '#ef4444'};
+                z-index: 960;
+                font-size: 10px;
+                font-weight: 600;
+                color: ${type === 'start' ? '#10b981' : '#ef4444'};
+                font-family: 'JetBrains Mono', monospace;
+            `;
+            
+            const topPosition = (hour - 6) * 60;
+            indicator.style.top = `${topPosition}px`;
+            
+            // Add time label
+            const timeLabel = document.createElement('div');
+            timeLabel.style.cssText = `
+                position: absolute;
+                right: 65px;
+                top: -8px;
+                white-space: nowrap;
+                font-size: 10px;
+            `;
+            timeLabel.textContent = formatTime(hour);
+            indicator.appendChild(timeLabel);
+            
+            const calendarContainer = document.querySelector('.resource-day-view');
+            if (calendarContainer) {
+                calendarContainer.appendChild(indicator);
+            }
+        }
+
+        // Enhanced ghost time indicator that shows precise drop time
+        function updateGhostTimeIndicator(e, clientX, clientY) {
+            // Find which slot the cursor is over
+            const targetElement = document.elementFromPoint(clientX, clientY);
+            
+            if (targetElement && targetElement.classList.contains('resource-slot')) {
+                // Calculate precise time from mouse position
+                const targetHour = getHalfHourFromPosition(e, targetElement);
+                const duration = getDurationHours(draggedBooking.startTime, draggedBooking.endTime);
+                
+                // Convert to readable time strings
+                const startTime = formatTime(targetHour);
+                const endTime = formatTime(targetHour + duration);
+                
+                // Create or update time indicator badge
+                let timeIndicator = ghostElement.querySelector('.ghost-time-indicator');
+                if (!timeIndicator) {
+                    timeIndicator = document.createElement('div');
+                    timeIndicator.className = 'ghost-time-indicator';
+                    timeIndicator.style.cssText = `
+                        position: absolute;
+                        top: -25px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: #1e293b;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 6px;
+                        font-size: 11px;
+                        font-weight: 600;
+                        white-space: nowrap;
+                        z-index: 1001;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    `;
+                    ghostElement.appendChild(timeIndicator);
+                }
+                
+                // Update time display with visual indicator for 30-minute precision
+                const isOnHalfHour = (targetHour % 1) === 0.5;
+                const timeDisplay = isOnHalfHour ? `${startTime}-${endTime} (:30)` : `${startTime}-${endTime} (:00)`;
+                timeIndicator.textContent = timeDisplay;
+                
+                // Color coding for time precision feedback
+                timeIndicator.style.background = isOnHalfHour ? '#f59e0b' : '#1e293b'; // Amber for :30, dark for :00
+            }
         }
 
         function enableInlineEdit(titleElement, booking) {
@@ -5292,20 +6353,84 @@
             // Check aircraft availability
             for (let hour = startHour; hour < endHour; hour++) {
                 if (!isSlotAvailable(resourceId, hour, 1, bookingData.startDate, excludeBookingId)) {
-                    alert(`Aircraft ${resourceName} is not available at ${hour}:00. Please choose a different time or aircraft.`);
+                    showErrorToast(
+                        'Aircraft Unavailable', 
+                        `${resourceName} is not available at ${hour}:00. Please choose a different time or aircraft.`
+                    );
                     return;
                 }
             }
             
-            // Check instructor availability if instructor is selected
+            // Comprehensive instructor conflict checking
             if (bookingData.instructor) {
-                for (let hour = startHour; hour < endHour; hour++) {
-                    if (!isSlotAvailable(bookingData.instructor, hour, 1, bookingData.startDate, excludeBookingId)) {
-                        const instructorResource = resources.find(r => r.id === bookingData.instructor);
-                        const instructorName = instructorResource ? instructorResource.name : bookingData.instructor;
-                        alert(`Instructor ${instructorName} is not available at ${hour}:00. Please choose a different time or instructor.`);
-                        return;
+                const instructorConflicts = bookings.filter(booking => {
+                    if (booking.id === excludeBookingId) return false;
+                    if (booking.date !== bookingData.startDate) return false;
+                    if (booking.instructor !== bookingData.instructor) return false;
+                    
+                    const bookingStart = getHourFromTime(booking.startTime);
+                    const bookingEnd = getHourFromTime(booking.endTime);
+                    return timeSlotOverlaps(startHour, endHour, bookingStart, bookingEnd);
+                });
+                
+                if (instructorConflicts.length > 0) {
+                    const conflict = instructorConflicts[0];
+                    const instructorResource = resources.find(r => r.id === bookingData.instructor);
+                    const instructorName = instructorResource ? instructorResource.name : bookingData.instructor;
+                    showErrorToast(
+                        'Instructor Conflict',
+                        `${instructorName} is already booked from ${conflict.startTime} to ${conflict.endTime}. Please choose a different time or instructor.`
+                    );
+                    return;
+                }
+            }
+            
+            // Check pilot double-booking prevention
+            const pilotName = bookingData.pilot || currentUser;
+            const conflictingBooking = bookings.find(booking => {
+                if (excludeBookingId && booking.id === excludeBookingId) return false; // Skip current booking when editing
+                
+                // Check if same pilot has a booking at overlapping time
+                const isSamePilot = booking.pilot === pilotName;
+                const isSameDate = booking.date === bookingData.startDate;
+                
+                if (isSamePilot && isSameDate) {
+                    const bookingStart = getHourFromTime(booking.startTime);
+                    const bookingEnd = getHourFromTime(booking.endTime);
+                    const proposedStart = getHourFromTime(bookingData.startTime);
+                    const proposedEnd = getHourFromTime(bookingData.endTime);
+                    
+                    // Check for time overlap
+                    return proposedStart < bookingEnd && proposedEnd > bookingStart;
+                }
+                
+                return false;
+            });
+            
+            if (conflictingBooking) {
+                const conflictStart = conflictingBooking.startTime;
+                const conflictEnd = conflictingBooking.endTime;
+                const conflictAircraft = conflictingBooking.aircraftName || conflictingBooking.aircraft;
+                
+                // Find next available time slot
+                const duration = getHourFromTime(bookingData.endTime) - getHourFromTime(bookingData.startTime);
+                const suggestedTime = findNextAvailableTimeForPilot(pilotName, bookingData.startDate, duration, excludeBookingId);
+                
+                if (suggestedTime) {
+                    const suggestedStart = hoursToTimeString(suggestedTime.startTime);
+                    const suggestedEnd = hoursToTimeString(suggestedTime.endTime);
+                    
+                    if (confirm(`${pilotName} already has a flight booked from ${conflictStart}-${conflictEnd} with ${conflictAircraft}.\n\nSuggested alternative time: ${suggestedStart}-${suggestedEnd}\n\nWould you like to use this suggested time instead?`)) {
+                        // Update the form with suggested time
+                        document.getElementById('startTime').value = suggestedStart;
+                        document.getElementById('endTime').value = suggestedEnd;
+                        return; // Let user confirm the new time
+                    } else {
+                        return; // Cancel booking
                     }
+                } else {
+                    alert(`${pilotName} already has a flight booked from ${conflictStart}-${conflictEnd} with ${conflictAircraft}.\n\nNo alternative time slots available for today. Please choose a different date or time.`);
+                    return;
                 }
             }
             
@@ -5325,6 +6450,13 @@
                     existingBooking.aircraftName = resourceName;
                     existingBooking.type = bookingData.flightType;
                     existingBooking.instructor = bookingData.instructor || null;
+                    // Add instructor name for display purposes
+                    if (bookingData.instructor) {
+                        const instructorResource = resources.find(r => r.id === bookingData.instructor);
+                        existingBooking.instructorName = instructorResource ? instructorResource.name : bookingData.instructor;
+                    } else {
+                        existingBooking.instructorName = null;
+                    }
                     existingBooking.startTime = bookingData.startTime;
                     existingBooking.endTime = bookingData.endTime;
                     existingBooking.notes = bookingData.notes;
@@ -5352,6 +6484,10 @@
                     pilot: currentUser,
                     creator: currentUser,
                     instructor: bookingData.instructor || null,
+                    instructorName: bookingData.instructor ? (() => {
+                        const instructorResource = resources.find(r => r.id === bookingData.instructor);
+                        return instructorResource ? instructorResource.name : bookingData.instructor;
+                    })() : null,
                     startTime: bookingData.startTime,
                     endTime: bookingData.endTime,
                     notes: bookingData.notes,
@@ -5995,13 +7131,7 @@
                         const minutesFromStart = (currentHour - 6) * 60 + currentMinute;
                         timeIndicator.style.top = minutesFromStart + 'px';
                         
-                        // Update current hour highlighting
-                        document.querySelectorAll('.time-row').forEach(row => {
-                            row.classList.remove('current-hour');
-                            if (parseInt(row.dataset.hour) === currentHour) {
-                                row.classList.add('current-hour');
-                            }
-                        });
+                        // Current hour highlighting removed - we use precise red line instead
                     }
                 }
             }, 60000); // Update every minute
@@ -6010,46 +7140,143 @@
         let isInitialLoad = true;
 
         // Initialize calendar
-        // High Contrast Mode Toggle for Cockpit Use
-        function toggleHighContrast() {
-            const body = document.body;
-            const icon = document.getElementById('contrastIcon');
-            const text = document.getElementById('contrastText');
-            
-            if (body.classList.contains('high-contrast')) {
-                // Switch to normal mode
-                body.classList.remove('high-contrast');
-                icon.textContent = '🌞';
-                text.textContent = 'Cockpit Mode';
-                localStorage.setItem('servantair_high_contrast', 'false');
-            } else {
-                // Switch to high contrast mode
-                body.classList.add('high-contrast');
-                icon.textContent = '🌙';
-                text.textContent = 'Normal Mode';
-                localStorage.setItem('servantair_high_contrast', 'true');
-            }
-        }
-        
-        // Initialize high contrast mode from localStorage
-        function initializeHighContrast() {
-            const saved = localStorage.getItem('servantair_high_contrast');
-            if (saved === 'true') {
-                document.body.classList.add('high-contrast');
-                const icon = document.getElementById('contrastIcon');
-                const text = document.getElementById('contrastText');
-                if (icon) icon.textContent = '🌙';
-                if (text) text.textContent = 'Normal Mode';
-            }
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
             populateResourceDropdown();
             renderView();
             startTimeUpdater();
-            initializeHighContrast();
             isInitialLoad = false;
         });
+        
+        // Add current time indicator line
+        function addCurrentTimeIndicator() {
+            // Remove existing time indicators
+            document.querySelectorAll('.current-time-indicator').forEach(el => el.remove());
+            
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            // Only show if current time is within operating hours (6 AM - midnight)
+            if (currentHour < 6 || currentHour >= 24) return;
+            
+            // Calculate precise position based on 60px per hour in the time grid
+            // Each hour slot is 60px high, so we need to position within that hour
+            const hoursFromStart = currentHour - 6;
+            const minutePercentage = currentMinute / 60; // 0 to 1 for position within the hour
+            const positionFromTop = (hoursFromStart * 60) + (minutePercentage * 60);
+            
+            // Find the time grid container for proper positioning
+            const timeGrid = document.querySelector('.resource-time-grid');
+            if (!timeGrid) return;
+            
+            // Create time indicator line
+            const indicator = document.createElement('div');
+            indicator.className = 'current-time-indicator';
+            indicator.style.cssText = `
+                position: absolute;
+                top: ${positionFromTop}px;
+                left: 80px;
+                right: 0;
+                height: 2px;
+                background: #EF4444;
+                z-index: 1000;
+                box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+                pointer-events: none;
+                width: calc(100% - 80px);
+            `;
+            
+            // Add time badge
+            const timeBadge = document.createElement('div');
+            timeBadge.style.cssText = `
+                position: absolute;
+                left: -75px;
+                top: -10px;
+                background: #EF4444;
+                color: white;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: 600;
+                font-family: 'JetBrains Mono', monospace;
+                white-space: nowrap;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            `;
+            timeBadge.textContent = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            
+            indicator.appendChild(timeBadge);
+            
+            // Add to the time grid for proper positioning
+            timeGrid.appendChild(indicator);
+            
+            // Update every minute
+            setTimeout(addCurrentTimeIndicator, 60000);
+        }
+
+        // Toast Notification System
+        function showToast(title, message, type = 'info', duration = 5000) {
+            const toastContainer = document.getElementById('toastContainer');
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            // Icon mapping
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || icons.info}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            // Add to container
+            toastContainer.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Auto remove
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    if (toastContainer.contains(toast)) {
+                        toastContainer.removeChild(toast);
+                    }
+                }, 300);
+            }, duration);
+            
+            return toast;
+        }
+
+        // Specialized toast functions
+        function showErrorToast(title, message, duration = 7000) {
+            return showToast(title, message, 'error', duration);
+        }
+
+        function showWarningToast(title, message, duration = 6000) {
+            return showToast(title, message, 'warning', duration);
+        }
+
+        function showSuccessToast(title, message, duration = 4000) {
+            return showToast(title, message, 'success', duration);
+        }
+
+        function showInfoToast(title, message, duration = 5000) {
+            return showToast(title, message, 'info', duration);
+        }
+        
     </script>
 
     <!-- Load Navigation Component -->

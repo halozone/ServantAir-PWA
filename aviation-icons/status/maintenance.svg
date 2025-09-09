@@ -1,0 +1,28 @@
+<!-- Maintenance Required Icon -->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Wrench Tool -->
+  <path d="M14.7 6.3C15.1 5.9 15.1 5.3 14.7 4.9L19.1 0.5C19.5 0.1 20.1 0.1 20.5 0.5C20.9 0.9 20.9 1.5 20.5 1.9L16.1 6.3C15.7 5.9 15.1 5.9 14.7 6.3Z" fill="#F59E0B"/>
+  
+  <!-- Main Wrench Body -->
+  <rect x="8" y="10" width="8" height="3" rx="1.5" fill="#F59E0B" transform="rotate(-45 12 11.5)"/>
+  
+  <!-- Wrench Head -->
+  <rect x="5" y="7" width="4" height="6" rx="2" fill="#F59E0B" transform="rotate(-45 7 10)"/>
+  
+  <!-- Adjustment Mechanism -->
+  <circle cx="7" cy="10" r="1" fill="#D97706" transform="rotate(-45 7 10)"/>
+  
+  <!-- Bolt/Nut being worked on -->
+  <g transform="translate(17,17)">
+    <polygon points="0,-2 1.7,-1 1.7,1 0,2 -1.7,1 -1.7,-1" fill="#94A3B8"/>
+    <circle cx="0" cy="0" r="1" fill="#64748B"/>
+  </g>
+  
+  <!-- Maintenance Schedule Indicator -->
+  <rect x="2" y="16" width="8" height="6" rx="1" fill="white" stroke="#F59E0B" stroke-width="1"/>
+  <text x="6" y="18.5" text-anchor="middle" font-family="Arial" font-size="2" fill="#F59E0B" font-weight="bold">MX</text>
+  <text x="6" y="20.5" text-anchor="middle" font-family="Arial" font-size="1.5" fill="#F59E0B">DUE</text>
+  
+  <!-- Tools Background Circle -->
+  <circle cx="12" cy="12" r="11" fill="none" stroke="#FCD34D" stroke-width="1" stroke-dasharray="3,2"/>
+</svg>

@@ -1,0 +1,36 @@
+<!-- Checkride Icon (Examiner + Candidate) -->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Examiner Figure -->
+  <circle cx="7" cy="6" r="2" fill="#EF4444"/>
+  <path d="M7 8L7 16" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+  <path d="M5 12L9 12" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Candidate Figure -->
+  <circle cx="17" cy="6" r="2" fill="#3B82F6"/>
+  <path d="M17 8L17 16" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+  <path d="M15 12L19 12" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Clipboard/Checklist -->
+  <rect x="10" y="8" width="4" height="6" rx="0.5" fill="white" stroke="#64748B" stroke-width="1"/>
+  
+  <!-- Checklist Items -->
+  <circle cx="11" cy="10" r="0.3" fill="#10B981"/>
+  <path d="M11.5 10L13.5 10" stroke="#64748B" stroke-width="0.5"/>
+  
+  <circle cx="11" cy="11.5" r="0.3" fill="#10B981"/>
+  <path d="M11.5 11.5L13.5 11.5" stroke="#64748B" stroke-width="0.5"/>
+  
+  <circle cx="11" cy="13" r="0.3" fill="#F59E0B"/>
+  <path d="M11.5 13L13.5 13" stroke="#64748B" stroke-width="0.5"/>
+  
+  <!-- FAA/Authority Badge -->
+  <rect x="5" y="4" width="4" height="1.5" rx="0.2" fill="#EF4444"/>
+  <path d="M6 4.7L8 4.7" stroke="white" stroke-width="0.3"/>
+  
+  <!-- Ground Reference -->
+  <path d="M3 20L21 20" stroke="#94A3B8" stroke-width="1" stroke-linecap="round"/>
+  
+  <!-- Certificate Symbol -->
+  <rect x="9.5" y="17" width="5" height="2" rx="0.3" fill="#F59E0B" stroke="#F59E0B"/>
+  <path d="M10.5 18L13.5 18" stroke="white" stroke-width="0.5"/>
+</svg>

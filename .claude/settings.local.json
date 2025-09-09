@@ -20,7 +20,8 @@
       "Bash(timeout 120 npx playwright install chromium)",
       "Bash(node:*)",
       "Bash(start calendar.html)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(start aviation-icons/index.html)"
     ],
     "deny": [],
     "ask": []
