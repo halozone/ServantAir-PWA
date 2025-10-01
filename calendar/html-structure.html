@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="app-container">
+        <!-- Navigation will be loaded here by JavaScript -->
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Calendar Header -->
+            <div class="calendar-header">
+                <div class="calendar-title-row">
+                    <div class="calendar-nav-section">
+                        <div class="date-navigation">
+                            <button class="nav-btn" id="prevBtn">‹</button>
+                            <div class="current-date" id="currentDate">Thursday, June 26, 2025</div>
+                            <button class="nav-btn" id="nextBtn">›</button>
+                        </div>
+                        <div class="view-tabs">
+                            <button class="view-tab active" data-view="day">Day</button>
+                            <button class="view-tab" data-view="month">Month</button>
+                            <button class="view-tab" data-view="agenda">Agenda</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Filter System -->
+            <div class="filter-container">
+                <!-- Primary Filter Bar -->
+                <div class="filter-bar-primary">
+                    <div class="essential-filters">
+                        <button class="filter-pill active" data-filter="all">All</button>
+                        <button class="filter-pill" data-filter="my-bookings">My Bookings</button>
+                        
+                        <div class="split-button-pill aircraft-pill" style="position: relative;">
+                            <button class="pill-main" data-type="aircraft" onclick="toggleAircraftFilter()">
+                                <span class="pill-text">Aircraft</span>
+                                <span class="selection-count" id="aircraft-count">(All)</span>
+                            </button>
+                            <button class="pill-dropdown" onclick="toggleAircraftPopover(event)">▼</button>
+                            
+                            <!-- Aircraft Popover -->
+                            <div class="resource-popover" id="aircraft-popover">
+                                <div class="popover-header">
+                                    <h4>Select Aircraft</h4>
+                                    <div class="header-controls">
+                                        <button class="select-all-btn" onclick="selectAllAircraft()">All</button>
+                                        <button class="select-none-btn" onclick="selectNoneAircraft()">None</button>
+                                        <button class="popover-close" onclick="closePopover('aircraft-popover')">✕</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="popover-search">
+                                    <input type="text" placeholder="Search tail numbers, aircraft types..." class="search-input" id="aircraft-search" oninput="filterAircraftList()">
+                                </div>
+                                
+                                <div class="resource-list" id="aircraft-list">
+                                    <!-- Aircraft items will be populated by JavaScript -->
+                                </div>
+                                
+                                <div class="popover-footer">
+                                    <span class="selection-summary" id="aircraft-selection-summary">3 of 8 aircraft selected</span>
+                                    <button class="apply-btn" onclick="applyAircraftFilters()">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="split-button-pill instructor-pill" style="position: relative;">
+                            <button class="pill-main" data-type="instructors" onclick="toggleInstructorFilter()">
+                                <span class="pill-text">Instructors</span>
+                                <span class="selection-count" id="instructor-count">(All)</span>
+                            </button>
+                            <button class="pill-dropdown" onclick="toggleInstructorPopover(event)">▼</button>
+                            
+                            <!-- Instructor Popover -->
+                            <div class="resource-popover" id="instructor-popover">
+                                <div class="popover-header">
+                                    <h4>Select Instructors</h4>
+                                    <div class="header-controls">
+                                        <button class="select-all-btn" onclick="selectAllInstructors()">All</button>
+                                        <button class="select-none-btn" onclick="selectNoneInstructors()">None</button>
+                                        <button class="popover-close" onclick="closePopover('instructor-popover')">✕</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="popover-search">
+                                    <input type="text" placeholder="Search instructor names..." class="search-input" id="instructor-search" oninput="filterInstructorList()">
+                                </div>
+                                
+                                <div class="resource-list" id="instructor-list">
+                                    <!-- Instructor items will be populated by JavaScript -->
+                                </div>
+                                
+                                <div class="popover-footer">
+                                    <span class="selection-summary" id="instructor-selection-summary">2 of 5 instructors selected</span>
+                                    <button class="apply-btn" onclick="applyInstructorFilters()">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Calendar -->
+            <div class="calendar-container">
+                <div class="calendar-weekdays">
+                    <div class="weekday">Sun</div>
+                    <div class="weekday">Mon</div>
+                    <div class="weekday">Tue</div>
+                    <div class="weekday">Wed</div>
+                    <div class="weekday">Thu</div>
+                    <div class="weekday">Fri</div>
+                    <div class="weekday">Sat</div>
+                </div>
+                
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar days will be populated by JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Quick Add Button -->
+        <button class="quick-add-btn" id="quickAddBtn">+</button>
+
+        <!-- Drag to Delete Zone -->
+        <div class="drag-delete-zone" id="dragDeleteZone">
+            🗑️
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">New Flight Booking</h3>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label class="form-label">Resource</label>
+                        <select class="form-select" id="aircraft" name="aircraft" required>
+                            <option value="">Select Resource</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-input" id="startDate" name="startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-input" id="endDate" name="endDate" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" class="form-input" id="startTime" name="startTime" step="1800" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Time</label>
+                            <input type="time" class="form-input" id="endTime" name="endTime" step="1800" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Flight Type</label>
+                        <select class="form-select" id="flightType" name="flightType" required>
+                            <option value="">Select Type</option>
+                            <option value="training">Training</option>
+                            <option value="solo">Solo</option>
+                            <option value="cross-country">Cross Country</option>
+                            <option value="checkride">Checkride</option>
+                            <option value="checkout">Checkout Flight</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="instructorGroup" style="display: none;">
+                        <label class="form-label">Instructor <span style="color: #e53e3e;">*</span></label>
+                        <select class="form-select" id="instructor" name="instructor">
+                            <option value="">Select instructor</option>
+                            <option value="CFI-1">John Smith (CFI)</option>
+                            <option value="CFI-2">Sarah Wilson (CFII)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-input" id="notes" name="notes" rows="3" placeholder="Additional notes..."></textarea>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                        <button type="button" class="delete-btn" id="deleteBookingBtn" style="display: none;">
+                            🗑️ Delete
+                        </button>
+                        <button type="submit" class="primary-btn">Book Flight</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js?v=1"></script>
+</body>
+</html> 

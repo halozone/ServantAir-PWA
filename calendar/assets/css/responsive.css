@@ -1,0 +1,184 @@
+/* Desktop Styles */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+
+            .app-container {
+                flex-direction: row;
+                overflow: hidden;
+            }
+
+            .sidebar-overlay {
+                position: relative;
+                left: 0;
+                z-index: auto;
+                flex-shrink: 0;
+                width: 280px;
+            }
+
+            .sidebar-backdrop {
+                display: none;
+            }
+
+            .main-content {
+                padding: 12px;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                width: calc(100vw - 280px);
+                max-width: calc(100vw - 280px);
+            }
+
+            .calendar-day {
+                min-height: 140px;
+                padding: 16px 12px;
+            }
+
+            .booking-item {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar-day {
+                min-height: 100px;
+                padding: 8px 6px;
+            }
+
+            .booking-item {
+                font-size: 9px;
+                padding: 3px 6px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-title {
+                font-size: 22px;
+            }
+
+            .current-date {
+                font-size: 12px;
+                min-width: 120px;
+            }
+
+            .calendar-nav-section {
+                gap: 10px;
+            }
+
+            .nav-btn {
+                width: 44px;
+                height: 44px;
+                min-width: 44px;
+                min-height: 44px;
+            }
+
+            .view-tab {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+
+        
+
+        @media (max-width: 768px) {
+            .calendar-title {
+                font-size: 24px;
+            }
+
+            .current-date {
+                font-size: 14px;
+                min-width: 160px;
+            }
+
+            .calendar-nav-section {
+                gap: 15px;
+            }
+        }
+
+        /* Toast Notification System */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #1f2937;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            max-width: 350px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+            transform: translateX(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.hide {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+
+        .toast.error {
+            background: #ef4444;
+            border-left: 4px solid #dc2626;
+        }
+
+        .toast.warning {
+            background: #f59e0b;
+            color: #1f2937;
+            border-left: 4px solid #d97706;
+        }
+
+        .toast.success {
+            background: #10b981;
+            border-left: 4px solid #059669;
+        }
+
+        .toast.info {
+            background: #3b82f6;
+            border-left: 4px solid #2563eb;
+        }
+
+        .toast-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+    

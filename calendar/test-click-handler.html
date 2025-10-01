@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Click Handler</title>
+    <style>
+        body { padding: 20px; font-family: sans-serif; }
+        .test-button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            background: #56B4E9;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        .log {
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Aircraft Filter Click Handler Test</h1>
+
+    <p>Click these buttons to test the event delegation:</p>
+
+    <button class="test-button" data-action="toggle-aircraft-popover">
+        Test: Toggle Aircraft Popover ▼
+    </button>
+
+    <button class="test-button" data-action="toggle-aircraft-filter">
+        Test: Toggle Aircraft Filter
+    </button>
+
+    <div class="log" id="log">Waiting for clicks...</div>
+
+    <div class="resource-popover" id="aircraft-popover" style="
+        position: fixed;
+        top: 100px;
+        left: 20px;
+        width: 300px;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+    ">
+        <h3>Aircraft Popover</h3>
+        <p>This should appear when you click the dropdown button!</p>
+        <button data-action="close-aircraft-popover">Close</button>
+    </div>
+
+    <style>
+        .resource-popover.open {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+    </style>
+
+    <script src="assets/js/utilities.js"></script>
+    <script src="assets/js/state.js"></script>
+    <script>
+        // Enable logging
+        Logger.enable();
+
+        const log = document.getElementById('log');
+        function addLog(message) {
+            log.textContent += '\n' + message;
+        }
+
+        // Simple test functions
+        function toggleAircraftPopover(event) {
+            addLog('toggleAircraftPopover called');
+            event.stopPropagation();
+            const popover = document.getElementById('aircraft-popover');
+            const isOpen = popover.classList.contains('open');
+
+            if (!isOpen) {
+                popover.classList.add('open');
+                addLog('Popover opened');
+            } else {
+                popover.classList.remove('open');
+                addLog('Popover closed');
+            }
+        }
+
+        function toggleAircraftFilter() {
+            addLog('toggleAircraftFilter called');
+        }
+
+        function closePopover(id) {
+            addLog('closePopover called: ' + id);
+            document.getElementById(id).classList.remove('open');
+        }
+
+        // Action handlers
+        const ActionHandlers = {
+            'toggle-aircraft-popover': (e) => toggleAircraftPopover(e),
+            'toggle-aircraft-filter': () => toggleAircraftFilter(),
+            'close-aircraft-popover': () => closePopover('aircraft-popover'),
+        };
+
+        // Event delegation
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-action]');
+            if (!target) {
+                addLog('Click detected but no data-action found');
+                return;
+            }
+
+            const action = target.dataset.action;
+            addLog('Click on button with action: ' + action);
+
+            const handler = ActionHandlers[action];
+
+            if (handler) {
+                addLog('Handler found, executing...');
+                handler(e);
+            } else {
+                addLog('No handler for action: ' + action);
+            }
+        });
+
+        addLog('Event delegation initialized');
+        addLog('Ready to test!');
+    </script>
+</body>
+</html>

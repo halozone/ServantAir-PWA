@@ -1,0 +1,299 @@
+/* Base Reset and Typography */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* Aviation-optimized font stack with fallbacks */
+    font-family: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    font-feature-settings: 'tnum' 1; /* Tabular numbers for consistency */
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Aviation Typography Scale */
+.text-xs { font-size: 11px; line-height: 1.4; }    /* Small details */
+.text-sm { font-size: 12px; line-height: 1.4; }    /* Body small */
+.text-base { font-size: 14px; line-height: 1.5; }  /* Body default */
+.text-lg { font-size: 16px; line-height: 1.5; }    /* Large body */
+.text-xl { font-size: 18px; line-height: 1.4; }    /* Small headings */
+.text-2xl { font-size: 20px; line-height: 1.3; }   /* Medium headings */
+.text-3xl { font-size: 24px; line-height: 1.2; }   /* Large headings */
+.text-4xl { font-size: 28px; line-height: 1.2; }   /* Display */
+
+/* Font weights for hierarchy */
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Critical aviation text - high contrast, larger for safety */
+.text-critical {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.025em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Monospace for numbers, times, and tail numbers */
+.text-mono {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.025em;
+}
+
+:root {
+    /* Aviation-Focused Brand Colors */
+    --primary-color: #56B4E9;
+    --primary-dark: #4A90E2;
+    --primary-light: #7AC5F0;
+    --secondary-color: #4A90E2;
+    
+    /* Aviation Safety Semantics */
+    --success-color: #10B981;      /* Green: Current/Compliant */
+    --success-light: #34D399;
+    --warning-color: #F59E0B;      /* Amber: 30-day warning */
+    --warning-light: #FCD34D;
+    --danger-color: #EF4444;       /* Red: Overdue/Critical */
+    --danger-light: #F87171;
+    
+    /* Booking Type Colors - Aviation Industry Standard */
+    --training-color: #3B82F6;     /* Blue: Training flights */
+    --training-gradient: linear-gradient(135deg, #3B82F6, #1D4ED8);
+    --solo-color: #10B981;         /* Green: Solo flights */
+    --solo-gradient: linear-gradient(135deg, #10B981, #059669);
+    --checkride-color: #DC2626;    /* Red: Critical checkrides */
+    --checkride-gradient: linear-gradient(135deg, #EF4444, #DC2626);
+    --maintenance-color: #F59E0B;  /* Amber: Maintenance */
+    --maintenance-gradient: linear-gradient(135deg, #F59E0B, #D97706);
+    --rental-color: #8B5CF6;       /* Purple: Rental */
+    --rental-gradient: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    --cross-country-color: #9F7AEA; /* Light Purple: Cross country */
+    --cross-country-gradient: linear-gradient(135deg, #9F7AEA, #805AD5);
+    
+    /* Neutral Colors for UI */
+    --gray-50: #F8FAFC;
+    --gray-100: #F1F5F9;
+    --gray-200: #E2E8F0;
+    --gray-300: #CBD5E1;
+    --gray-400: #94A3B8;
+    --gray-500: #64748B;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1E293B;
+    --gray-900: #0F172A;
+    
+    /* Background Colors */
+    --bg-primary: #F8FAFC;
+    --bg-secondary: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+    --bg-overlay: rgba(15, 23, 42, 0.8);
+    
+    /* Border Colors */
+    --border-light: #E2E8F0;
+    --border-medium: #CBD5E1;
+    --border-strong: #94A3B8;
+    
+    /* Text Colors */
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --text-tertiary: #94A3B8;
+    --text-inverse: #FFFFFF;
+    
+    /* Shadow Variables */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    /* High Contrast Mode (for cockpit use) */
+    --hc-bg: #000000;
+    --hc-bg-secondary: #1a1a1a;
+    --hc-bg-elevated: #2d2d2d;
+    --hc-text: #FFFFFF;
+    --hc-text-secondary: #E0E0E0;
+    --hc-primary: #00FF00;
+    --hc-primary-hover: #33FF33;
+    --hc-warning: #FFFF00;
+    --hc-danger: #FF0000;
+    --hc-border: #666666;
+    --hc-border-strong: #999999;
+    
+    /* Animation Variables */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode Support - Respects system preference */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Dark mode background colors */
+        --bg-primary: #0F172A;
+        --bg-secondary: #1E293B;
+        --bg-elevated: #334155;
+        --bg-overlay: rgba(0, 0, 0, 0.8);
+
+        /* Dark mode text colors */
+        --text-primary: #F1F5F9;
+        --text-secondary: #CBD5E1;
+        --text-tertiary: #94A3B8;
+        --text-inverse: #0F172A;
+
+        /* Dark mode borders */
+        --border-light: #334155;
+        --border-medium: #475569;
+        --border-strong: #64748B;
+
+        /* Adjusted gray scale for dark mode */
+        --gray-50: #0F172A;
+        --gray-100: #1E293B;
+        --gray-200: #334155;
+        --gray-300: #475569;
+        --gray-400: #64748B;
+        --gray-500: #94A3B8;
+        --gray-600: #CBD5E1;
+        --gray-700: #E2E8F0;
+        --gray-800: #F1F5F9;
+        --gray-900: #F8FAFC;
+
+        /* Softer shadows for dark mode */
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* Mobile First Layout */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg-primary);
+    overflow: hidden;
+    touch-action: pan-y pinch-zoom;
+}
+
+/* Mobile Swipe Support for Calendar Navigation */
+.calendar-content {
+    touch-action: pan-x pan-y;
+    overscroll-behavior: none;
+}
+
+.swipe-indicator {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    font-size: 32px;
+    color: var(--primary-color);
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.swipe-indicator.left {
+    left: 20px;
+}
+
+.swipe-indicator.right {
+    right: 20px;
+}
+
+.swipe-indicator.active {
+    opacity: 0.8;
+}
+
+/* Toast Notification System */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+.toast {
+    background: #1f2937;
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    max-width: 350px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+    transform: translateX(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.hide {
+    transform: translateX(100px);
+    opacity: 0;
+}
+
+.toast.error {
+    background: #ef4444;
+    border-left: 4px solid #dc2626;
+}
+
+.toast.warning {
+    background: #f59e0b;
+    color: #1f2937;
+    border-left: 4px solid #d97706;
+}
+
+.toast.success {
+    background: #10b981;
+    border-left: 4px solid #059669;
+}
+
+.toast.info {
+    background: #3b82f6;
+    border-left: 4px solid #2563eb;
+}
+
+.toast-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.toast-message {
+    font-size: 13px;
+    opacity: 0.9;
+}

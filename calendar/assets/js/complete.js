@@ -1,3097 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        // ===================================================================
+        // SERVANTAIR CALENDAR - Modern Mobile-First Calendar Application
+        // ===================================================================
 
-        body {
-            /* Aviation-optimized font stack with fallbacks */
-            font-family: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
-            font-feature-settings: 'tnum' 1; /* Tabular numbers for consistency */
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        console.log('🔥 COMPLETE.JS LOADED - VERSION 2.0 - FIXED');
+        Logger.log('CALENDAR', 'Initializing calendar application');
+
+        // Helper function to get current date string in YYYY-MM-DD format
+        function getCurrentDateString() {
+            return DateUtils.formatDate(new Date());
         }
         
-        /* Aviation Typography Scale */
-        .text-xs { font-size: 11px; line-height: 1.4; }    /* Small details */
-        .text-sm { font-size: 12px; line-height: 1.4; }    /* Body small */
-        .text-base { font-size: 14px; line-height: 1.5; }  /* Body default */
-        .text-lg { font-size: 16px; line-height: 1.5; }    /* Large body */
-        .text-xl { font-size: 18px; line-height: 1.4; }    /* Small headings */
-        .text-2xl { font-size: 20px; line-height: 1.3; }   /* Medium headings */
-        .text-3xl { font-size: 24px; line-height: 1.2; }   /* Large headings */
-        .text-4xl { font-size: 28px; line-height: 1.2; }   /* Display */
-        
-        /* Font weights for hierarchy */
-        .font-normal { font-weight: 400; }
-        .font-medium { font-weight: 500; }
-        .font-semibold { font-weight: 600; }
-        .font-bold { font-weight: 700; }
-        
-        /* Critical aviation text - high contrast, larger for safety */
-        .text-critical {
-            font-weight: 700;
-            font-size: 16px;
-            letter-spacing: 0.025em;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Monospace for numbers, times, and tail numbers */
-        .text-mono {
-            font-family: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -0.025em;
-        }
-
-        :root {
-            /* Aviation-Focused Brand Colors */
-            --primary-color: #56B4E9;
-            --primary-dark: #4A90E2;
-            --primary-light: #7AC5F0;
-            --secondary-color: #4A90E2;
-            
-            /* Aviation Safety Semantics */
-            --success-color: #10B981;      /* Green: Current/Compliant */
-            --success-light: #34D399;
-            --warning-color: #F59E0B;      /* Amber: 30-day warning */
-            --warning-light: #FCD34D;
-            --danger-color: #EF4444;       /* Red: Overdue/Critical */
-            --danger-light: #F87171;
-            
-            /* Booking Type Colors - Aviation Industry Standard */
-            --training-color: #3B82F6;     /* Blue: Training flights */
-            --training-gradient: linear-gradient(135deg, #3B82F6, #1D4ED8);
-            --solo-color: #10B981;         /* Green: Solo flights */
-            --solo-gradient: linear-gradient(135deg, #10B981, #059669);
-            --checkride-color: #DC2626;    /* Red: Critical checkrides */
-            --checkride-gradient: linear-gradient(135deg, #EF4444, #DC2626);
-            --maintenance-color: #F59E0B;  /* Amber: Maintenance */
-            --maintenance-gradient: linear-gradient(135deg, #F59E0B, #D97706);
-            --rental-color: #8B5CF6;       /* Purple: Rental */
-            --rental-gradient: linear-gradient(135deg, #8B5CF6, #7C3AED);
-            --cross-country-color: #9F7AEA; /* Light Purple: Cross country */
-            --cross-country-gradient: linear-gradient(135deg, #9F7AEA, #805AD5);
-            
-            /* Neutral Colors for UI */
-            --gray-50: #F8FAFC;
-            --gray-100: #F1F5F9;
-            --gray-200: #E2E8F0;
-            --gray-300: #CBD5E1;
-            --gray-400: #94A3B8;
-            --gray-500: #64748B;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1E293B;
-            --gray-900: #0F172A;
-            
-            /* Background Colors */
-            --bg-primary: #F8FAFC;
-            --bg-secondary: #FFFFFF;
-            --bg-elevated: #FFFFFF;
-            --bg-overlay: rgba(15, 23, 42, 0.8);
-            
-            /* Border Colors */
-            --border-light: #E2E8F0;
-            --border-medium: #CBD5E1;
-            --border-strong: #94A3B8;
-            
-            /* Text Colors */
-            --text-primary: #1E293B;
-            --text-secondary: #64748B;
-            --text-tertiary: #94A3B8;
-            --text-inverse: #FFFFFF;
-            
-            /* Shadow Variables */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            
-            /* High Contrast Mode (for cockpit use) */
-            --hc-bg: #000000;
-            --hc-bg-secondary: #1a1a1a;
-            --hc-bg-elevated: #2d2d2d;
-            --hc-text: #FFFFFF;
-            --hc-text-secondary: #E0E0E0;
-            --hc-primary: #00FF00;
-            --hc-primary-hover: #33FF33;
-            --hc-warning: #FFFF00;
-            --hc-danger: #FF0000;
-            --hc-border: #666666;
-            --hc-border-strong: #999999;
-            
-            /* Animation Variables */
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Mobile First Layout */
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background: var(--bg-primary);
-            overflow: hidden;
-            touch-action: pan-y pinch-zoom;
-        }
-        
-        /* Mobile Swipe Support for Calendar Navigation */
-        .calendar-content {
-            touch-action: pan-x pan-y;
-            overscroll-behavior: none;
-        }
-        
-        .swipe-indicator {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
-            font-size: 32px;
-            color: var(--primary-color);
-            background: var(--bg-secondary);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .swipe-indicator.left {
-            left: 20px;
-        }
-        
-        .swipe-indicator.right {
-            right: 20px;
-        }
-        
-        .swipe-indicator.active {
-            opacity: 0.8;
-        }
-
-        /* Mobile Header */
-        .mobile-header {
-            background: white;
-            padding: 16px 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .hamburger-menu {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            padding: 2px 0;
-        }
-
-        .hamburger-line {
-            width: 100%;
-            height: 2px;
-            background: #4a5568;
-            border-radius: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .logo-mobile {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logo-icon-mobile {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-        }
-
-        .logo-text-mobile {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a202c;
-        }
-
-        .user-avatar-mobile {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        /* Sidebar Overlay */
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100vh;
-            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
-            z-index: 1000;
-            transition: left 0.3s ease;
-            padding: 24px;
-        }
-
-        .sidebar-overlay.open {
-            left: 0;
-        }
-
-        .sidebar-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-backdrop.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .nav-menu {
-            list-style: none;
-            margin-top: 32px;
-        }
-
-        .nav-item {
-            margin-bottom: 8px;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            color: #a0aec0;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active .nav-link {
-            color: white;
-        }
-
-        .nav-icon {
-            font-size: 18px;
-        }
-
-        /* Main Content - Maximized for calendar viewing */
-        .main-content {
-            flex: 1;
-            padding: 8px;
-            min-width: 0; /* Allow shrinking */
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-
-        /* Calendar Header */
-        .calendar-header {
-            background: white;
-            padding: 20px 24px;
-            margin-bottom: 0;
-            border-bottom: 1px solid #f1f5f9;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .calendar-title-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .calendar-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -0.025em;
-            margin: 0;
-        }
-
-        .calendar-nav-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: nowrap;
-            min-width: 0;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .date-navigation {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-
-        .nav-btn {
-            width: 44px;
-            height: 44px;
-            min-width: 44px;
-            min-height: 44px;
-            border: 2px solid var(--border-light);
-            background: var(--bg-secondary);
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            transition: var(--transition-normal);
-            flex-shrink: 0;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: var(--shadow-sm);
-            font-size: 18px;
-        }
-
-        .nav-btn:hover {
-            background: var(--gray-50);
-            border-color: var(--border-medium);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .nav-btn:active {
-            transform: translateY(0);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .current-date {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap;
-            text-align: center;
-            min-width: 180px;
-            font-family: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 0.025em;
-        }
-
-        .view-tabs {
-            display: flex;
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 3px;
-            gap: 2px;
-        }
-
-        .view-tab {
-            padding: 12px 18px;
-            border-radius: 7px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-            background: transparent;
-            border: none;
-            min-height: 44px;
-            min-width: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .view-tab.active {
-            background: white;
-            color: #3b82f6;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Enhanced Filter System */
-        .filter-container {
-            background: white;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        /* Primary Filter Bar */
-        .filter-bar-primary {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 24px;
-            gap: 16px;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .essential-filters {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .expand-controls {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-shrink: 0;
-        }
-
-        .result-summary {
-            font-size: 10px;
-            color: #64748b;
-            white-space: nowrap;
-            background: #f1f5f9;
-            padding: 2px 6px;
-            border-radius: 10px;
-            margin-left: 6px;
-        }
-
-        .filter-pill.active .result-summary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .more-filters-toggle {
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            background: white;
-            color: #64748b;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .more-filters-toggle:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
-        }
-
-        .more-filters-toggle.expanded {
-            background: #f1f5f9;
-            color: #3b82f6;
-            border-color: #3b82f6;
-        }
-
-        /* Secondary Filter Bar */
-        .filter-bar-secondary {
-            padding: 0 24px 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease;
-            opacity: 0;
-        }
-
-        .filter-bar-secondary.expanded {
-            max-height: 80px;
-            opacity: 1;
-        }
-
-        .resource-type-filters {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-        }
-
-        .status-filters {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Basic Filter Pills */
-        .filter-pill {
-            padding: 12px 20px;
-            border: 2px solid var(--border-light);
-            border-radius: 24px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-normal);
-            white-space: nowrap;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            min-height: 48px;
-            min-width: 48px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            position: relative;
-            display: flex;
-            min-height: 44px;
-            min-width: 44px;
-            align-items: center;
-            gap: 8px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .filter-pill:hover {
-            background: var(--gray-50);
-            border-color: var(--border-medium);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .filter-pill.active {
-            background: var(--primary-color);
-            color: var(--text-inverse);
-            border-color: var(--primary-color);
-            box-shadow: var(--shadow-lg);
-        }
-
-        /* Icons removed from filter pills for professional appearance */
-
-        /* Split Button Pills */
-        .split-button-pill {
-            display: inline-flex;
-            border-radius: 20px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            overflow: visible;
-            position: relative;
-            transition: all 0.2s ease;
-            height: auto;
-        }
-
-        .split-button-pill:hover {
-            border-color: #cbd5e1;
-        }
-
-        .split-button-pill.active {
-            box-shadow: 0 0 0 2px rgba(86, 180, 233, 0.1);
-        }
-
-        .split-button-pill.aircraft-pill.active {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(86, 180, 233, 0.1);
-        }
-
-        .split-button-pill.instructor-pill.active {
-            border-color: var(--success-color);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-
-        .pill-main {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 500;
-            border: none;
-            background: transparent;
-            color: #64748b;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            border-radius: 20px 0 0 20px;
-        }
-
-        .pill-main:hover {
-            background: rgba(248, 250, 252, 0.3);
-        }
-
-        .pill-dropdown {
-            padding: 8px 8px;
-            border: none;
-            background: transparent;
-            border-left: 1px solid #e2e8f0;
-            color: #64748b;
-            font-size: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 24px;
-            border-radius: 0 20px 20px 0;
-        }
-
-        .pill-dropdown:hover {
-            background: rgba(241, 245, 249, 0.5);
-        }
-
-        .selection-count {
-            font-size: 10px;
-            background: #f1f5f9;
-            color: #64748b;
-            padding: 2px 6px;
-            border-radius: 10px;
-            min-width: 20px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .aircraft-pill.active .pill-main,
-        .aircraft-pill.active .pill-dropdown {
-            background: transparent;
-            color: white;
-        }
-
-        .aircraft-pill.active {
-            background: var(--primary-color);
-        }
-
-        .aircraft-pill.active .pill-dropdown {
-            border-left-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .aircraft-pill.active .selection-count {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .instructor-pill.active .pill-main,
-        .instructor-pill.active .pill-dropdown {
-            background: transparent;
-            color: white;
-        }
-
-        .instructor-pill.active {
-            background: var(--success-color);
-        }
-
-        .instructor-pill.active .pill-dropdown {
-            border-left-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .instructor-pill.active .selection-count {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        /* Status indicators */
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
-        }
-
-        .status-dot.available {
-            background: #10b981;
-        }
-
-        .status-dot.amber {
-            background: #f59e0b;
-        }
-
-        .status-dot.maintenance {
-            background: #ef4444;
-        }
-
-        /* Resource Selection Popover */
-        .resource-popover {
-            position: fixed;
-            top: auto;
-            left: 0;
-            width: 350px;
-            min-width: 350px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-8px);
-            transition: all 0.2s ease;
-            margin-top: 4px;
-        }
-
-        .resource-popover.open {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .popover-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px 12px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .popover-header h4 {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: #1a202c;
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .select-all-btn, .select-none-btn {
-            padding: 4px 8px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: white;
-            color: #64748b;
-        }
-
-        .select-all-btn:hover, .select-none-btn:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
-        }
-
-        .popover-close {
-            background: none;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .popover-close:hover {
-            background: #f1f5f9;
-            color: #ef4444;
-        }
-
-        .popover-search {
-            padding: 12px 20px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 12px;
-            background: #f8fafc;
-            transition: all 0.2s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .resource-list {
-            max-height: 240px;
-            overflow-y: auto;
-        }
-
-        .resource-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid #f8fafc;
-        }
-
-        .resource-item:hover {
-            background: #f8fafc;
-        }
-
-        .resource-item:last-child {
-            border-bottom: none;
-        }
-
-        .resource-item input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #3b82f6;
-        }
-
-        .resource-info {
-            flex: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .primary-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .resource-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1a202c;
-        }
-
-        .resource-type {
-            font-size: 11px;
-            color: #64748b;
-        }
-
-        .status-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 2px;
-        }
-
-        .availability-status {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .availability-status.available {
-            color: var(--success-color);
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success-color);
-        }
-
-        .availability-status.maintenance {
-            color: var(--maintenance-color);
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--maintenance-color);
-        }
-
-        .availability-status.warning {
-            color: var(--warning-color);
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--warning-color);
-        }
-
-        .availability-status.overdue {
-            color: var(--danger-color);
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--danger-color);
-        }
-
-        /* Aircraft Compliance Status Indicators */
-        .aircraft-status-indicator {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .compliance-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            position: relative;
-            display: inline-block;
-        }
-
-        .compliance-dot.current {
-            background: var(--success-color);
-            box-shadow: 0 0 4px var(--success-color);
-        }
-
-        .compliance-dot.warning {
-            background: var(--warning-color);
-            box-shadow: 0 0 4px var(--warning-color);
-            animation: pulse-warning 2s infinite;
-        }
-
-        .compliance-dot.overdue {
-            background: var(--danger-color);
-            box-shadow: 0 0 4px var(--danger-color);
-            animation: pulse-danger 1s infinite;
-        }
-
-        @keyframes pulse-warning {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @keyframes pulse-danger {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.1); }
-        }
-
-        /* Aircraft header with compliance status */
-        .aircraft-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
-            background: var(--gray-50);
-            border-radius: 6px;
-            margin-bottom: 4px;
-        }
-
-        .aircraft-compliance-summary {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 10px;
-            font-weight: 500;
-        }
-
-        .availability-status.booked {
-            color: #ef4444;
-        }
-
-        .rate {
-            font-size: 10px;
-            color: #64748b;
-        }
-
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .status-indicator.available {
-            background: #10b981;
-        }
-
-        .status-indicator.maintenance {
-            background: #f59e0b;
-        }
-
-        .status-indicator.booked {
-            background: #ef4444;
-        }
-
-        .popover-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
-            border-top: 1px solid #f1f5f9;
-            background: #f8fafc;
-        }
-
-        .selection-summary {
-            font-size: 11px;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .apply-btn {
-            padding: 6px 12px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .apply-btn:hover {
-            background: #2563eb;
-        }
-
-        /* Desktop popover override for mobile specificity */
-        @media (min-width: 769px) {
-            .resource-popover {
-                position: fixed !important;
-                top: auto !important;
-                bottom: auto !important;
-                left: auto !important;
-                right: auto !important;
-                width: 350px !important;
-                min-width: 350px !important;
-                max-width: 350px !important;
-                max-height: none !important;
-                border-radius: 12px !important;
-                transform: translateY(-8px) !important;
-                transition: all 0.2s ease !important;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
-                z-index: 1000 !important;
-                margin-top: 4px !important;
-            }
-            
-            .resource-popover.open {
-                opacity: 1 !important;
-                visibility: visible !important;
-                transform: translateY(0) !important;
-            }
-        }
-
-        /* Mobile Responsive Styles */
-        @media (max-width: 768px) {
-            .filter-bar-primary {
-                flex-direction: column;
-                gap: 8px;
-                padding: 12px 16px;
-            }
-            
-            .essential-filters {
-                justify-content: flex-start;
-                flex-wrap: wrap;
-                gap: 6px;
-                width: 100%;
-            }
-            
-            .expand-controls {
-                justify-content: center;
-                width: 100%;
-            }
-            
-            .result-summary {
-                font-size: 11px;
-            }
-            
-            .split-button-pill {
-                min-height: 44px;
-            }
-            
-            .pill-main {
-                flex: 1;
-                justify-content: space-between;
-                padding: 12px 16px;
-                min-height: 44px;
-            }
-            
-            .pill-dropdown {
-                padding: 12px 16px;
-                min-width: 44px;
-                min-height: 44px;
-            }
-            
-            .filter-pill {
-                min-height: 48px;
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-            
-            /* Mobile Popover Styles */
-            .resource-popover {
-                position: fixed !important;
-                top: auto !important;
-                bottom: auto !important;
-                left: auto !important;
-                right: auto !important;
-                width: 350px !important;
-                min-width: 350px !important;
-                max-width: calc(100vw - 10px) !important;
-                max-height: 70vh !important;
-                border-radius: 12px !important;
-                transform: translateY(-8px) !important;
-                transition: all 0.2s ease !important;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
-                z-index: 1001 !important;
-                margin-top: 4px !important;
-            }
-            
-            .resource-popover.open {
-                opacity: 1 !important;
-                visibility: visible !important;
-                transform: translateY(0) !important;
-            }
-            
-            .popover-header {
-                padding: 20px 24px 16px;
-                border-bottom: 1px solid #f1f5f9;
-            }
-            
-            .popover-header h4 {
-                font-size: 16px;
-            }
-            
-            .popover-search {
-                padding: 16px 24px;
-            }
-            
-            .search-input {
-                padding: 12px 16px;
-                font-size: 14px;
-                border-radius: 12px;
-            }
-            
-            .resource-list {
-                max-height: 300px;
-                padding: 0 8px;
-            }
-            
-            .resource-item {
-                padding: 16px 20px;
-                min-height: 64px;
-            }
-            
-            .resource-item input[type="checkbox"] {
-                width: 20px;
-                height: 20px;
-            }
-            
-            .primary-info {
-                gap: 4px;
-            }
-            
-            .resource-name {
-                font-size: 14px;
-            }
-            
-            .resource-type {
-                font-size: 12px;
-            }
-            
-            .status-info {
-                gap: 4px;
-            }
-            
-            .availability-status {
-                font-size: 12px;
-            }
-            
-            .rate {
-                font-size: 11px;
-            }
-            
-            .status-indicator {
-                width: 16px;
-                height: 16px;
-            }
-            
-            .popover-footer {
-                padding: 16px 24px;
-            }
-            
-            .selection-summary {
-                font-size: 12px;
-            }
-            
-            .apply-btn {
-                padding: 12px 20px;
-                font-size: 12px;
-                min-height: 44px;
-            }
-            
-            .select-all-btn, .select-none-btn {
-                padding: 8px 12px;
-                font-size: 12px;
-                min-height: 36px;
-            }
-            
-            .popover-close {
-                padding: 8px;
-                font-size: 18px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .filter-bar-primary {
-                padding: 8px 12px;
-            }
-            
-            .essential-filters {
-                gap: 4px;
-            }
-            
-            .filter-pill {
-                font-size: 12px;
-                padding: 10px 16px;
-                min-height: 48px;
-                min-width: 48px;
-            }
-            
-            .more-filters-toggle {
-                font-size: 11px;
-                padding: 6px 10px;
-            }
-            
-            .result-summary {
-                font-size: 10px;
-            }
-            
-            .split-button-pill {
-                min-height: 40px;
-            }
-            
-            .pill-main {
-                padding: 10px 12px;
-                font-size: 11px;
-                min-height: 40px;
-            }
-            
-            .pill-dropdown {
-                min-width: 40px;
-                min-height: 40px;
-                padding: 10px 12px;
-            }
-            
-            .selection-count {
-                font-size: 9px;
-                padding: 1px 4px;
-            }
-        }
-
-        /* Enhanced Day View Improvements */
-        
-        /* Current Time Indicator */
-        .current-time-indicator {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #ef4444;
-            z-index: 15;
-            box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
-            pointer-events: none;
-        }
-
-        .current-time-indicator::before {
-            content: '';
-            position: absolute;
-            left: 76px;
-            top: -4px;
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
-        }
-
-        /* Today Highlight */
-        .resource-day-view.today {
-            background: linear-gradient(135deg, #fefefe, #f8fafc);
-        }
-
-        .resource-day-view.today .time-label {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-        }
-
-        /* Enhanced Booking Colors Based on Type */
-        .resource-booking {
-            border-radius: 8px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition-normal);
-            cursor: pointer;
-            overflow: hidden;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            min-height: 48px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .resource-booking:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
-            z-index: 10;
-        }
-
-        .resource-booking:active {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .resource-booking.training {
-            background: var(--training-gradient);
-            border-left: 4px solid var(--training-color);
-            color: var(--text-inverse);
-            transition: var(--transition-normal);
-        }
-
-        .resource-booking.checkride {
-            background: var(--checkride-gradient);
-            border-left: 4px solid var(--checkride-color);
-            color: var(--text-inverse);
-            transition: var(--transition-normal);
-        }
-
-        .resource-booking.solo {
-            background: var(--solo-gradient);
-            border-left: 4px solid var(--solo-color);
-            color: var(--text-inverse);
-            transition: var(--transition-normal);
-        }
-
-        .resource-booking.maintenance {
-            background: var(--maintenance-gradient);
-            border-left: 4px solid var(--maintenance-color);
-            color: var(--text-primary);
-            transition: var(--transition-normal);
-        }
-
-        .resource-booking.rental {
-            background: var(--rental-gradient);
-            border-left: 4px solid var(--rental-color);
-            color: var(--text-inverse);
-            transition: var(--transition-normal);
-        }
-        
-        /* Unified event card styling - common base for all resource bookings */
-        .resource-booking {
-            /* Base styling already defined above - extends this for all types */
-        }
-        
-        /* Event type differentiators - only color variations */
-        .resource-booking.instructor-booking {
-            /* Override background for instructor overlay bookings */
-            background: rgba(255, 255, 255, 0.15) !important;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
-        
-        .resource-booking.instructor-booking::before {
-            content: '👨‍✈️';
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            font-size: 14px;
-            z-index: 10;
-            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Booking Content Styling */
-        .booking-content {
-            padding: 8px 12px;
-            font-size: 11px;
-            font-weight: 500;
-            line-height: 1.3;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .booking-title {
-            font-weight: 600;
-            font-size: 12px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .booking-details {
-            font-size: 10px;
-            opacity: 0.9;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .booking-notes {
-            font-size: 10px; /* Same as .booking-details */
-            opacity: 0.8;
-            color: rgba(255, 255, 255, 0.75);
-            margin-top: 2px;
-            font-style: italic;
-            max-height: 24px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-height: 1.2;
-        }
-
-        /* Booking Tooltip */
-        .booking-tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 12px;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 250px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-8px);
-            transition: all 0.2s ease;
-        }
-
-        .booking-tooltip.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .booking-tooltip .tooltip-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #56B4E9;
-        }
-
-        .booking-tooltip .tooltip-detail {
-            margin: 2px 0;
-            font-size: 11px;
-        }
-
-        /* Time Grid Enhancements */
-        .time-row.current-hour {
-            background: rgba(239, 68, 68, 0.03);
-        }
-
-        .time-row.current-hour .time-label {
-            color: #ef4444;
-            font-weight: 600;
-        }
-
-
-        /* Hide 15-min line on last row */
-        .time-row:last-child::after {
-            display: none;
-        }
-
-        /* Resource slot hover effects */
-        .resource-slot:hover:not(.occupied) {
-            background: rgba(59, 130, 246, 0.05);
-            cursor: pointer;
-        }
-
-        /* Removed CSS hover + indicator - using JavaScript createHoverCreatePreview instead */
-        /* .resource-slot:hover:not(.occupied)::after { removed } */
-
-        /* Enhanced Aviation Conflict Indicators */
-        .resource-booking.conflict {
-            border: 3px solid var(--danger-color);
-            background: linear-gradient(135deg, var(--danger-color), #dc2626) !important;
-            animation: conflictAlert 1.5s infinite;
-            position: relative;
-            z-index: 100;
-        }
-
-        .resource-booking.conflict::before {
-            content: '⚠️';
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            font-size: 12px;
-            z-index: 10;
-            animation: flash 1s infinite alternate;
-        }
-
-        @keyframes conflictAlert {
-            0%, 100% { 
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), var(--shadow-lg);
-            }
-            50% { 
-                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0), var(--shadow-xl);
-                transform: scale(1.02);
-            }
-        }
-
-        @keyframes flash {
-            0% { opacity: 1; }
-            100% { opacity: 0.3; }
-        }
-
-        /* Conflict warning in aircraft filter */
-        .aircraft-conflict-warning {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--danger-color);
-            font-size: 10px;
-            font-weight: 600;
-            margin-top: 2px;
-        }
-
-        /* Multi-resource conflict indicator */
-        .multi-resource-conflict {
-            background: repeating-linear-gradient(
-                45deg,
-                var(--danger-color),
-                var(--danger-color) 10px,
-                var(--warning-color) 10px,
-                var(--warning-color) 20px
-            );
-            animation: slideConflict 2s linear infinite;
-        }
-
-        @keyframes slideConflict {
-            0% { background-position: 0 0; }
-            100% { background-position: 28px 0; }
-        }
-
-        @keyframes pulseConflict {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        /* Enhanced drag preview with GPU acceleration */
-        .drag-preview {
-            background: rgba(59, 130, 246, 0.3);
-            border: 2px dashed #3b82f6;
-            border-radius: 4px;
-            pointer-events: none;
-            transform: translateZ(0); /* GPU acceleration */
-        }
-        
-        /* Enhanced ghost element styling */
-        .drag-ghost {
-            will-change: transform;
-            transform: translateZ(0) rotate(3deg);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 4px 10px rgba(0,0,0,0.2);
-            opacity: 0.9;
-            pointer-events: none;
-            z-index: 1000;
-            transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        
-        /* Drop zone animations */
-        .drop-target {
-            background: rgba(72, 187, 120, 0.2);
-            border: 2px solid #48bb78;
-            transform: translateZ(0) scale(1.02);
-            transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: inset 0 0 0 2px rgba(72, 187, 120, 0.4);
-        }
-        
-        /* 30-minute precision drop preview */
-        .half-hour-preview {
-            position: absolute;
-            background: rgba(72, 187, 120, 0.3);
-            border: 2px solid #48bb78;
-            border-radius: 5px; /* Match booking card border radius */
-            pointer-events: none;
-            z-index: 50;
-            transition: all 0.1s ease;
-            box-shadow: 0 2px 4px rgba(72, 187, 120, 0.3);
-        }
-        
-        /* Hover preview for new events */
-        .hover-create-preview {
-            position: absolute;
-            background: rgba(148, 163, 184, 0.15);
-            border: 1px dashed #94a3b8;
-            border-radius: 5px; /* Match booking card border radius */
-            pointer-events: none;
-            z-index: 40;
-            transition: all 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: #64748b;
-        }
-        
-        .hover-create-preview::before {
-            content: '+';
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        .drop-conflict {
-            background: rgba(239, 68, 68, 0.25);
-            border: 3px solid var(--danger-color);
-            transform: translateZ(0) scale(0.98);
-            transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            animation: dropConflictPulse 0.8s ease-in-out infinite;
-            position: relative;
-        }
-        
-        .drop-conflict::before {
-            content: '❌ CONFLICT';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--danger-color);
-            color: var(--text-inverse);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            z-index: 10;
-            pointer-events: none;
-        }
-        
-        @keyframes dropConflictPulse {
-            0%, 100% { 
-                transform: translateZ(0) scale(0.98);
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
-            }
-            50% { 
-                transform: translateZ(0) scale(1.01);
-                box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
-            }
-        }
-
-        /* Weekend/Holiday styling */
-        .resource-day-view.weekend {
-            background: linear-gradient(135deg, #fefefe, #faf9f7);
-        }
-
-        .resource-day-view.weekend .time-label {
-            background: linear-gradient(135deg, #faf9f7, #f3f2f0);
-            color: #92400e;
-        }
-
-        /* Enhanced mobile day view */
-        @media (max-width: 768px) {
-            .current-time-indicator::before {
-                left: 56px;
-                width: 6px;
-                height: 6px;
-            }
-            
-            .booking-content {
-                padding: 6px 8px;
-                font-size: 10px;
-            }
-            
-            .booking-title {
-                font-size: 11px;
-            }
-            
-            .booking-details {
-                font-size: 9px;
-            }
-            
-            .booking-tooltip {
-                font-size: 11px;
-                padding: 8px 12px;
-                max-width: 200px;
-            }
-            
-            /* .resource-slot:hover:not(.occupied)::after { removed } */
-        }
-
-        .calendar-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-        }
-
-        .nav-button {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: #f7fafc;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #4a5568;
-        }
-
-        .nav-button:hover {
-            background: #e2e8f0;
-        }
-
-        .current-date {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a202c;
-            flex: 1;
-            text-align: center;
-        }
-
-        /* Calendar Grid */
-        .calendar-container {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            background: #f7fafc;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .weekday {
-            padding: 16px 8px;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: #718096;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background: #e2e8f0;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .calendar-day {
-            background: white;
-            min-height: 120px;
-            padding: 12px 8px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .calendar-day:hover {
-            background: #f7fafc;
-        }
-
-        .calendar-day.other-month {
-            background: #f7fafc;
-            color: #a0aec0;
-        }
-
-        .calendar-day.today {
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .day-number {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .day-bookings {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .booking-item {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .booking-item:hover {
-            transform: scale(1.02);
-        }
-
-        .booking-item.training {
-            background: linear-gradient(135deg, var(--success-color) 0%, #38a169 100%);
-        }
-
-        .booking-item.maintenance {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #dd6b20 100%);
-        }
-
-        .booking-item.cancelled {
-            background: linear-gradient(135deg, var(--danger-color) 0%, #c53030 100%);
-        }
-
-        /* Week View Styles */
-        .calendar-grid.week-view {
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-        }
-
-        .calendar-day.week-day {
-            min-height: 200px;
-            padding: 12px;
-        }
-
-        /* Day View Styles - Full Width for Maximum Viewing Area */
-        .calendar-grid.day-view {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            margin: 0;
-        }
-
-        .day-detail-view {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-height: 70vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .time-slots {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
-
-        .time-slot {
-            display: flex;
-            min-height: 60px;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 8px 0;
-        }
-
-        .time-slot:last-child {
-            border-bottom: none;
-        }
-
-        .time-label {
-            width: 80px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #718096;
-            padding-right: 16px;
-            text-align: right;
-            flex-shrink: 0;
-        }
-
-        .slot-bookings {
-            flex: 1;
-            padding-left: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .booking-detail {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .booking-detail.training {
-            border-color: #56B4E9;
-            background: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
-            color: white;
-        }
-
-        .booking-detail.solo {
-            border-color: #48bb78;
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            color: white;
-        }
-
-        .booking-detail.maintenance {
-            border-color: #ed8936;
-            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
-            color: white;
-        }
-
-        .booking-detail.checkride {
-            border-color: #e53e3e;
-            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-            color: white;
-        }
-
-        .booking-detail.cross-country {
-            border-color: #9f7aea;
-            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
-            color: white;
-        }
-
-        .booking-title {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .booking-time {
-            font-size: 12px;
-            opacity: 0.9;
-            margin-bottom: 2px;
-        }
-
-        .booking-pilot {
-            font-size: 11px;
-            opacity: 0.8;
-        }
-
-        /* Resource Column Day View Styles */
-        .resource-day-view {
-            background: white;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 200px);
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .resource-header {
-            display: flex;
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            min-width: 100%;
-        }
-
-        .time-header {
-            width: 80px;
-            min-width: 80px;
-            padding: 16px 8px;
-            font-weight: 600;
-            color: #64748b;
-            font-size: 12px;
-            text-align: center;
-            border-right: 1px solid #e2e8f0;
-            background: #f8fafc;
-        }
-
-        .resource-columns-container {
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 #f1f5f9;
-        }
-
-        .resource-columns-container::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .resource-columns-container::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        .resource-columns-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-
-        .resource-column-header {
-            width: 180px;
-            min-width: 180px;
-            padding: 16px 12px;
-            font-weight: 600;
-            color: white;
-            font-size: 13px;
-            text-align: center;
-            border-right: 1px solid #e2e8f0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .resource-column-header.aircraft {
-            background: #3b82f6;
-        }
-
-        .resource-column-header.instructor {
-            background: #10b981;
-        }
-
-        .resource-time-grid {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .time-row {
-            display: flex;
-            min-height: 60px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .time-row:hover {
-            background: #fafafa;
-        }
-
-        .time-row .time-label {
-            width: 80px;
-            min-width: 80px;
-            padding: 16px 8px;
-            font-size: 11px;
-            font-weight: 500;
-            color: #64748b;
-            text-align: right;
-            border-right: 1px solid #e2e8f0;
-            background: #f8fafc;
-        }
-
-        .resource-slots-container {
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
-            position: relative;
-        }
-
-        .resource-slots-container::-webkit-scrollbar {
-            display: none;
-        }
-        
-        /* Clip events that extend into time column */
-        .resource-slots-container::before {
-            content: '';
-            position: absolute;
-            left: -80px; /* Width of time column */
-            top: 0;
-            bottom: 0;
-            width: 80px;
-            background: white;
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        .resource-slot {
-            width: 180px;
-            min-width: 180px;
-            border-right: 1px solid #e2e8f0;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-            padding: 4px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        
-        /* Magnetic snap zones for 30-minute increments */
-        .resource-slot::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .resource-slot:hover {
-            background: #f8fafc;
-        }
-
-        .resource-slot.aircraft {
-            background: rgba(59, 130, 246, 0.02);
-        }
-
-        .resource-slot.instructor {
-            background: rgba(16, 185, 129, 0.02);
-        }
-
-        .resource-slot.occupied {
-            background: #23486c;
-            cursor: not-allowed;
-        }
-
-        .resource-slot.hidden {
-            display: none;
-        }
-
-        .resource-slot.drag-start {
-            background: rgba(102, 126, 234, 0.2);
-            border: 2px solid #667eea;
-        }
-
-        .resource-slot.drag-highlight {
-            background: rgba(102, 126, 234, 0.1);
-            border: 1px solid #667eea;
-        }
-
-        .resource-slot.drop-target {
-            background: rgba(72, 187, 120, 0.1);
-            border: 1px solid #48bb78;
-        }
-
-        .resource-slot.drop-conflict {
-            background: rgba(229, 62, 62, 0.2);
-            border: 2px solid #e53e3e;
-        }
-
-        .editable-title:focus {
-            outline: 2px solid #667eea;
-            outline-offset: 1px;
-        }
-
-        .resize-handle {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 6px;
-            cursor: ns-resize;
-            z-index: 10;
-        }
-
-        .resize-handle-top {
-            top: -3px;
-        }
-
-        .resize-handle-bottom {
-            bottom: -3px;
-        }
-
-        .resize-handle:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .booking-content {
-            padding: 4px 8px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Agenda View Styles */
-        .agenda-view {
-            padding: 20px;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .agenda-header h2 {
-            color: #2d3748;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .agenda-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .agenda-item {
-            display: flex;
-            gap: 16px;
-            padding: 16px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .agenda-item:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        .agenda-date {
-            min-width: 80px;
-            text-align: center;
-            color: #4a5568;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .agenda-time {
-            min-width: 120px;
-            color: #2d3748;
-            font-weight: 500;
-        }
-
-        .agenda-details {
-            flex: 1;
-        }
-
-        .agenda-title {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 4px;
-        }
-
-        .agenda-info {
-            color: #4a5568;
-            font-size: 14px;
-        }
-
-        .agenda-instructor {
-            color: #56B4E9;
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        .no-events {
-            text-align: center;
-            color: #a0aec0;
-            padding: 40px;
-            font-style: italic;
-        }
-
-        .resource-booking {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            bottom: 2px;
-            border-radius: 5px;
-            padding: 0;
-            font-size: 11px;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-
-        .resource-booking.training {
-            background: var(--training-color);
-            border: 1px solid var(--training-color);
-        }
-
-        .resource-booking.solo {
-            background: var(--solo-color);
-            border: 1px solid var(--solo-color);
-        }
-
-        .resource-booking.maintenance {
-            background: var(--maintenance-color);
-            border: 1px solid var(--maintenance-color);
-        }
-
-        .resource-booking.checkride {
-            background: var(--checkride-color);
-            border: 1px solid var(--checkride-color);
-            color: var(--text-inverse);
-        }
-
-        .resource-booking.checkride .booking-title,
-        .resource-booking.checkride .booking-time,
-        .resource-booking.checkride .booking-pilot {
-            color: #202124;
-        }
-
-        .resource-booking.cross-country {
-            background: #9c27b0;
-            border: 1px solid #8e24aa;
-        }
-
-        .resource-booking .booking-header {
-            padding: 4px 6px 2px 6px;
-            background: transparent;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .resource-booking .booking-title {
-            font-weight: 700;
-            font-size: 12px;
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
-            letter-spacing: 0.025em;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .resource-booking .booking-content {
-            padding: 4px 6px;
-        }
-
-        .resource-booking .booking-time {
-            font-size: 11px;
-            margin: 0 0 2px 0;
-            font-weight: 600;
-            font-family: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 0.025em;
-        }
-
-        .resource-booking .booking-pilot {
-            font-size: 9px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 400;
-            opacity: 0.9;
-        }
-        
-        .resource-booking .booking-aircraft {
-            font-size: 9px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 500;
-            opacity: 0.95;
-            font-family: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
-        }
-
-        /* Flight Instructor Information */
-        .instructor-info {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 4px;
-            font-size: 10px;
-            opacity: 0.9;
-        }
-
-        .instructor-icon {
-            width: 12px;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-        }
-
-        .instructor-name {
-            font-weight: 500;
-        }
-
-        /* Month Calendar Day Click */
-        .month-calendar-day {
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .month-calendar-day:hover {
-            background: #f7fafc;
-            transform: scale(1.02);
-        }
-
-        .month-calendar-day.clickable {
-            position: relative;
-        }
-
-        .month-calendar-day.clickable::after {
-            content: '';
-            position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 4px;
-            background: #667eea;
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .month-calendar-day.clickable:hover::after {
-            opacity: 1;
-        }
-
-        /* Mobile responsiveness for resource view */
-        @media (max-width: 768px) {
-            .resource-header {
-                grid-template-columns: 60px repeat(auto-fit, minmax(120px, 1fr));
-            }
-
-            .time-row {
-                grid-template-columns: 60px repeat(auto-fit, minmax(120px, 1fr));
-            }
-
-            .resource-column-header {
-                font-size: 11px;
-                padding: 12px 8px;
-            }
-
-            .time-header {
-                font-size: 10px;
-                padding: 12px 4px;
-            }
-
-            .time-row .time-label {
-                font-size: 10px;
-                padding: 12px 4px;
-            }
-
-            .resource-slot {
-                min-height: 50px;
-            }
-        }
-
-        /* Quick Add Button */
-        .quick-add-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease;
-            z-index: 50;
-        }
-
-        /* Drag to Delete Trash Can */
-        .drag-delete-zone {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 80px;
-            height: 80px;
-            background: #dc3545;
-            border: 3px solid #c82333;
-            border-radius: 12px;
-            color: white;
-            font-size: 32px;
-            cursor: pointer;
-            box-shadow: 0 10px 25px -5px rgba(220, 53, 69, 0.5);
-            transition: all 0.3s ease;
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .drag-delete-zone.active {
-            display: flex;
-            animation: bounceIn 0.3s ease;
-        }
-
-        .drag-delete-zone.hover {
-            background: #c82333;
-            transform: scale(1.1);
-        }
-
-        /* Modal Delete Button */
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .delete-btn:hover {
-            background: #c82333;
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .quick-add-btn:hover {
-            transform: scale(1.1);
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal {
-            background: white;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow: hidden;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.show .modal {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            padding: 24px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a202c;
-        }
-
-        .close-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: #f7fafc;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #718096;
-        }
-
-        .modal-body {
-            padding: 24px;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #4a5568;
-            font-size: 14px;
-        }
-
-        .form-input, .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .primary-btn {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            border: none;
-            padding: 16px 24px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .primary-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Desktop Styles */
-        @media (min-width: 768px) {
-            .mobile-header {
-                display: none;
-            }
-
-            .app-container {
-                flex-direction: row;
-                overflow: hidden;
-            }
-
-            .sidebar-overlay {
-                position: relative;
-                left: 0;
-                z-index: auto;
-                flex-shrink: 0;
-                width: 280px;
-            }
-
-            .sidebar-backdrop {
-                display: none;
-            }
-
-            .main-content {
-                padding: 12px;
-                flex: 1;
-                min-width: 0;
-                overflow: hidden;
-                width: calc(100vw - 280px);
-                max-width: calc(100vw - 280px);
-            }
-
-            .calendar-day {
-                min-height: 140px;
-                padding: 16px 12px;
-            }
-
-            .booking-item {
-                font-size: 11px;
-                padding: 6px 10px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .calendar-day {
-                min-height: 100px;
-                padding: 8px 6px;
-            }
-
-            .booking-item {
-                font-size: 9px;
-                padding: 3px 6px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .calendar-title {
-                font-size: 22px;
-            }
-
-            .current-date {
-                font-size: 12px;
-                min-width: 120px;
-            }
-
-            .calendar-nav-section {
-                gap: 10px;
-            }
-
-            .nav-btn {
-                width: 44px;
-                height: 44px;
-                min-width: 44px;
-                min-height: 44px;
-            }
-
-            .view-tab {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-        }
-
-        
-
-        @media (max-width: 768px) {
-            .calendar-title {
-                font-size: 24px;
-            }
-
-            .current-date {
-                font-size: 14px;
-                min-width: 160px;
-            }
-
-            .calendar-nav-section {
-                gap: 15px;
-            }
-        }
-
-        /* Toast Notification System */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            pointer-events: none;
-        }
-
-        .toast {
-            background: #1f2937;
-            color: white;
-            padding: 16px 20px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            max-width: 350px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            pointer-events: auto;
-            transform: translateX(100px);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .toast.hide {
-            transform: translateX(100px);
-            opacity: 0;
-        }
-
-        .toast.error {
-            background: #ef4444;
-            border-left: 4px solid #dc2626;
-        }
-
-        .toast.warning {
-            background: #f59e0b;
-            color: #1f2937;
-            border-left: 4px solid #d97706;
-        }
-
-        .toast.success {
-            background: #10b981;
-            border-left: 4px solid #059669;
-        }
-
-        .toast.info {
-            background: #3b82f6;
-            border-left: 4px solid #2563eb;
-        }
-
-        .toast-icon {
-            font-size: 18px;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .toast-message {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-    </style>
-</head>
-<body>
-    <!-- Toast Notification Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <div class="app-container">
-        <!-- Navigation will be loaded here by JavaScript -->
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Calendar Header -->
-            <div class="calendar-header">
-                <div class="calendar-title-row">
-                    <div class="calendar-nav-section">
-                        <div class="date-navigation">
-                            <button class="nav-btn" id="prevBtn">‹</button>
-                            <div class="current-date" id="currentDate">Thursday, June 26, 2025</div>
-                            <button class="nav-btn" id="nextBtn">›</button>
-                        </div>
-                        <div class="view-tabs">
-                            <button class="view-tab active" data-view="day">Day</button>
-                            <button class="view-tab" data-view="month">Month</button>
-                            <button class="view-tab" data-view="agenda">Agenda</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Enhanced Filter System -->
-            <div class="filter-container">
-                <!-- Primary Filter Bar -->
-                <div class="filter-bar-primary">
-                    <div class="essential-filters">
-                        <button class="filter-pill active" data-filter="all">All</button>
-                        <button class="filter-pill" data-filter="my-bookings">My Bookings</button>
-                        
-                        <div class="split-button-pill aircraft-pill" style="position: relative;">
-                            <button class="pill-main" data-type="aircraft" onclick="toggleAircraftFilter()">
-                                <span class="pill-text">Aircraft</span>
-                                <span class="selection-count" id="aircraft-count">(All)</span>
-                            </button>
-                            <button class="pill-dropdown" onclick="toggleAircraftPopover(event)">▼</button>
-                            
-                            <!-- Aircraft Popover -->
-                            <div class="resource-popover" id="aircraft-popover">
-                                <div class="popover-header">
-                                    <h4>Select Aircraft</h4>
-                                    <div class="header-controls">
-                                        <button class="select-all-btn" onclick="selectAllAircraft()">All</button>
-                                        <button class="select-none-btn" onclick="selectNoneAircraft()">None</button>
-                                        <button class="popover-close" onclick="closePopover('aircraft-popover')">✕</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="popover-search">
-                                    <input type="text" placeholder="Search tail numbers, aircraft types..." class="search-input" id="aircraft-search" oninput="filterAircraftList()">
-                                </div>
-                                
-                                <div class="resource-list" id="aircraft-list">
-                                    <!-- Aircraft items will be populated by JavaScript -->
-                                </div>
-                                
-                                <div class="popover-footer">
-                                    <span class="selection-summary" id="aircraft-selection-summary">3 of 8 aircraft selected</span>
-                                    <button class="apply-btn" onclick="applyAircraftFilters()">Apply</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="split-button-pill instructor-pill" style="position: relative;">
-                            <button class="pill-main" data-type="instructors" onclick="toggleInstructorFilter()">
-                                <span class="pill-text">Instructors</span>
-                                <span class="selection-count" id="instructor-count">(All)</span>
-                            </button>
-                            <button class="pill-dropdown" onclick="toggleInstructorPopover(event)">▼</button>
-                            
-                            <!-- Instructor Popover -->
-                            <div class="resource-popover" id="instructor-popover">
-                                <div class="popover-header">
-                                    <h4>Select Instructors</h4>
-                                    <div class="header-controls">
-                                        <button class="select-all-btn" onclick="selectAllInstructors()">All</button>
-                                        <button class="select-none-btn" onclick="selectNoneInstructors()">None</button>
-                                        <button class="popover-close" onclick="closePopover('instructor-popover')">✕</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="popover-search">
-                                    <input type="text" placeholder="Search instructor names..." class="search-input" id="instructor-search" oninput="filterInstructorList()">
-                                </div>
-                                
-                                <div class="resource-list" id="instructor-list">
-                                    <!-- Instructor items will be populated by JavaScript -->
-                                </div>
-                                
-                                <div class="popover-footer">
-                                    <span class="selection-summary" id="instructor-selection-summary">2 of 5 instructors selected</span>
-                                    <button class="apply-btn" onclick="applyInstructorFilters()">Apply</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Calendar -->
-            <div class="calendar-container">
-                <div class="calendar-weekdays">
-                    <div class="weekday">Sun</div>
-                    <div class="weekday">Mon</div>
-                    <div class="weekday">Tue</div>
-                    <div class="weekday">Wed</div>
-                    <div class="weekday">Thu</div>
-                    <div class="weekday">Fri</div>
-                    <div class="weekday">Sat</div>
-                </div>
-                
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- Calendar days will be populated by JavaScript -->
-                </div>
-            </div>
-        </main>
-
-        <!-- Quick Add Button -->
-        <button class="quick-add-btn" id="quickAddBtn">+</button>
-
-        <!-- Drag to Delete Zone -->
-        <div class="drag-delete-zone" id="dragDeleteZone">
-            🗑️
-        </div>
-    </div>
-
-    <!-- Booking Modal -->
-    <div class="modal-overlay" id="bookingModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">New Flight Booking</h3>
-                <button class="close-btn" id="closeModal">×</button>
-            </div>
-            <div class="modal-body">
-                <form id="bookingForm">
-                    <div class="form-group">
-                        <label class="form-label">Resource</label>
-                        <select class="form-select" id="aircraft" name="aircraft" required>
-                            <option value="">Select Resource</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Start Date</label>
-                            <input type="date" class="form-input" id="startDate" name="startDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">End Date</label>
-                            <input type="date" class="form-input" id="endDate" name="endDate" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Start Time</label>
-                            <input type="time" class="form-input" id="startTime" name="startTime" step="1800" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">End Time</label>
-                            <input type="time" class="form-input" id="endTime" name="endTime" step="1800" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Flight Type</label>
-                        <select class="form-select" id="flightType" name="flightType" required>
-                            <option value="">Select Type</option>
-                            <option value="training">Training</option>
-                            <option value="solo">Solo</option>
-                            <option value="cross-country">Cross Country</option>
-                            <option value="checkride">Checkride</option>
-                            <option value="checkout">Checkout Flight</option>
-                            <option value="maintenance">Maintenance</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group" id="instructorGroup" style="display: none;">
-                        <label class="form-label">Instructor <span style="color: #e53e3e;">*</span></label>
-                        <select class="form-select" id="instructor" name="instructor">
-                            <option value="">Select instructor</option>
-                            <option value="CFI-1">John Smith (CFI)</option>
-                            <option value="CFI-2">Sarah Wilson (CFII)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Notes</label>
-                        <textarea class="form-input" id="notes" name="notes" rows="3" placeholder="Additional notes..."></textarea>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
-                        <button type="button" class="delete-btn" id="deleteBookingBtn" style="display: none;">
-                            🗑️ Delete
-                        </button>
-                        <button type="submit" class="primary-btn">Book Flight</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script>
         // Sample booking data
         // Load bookings from localStorage or use default data
         const defaultBookings = [
-            { id: 1, date: '2024-11-15', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'training', pilot: 'John Doe', instructor: 'CFI-1', instructorName: 'John Smith (CFI)', startTime: '09:00', endTime: '11:00' },
-            { id: 2, date: '2024-11-15', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'solo', pilot: 'Jane Smith', startTime: '14:00', endTime: '16:00' },
-            { id: 3, date: '2024-11-16', aircraft: 'N789EF', aircraftName: 'N789EF - Cessna 182', type: 'maintenance', pilot: 'Maintenance', startTime: '08:00', endTime: '17:00' },
-            { id: 4, date: '2024-11-18', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'checkride', pilot: 'Mike Johnson', instructor: 'CFI-2', instructorName: 'Sarah Wilson (CFII)', startTime: '10:00', endTime: '12:00' },
-            { id: 5, date: '2024-11-20', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'cross-country', pilot: 'Sarah Wilson', startTime: '13:00', endTime: '17:00' }
+            { id: 1, date: '2025-09-11', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'training', pilot: 'John Doe', instructor: 'CFI-1', instructorName: 'John Smith (CFI)', startTime: '09:00', endTime: '11:00' },
+            { id: 2, date: '2025-09-11', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'solo', pilot: 'Jane Smith', startTime: '14:00', endTime: '16:00' },
+            { id: 3, date: '2025-09-12', aircraft: 'N789EF', aircraftName: 'N789EF - Cessna 182', type: 'maintenance', pilot: 'Maintenance', startTime: '08:00', endTime: '17:00' },
+            { id: 4, date: '2025-09-13', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'checkride', pilot: 'Mike Johnson', instructor: 'CFI-2', instructorName: 'Sarah Wilson (CFII)', startTime: '10:00', endTime: '12:00' },
+            { id: 5, date: '2025-09-15', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'cross-country', pilot: 'Sarah Wilson', startTime: '13:00', endTime: '17:00' },
+            // Add bookings for Current User to test filtering
+            { id: 6, date: getCurrentDateString(), aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'training', pilot: 'Current User', instructor: 'CFI-1', instructorName: 'John Smith (CFI)', startTime: '08:00', endTime: '10:00' },
+            { id: 7, date: getCurrentDateString(), aircraft: 'N789EF', aircraftName: 'N789EF - Cessna 182', type: 'solo', pilot: 'Current User', startTime: '14:00', endTime: '16:00' }
         ];
         
-        let bookings = JSON.parse(localStorage.getItem('servantair_bookings')) || defaultBookings;
+        // Load bookings from storage or use defaults
+        let bookings = Storage.load('servantair_bookings', defaultBookings);
+        AppState.setBookings(bookings);
+
+        // Touch/Press variables (will be migrated to AppState in future refactor)
+        let pressTimer = null;
+        let isLongPress = false;
+        let createFlightPopup = null;
+        let initialTouchPos = { x: 0, y: 0 };
+        let hasMovedDuringPress = false;
+        const LONG_PRESS_DELAY = 200; // 200ms long press - more responsive
+        const MOVEMENT_THRESHOLD = 10; // pixels of movement to cancel press
+
+        // Calendar view variables (use AppState for new code)
+        let currentView = AppState.view.current;
+        const currentDate = AppState.view.date;
+        let instructors = null; // Will be initialized later
+
+        // Drag state variables (use AppState.drag for new code)
+        let isDraggingEvent = AppState.drag.isDraggingEvent;
+        let draggedBooking = AppState.drag.booking;
+        let draggedElement = AppState.drag.element;
+        let ghostElement = AppState.drag.ghost;
+        let originalResourceId = AppState.drag.originalResourceId;
+
+        // Resize state
+        let isResizing = false;
+        let resizeBooking = null;
+        let resizeDirection = null;
+        let resizeResourceId = null;
+
+        // Touch gesture variables
+        let lastTouchDistance = 0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isSwipeGesture = false;
+
+        // Settings
+        let settings = {
+            timeStart: '06:00',
+            timeEnd: '22:00',
+            timeGranularity: 15, // minutes
+            autoSave: true,
+            showWeekends: true
+        };
+        let timeGranularity = settings.timeGranularity;
+
+        // Performance throttling
+        let lastGhostUpdate = 0;
+        const ghostUpdateThrottle = 16; // ~60fps
+        
+        // calendarShadowElement already declared at top
+        // autoScrollAnimation already declared at top
+        // dragDeleteZone already declared at top
+        // bookingTooltip already declared at top
         
         // Save bookings to localStorage
         function saveBookings() {
-            localStorage.setItem('servantair_bookings', JSON.stringify(bookings));
-            console.log('Bookings saved to localStorage:', bookings.length);
+            Storage.save('servantair_bookings', bookings);
+            AppState.setBookings(bookings);
+            Logger.log('BOOKINGS', `Saved ${bookings.length} bookings to storage`);
         }
-        
+
         // Reset to default demo data (useful for testing)
         function resetDemoData() {
             bookings = [...defaultBookings];
             saveBookings();
             renderView();
-            console.log('Demo data reset to defaults');
+            Logger.log('BOOKINGS', 'Demo data reset to defaults');
         }
-        
+
         // Make reset function available in console for testing
         window.resetDemoData = resetDemoData;
 
@@ -3104,8 +106,7 @@
             { id: 'CFI-2', name: 'Sarah Wilson (CFII)', type: 'instructor', available: true }
         ];
 
-        let currentDate = new Date();
-        let currentView = 'day'; // Track current view - start with day view
+        // currentDate and currentView already declared at the top
         let currentUser = 'Current User'; // Would come from authentication
         let currentUserRole = 'student'; // Would come from authentication: 'student', 'private', 'commercial', 'cfi', 'admin'
         
@@ -3125,31 +126,25 @@
         let dragStartResource = null;
         
         // Mobile menu functionality now handled by load-navigation.js
-
-        // View tab functionality
-        document.querySelectorAll('.view-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs
-                document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-                // Add active class to clicked tab
-                tab.classList.add('active');
-                
-                // Update current view
-                currentView = tab.dataset.view;
-                
-                // Render the appropriate view
-                renderView();
-            });
-        });
+        // View tab functionality moved to DOMContentLoaded handler
 
         // Enhanced Filter System Functions
         
 
         // Primary Filter Functions
         function togglePrimaryFilter(filterType) {
+            console.log('=== TOGGLE PRIMARY FILTER ===');
+            console.log('Filter type:', filterType);
+            console.log('Current primary filters before:', Array.from(filterState.primaryFilters));
+
             if (filterType === 'all') {
                 filterState.primaryFilters.clear();
                 filterState.primaryFilters.add('all');
+                // When clicking "All", reset aircraft and instructor filters to 'all' as well
+                filterState.aircraft.clear();
+                filterState.aircraft.add('all');
+                filterState.instructors.clear();
+                filterState.instructors.add('all');
             } else {
                 filterState.primaryFilters.delete('all');
                 if (filterState.primaryFilters.has(filterType)) {
@@ -3160,8 +155,15 @@
                 // If no filters left, default to 'all'
                 if (filterState.primaryFilters.size === 0) {
                     filterState.primaryFilters.add('all');
+                    // Reset resource filters when defaulting back to 'all'
+                    filterState.aircraft.clear();
+                    filterState.aircraft.add('all');
+                    filterState.instructors.clear();
+                    filterState.instructors.add('all');
                 }
             }
+
+            console.log('Current primary filters after:', Array.from(filterState.primaryFilters));
             updateFilterUI();
             renderView();
         }
@@ -3334,13 +336,18 @@
         }
 
         function filterAircraftList() {
-            const searchTerm = document.getElementById('aircraft-search').value.toLowerCase();
-            const items = document.querySelectorAll('#aircraft-list .resource-item');
-            
+            const searchInput = DOM.get('#aircraft-search');
+            if (!searchInput) return;
+
+            const searchTerm = searchInput.value.toLowerCase();
+            const items = DOM.getAll('#aircraft-list .resource-item');
+
+            Logger.log('FILTER', `Filtering aircraft: "${searchTerm}"`);
+
             items.forEach(item => {
                 const name = item.querySelector('.resource-name').textContent.toLowerCase();
                 const type = item.querySelector('.resource-type').textContent.toLowerCase();
-                
+
                 if (name.includes(searchTerm) || type.includes(searchTerm)) {
                     item.style.display = 'flex';
                 } else {
@@ -3348,6 +355,9 @@
                 }
             });
         }
+
+        // Debounced version for performance
+        const debouncedFilterAircraft = Performance.debounce(filterAircraftList, 300);
 
         // Instructor Filter Functions (Similar structure to aircraft)
         function toggleInstructorFilter() {
@@ -3612,8 +622,8 @@
             }
         }
 
-        // Initialize primary filter handlers
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize primary filter handlers (moved to main DOMContentLoaded handler)
+        function initializeFilterHandlers() {
             // Primary filter click handlers
             document.querySelectorAll('.filter-pill').forEach(pill => {
                 pill.addEventListener('click', () => {
@@ -3630,69 +640,29 @@
             
             // Initialize filter UI
             updateFilterUI();
-        });
+        }
 
-        // Calendar navigation
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            if (currentView === 'month') {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-            } else if (currentView === 'day') {
-                currentDate.setDate(currentDate.getDate() - 1);
+        // Calendar navigation function (called by HTML onclick handlers)
+        window.navigateCalendar = function(direction) {
+            if (direction === 'prev') {
+                if (currentView === 'month') {
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                } else if (currentView === 'day') {
+                    currentDate.setDate(currentDate.getDate() - 1);
+                }
+            } else if (direction === 'next') {
+                if (currentView === 'month') {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                } else if (currentView === 'day') {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
             }
             renderView();
-        });
+        };
 
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            if (currentView === 'month') {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-            } else if (currentView === 'day') {
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            renderView();
-        });
+        // Modal functionality handled later in the file
 
-        // Modal functionality
-        const bookingModal = document.getElementById('bookingModal');
-        const quickAddBtn = document.getElementById('quickAddBtn');
-        const closeModal = document.getElementById('closeModal');
-
-        quickAddBtn.addEventListener('click', () => {
-            // Pre-fill with current date
-            const today = new Date();
-            const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            document.getElementById('startDate').value = dateStr;
-            document.getElementById('endDate').value = dateStr;
-            
-            // Set default flight type based on user role
-            const flightTypeSelect = document.getElementById('flightType');
-            switch (currentUserRole) {
-                case 'student':
-                    flightTypeSelect.value = 'training';
-                    break;
-                case 'cfi':
-                    flightTypeSelect.value = 'training';
-                    break;
-                case 'private':
-                case 'commercial':
-                    flightTypeSelect.value = 'solo';
-                    break;
-                default:
-                    flightTypeSelect.value = ''; // Leave empty for admin/other roles
-                    break;
-            }
-            
-            bookingModal.classList.add('show');
-        });
-
-        closeModal.addEventListener('click', () => {
-            bookingModal.classList.remove('show');
-        });
-
-        bookingModal.addEventListener('click', (e) => {
-            if (e.target === bookingModal) {
-                bookingModal.classList.remove('show');
-            }
-        });
+        // Modal event listeners handled later in the file
 
         // Main render function that switches between views
         function renderView() {
@@ -3818,6 +788,11 @@
             // Create resource-column day view
             const dayElement = createResourceColumnDayView(currentDate);
             calendarGrid.appendChild(dayElement);
+            
+            // Add double-click handlers after rendering bookings
+            if (typeof addDoubleClickHandlers === 'function') {
+                addDoubleClickHandlers();
+            }
         }
 
         function createDayElement(day, isOtherMonth, year, month) {
@@ -4361,43 +1336,17 @@
             calendarGrid.addEventListener('touchend', handleGlobalTouchEnd, { passive: true });
         }
 
-        // Press and hold state
-        let pressTimer = null;
-        let isLongPress = false;
-        let createFlightPopup = null;
-        let initialTouchPos = { x: 0, y: 0 };
-        let hasMovedDuringPress = false;
-        const LONG_PRESS_DELAY = 200; // 200ms long press - more responsive
-        const MOVEMENT_THRESHOLD = 10; // pixels of movement to cancel press
+        // Press and hold state (variables declared at top)
         
-        // Event drag state
-        let isDraggingEvent = false;
-        let draggedBooking = null;
-        let draggedElement = null;
-        let ghostElement = null;
-        let originalResourceId = null;
+        // Event drag state (variables declared at top)
         
-        // Event resize state
-        let isResizing = false;
-        let resizeBooking = null;
-        let resizeDirection = null;
-        let resizeResourceId = null;
+        // Event resize state (variables declared at top)
         
-        // Touch gesture state
-        let lastTouchDistance = 0;
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let isSwipeGesture = false;
+        // Touch gesture state (variables declared at top)
         
-        // Settings with defaults
-        let settings = {
-            defaultBookingSlot: 90, // minutes - default 90 minutes as requested
-            timeGranularity: 60, // minutes per slot display
-            colorScheme: 'default',
-            ...JSON.parse(localStorage.getItem('servantair_calendar_settings') || '{}')
-        };
+        // Settings with defaults (variable declared at top)
         
-        let timeGranularity = settings.timeGranularity;
+        // timeGranularity already declared at top
 
         // Helper function to check if resource is an instructor
         function isInstructorResource(resourceId) {
@@ -4855,9 +1804,10 @@
             
             // Enhanced original element restoration
             if (draggedElement) {
+                draggedElement.classList.remove('being-dragged');
                 draggedElement.style.transition = 'opacity 0.15s ease-out';
                 draggedElement.style.opacity = '1';
-                
+
                 // Clear transition after animation
                 setTimeout(() => {
                     if (draggedElement) {
@@ -5826,16 +2776,16 @@
             draggedBooking = booking;
             draggedElement = bookingElement;
             originalResourceId = resourceId;
-            
+
             // Show drag-to-delete zone
             showDragDeleteZone();
-            
+
             // Create ghost element
             createGhostElement(bookingElement, e);
-            
-            // Hide original element during drag
-            bookingElement.style.opacity = '0.3';
-            
+
+            // Completely hide original element during drag (looks like it's been "picked up")
+            bookingElement.classList.add('being-dragged');
+
             // Add global mouse/touch move and up listeners
             document.addEventListener('mousemove', handleEventDragMove);
             document.addEventListener('mouseup', handleEventDragEnd);
@@ -5880,8 +2830,7 @@
         }
 
         // Enhanced ghost positioning with smooth GPU-accelerated movement
-        let lastGhostUpdate = 0;
-        const ghostUpdateThrottle = 16; // ~60fps
+        // lastGhostUpdate and ghostUpdateThrottle already declared at top
         
         function updateGhostPosition(e) {
             if (!ghostElement) return;
@@ -6009,7 +2958,7 @@
         }
 
         // Calendar shadow preview variables
-        let calendarShadowElement = null;
+        // calendarShadowElement already declared at top
         
         // Create calendar shadow preview that shows where booking will land
         function createCalendarShadowPreview() {
@@ -6306,11 +3255,17 @@
         }
 
         // Flight type change handler to show/hide instructor field
-        document.getElementById('flightType').addEventListener('change', function() {
-            const flightType = this.value;
+        // NOTE: This is now handled in the global event delegation system below
+        function updateInstructorVisibility() {
+            const flightTypeSelect = document.getElementById('flightType');
+            if (!flightTypeSelect) return;
+
+            const flightType = flightTypeSelect.value;
             const instructorGroup = document.getElementById('instructorGroup');
             const instructorSelect = document.getElementById('instructor');
-            
+
+            if (!instructorGroup || !instructorSelect) return;
+
             // Show instructor field for training, checkride, and checkout flights
             if (flightType === 'training' || flightType === 'checkride' || flightType === 'checkout') {
                 instructorGroup.style.display = 'block';
@@ -6320,16 +3275,35 @@
                 instructorSelect.required = false;
                 instructorSelect.value = ''; // Clear selection
             }
-        });
+        }
 
-        // Form submission
-        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+        // Form submission handler
+        // NOTE: This is now handled in the global event delegation system below
+        function handleBookingFormSubmit(e) {
             e.preventDefault();
             
             // Get form data
             const formData = new FormData(e.target);
             const bookingData = Object.fromEntries(formData);
-            
+
+            // Normalize field names (bookingDate → startDate for consistency)
+            if (bookingData.bookingDate && !bookingData.startDate) {
+                bookingData.startDate = bookingData.bookingDate;
+            }
+
+            // Add debugging
+            console.log('📝 Form data collected:', bookingData);
+
+            // Validate required fields
+            if (!bookingData.startTime || !bookingData.endTime) {
+                alert('Please select both start and end times.');
+                return;
+            }
+            if (!bookingData.startDate) {
+                alert('Please select a date.');
+                return;
+            }
+
             // Validate instructor requirement for training flights
             const flightType = bookingData.flightType;
             if ((flightType === 'training' || flightType === 'checkride' || flightType === 'checkout') && !bookingData.instructor) {
@@ -6530,66 +3504,207 @@
                     scrollToTime(startHour);
                 }, 100);
             }
-            
+
             console.log('=== RENDER COMPLETE ===');
             console.log('renderView() completed');
-        });
+        }
 
         // Populate resource dropdown
         function populateResourceDropdown() {
             const aircraftSelect = document.getElementById('aircraft');
-            const currentOptions = aircraftSelect.innerHTML;
-            
-            // Keep the default "Select Resource" option
-            aircraftSelect.innerHTML = '<option value="">Select Resource</option>';
-            
-            resources.forEach(resource => {
+            if (!aircraftSelect) return;
+
+            // Keep the default "Select Aircraft" option
+            aircraftSelect.innerHTML = '<option value="">Select Aircraft</option>';
+
+            // Only add aircraft to the aircraft dropdown
+            resources.filter(r => r.type === 'aircraft').forEach(resource => {
                 const option = document.createElement('option');
                 option.value = resource.id;
                 option.textContent = resource.name;
-                option.setAttribute('data-type', resource.type);
                 aircraftSelect.appendChild(option);
             });
         }
 
+        // Populate instructor dropdown based on availability for selected date/time
+        function populateInstructorDropdown() {
+            const instructorSelect = document.getElementById('instructor');
+            const dateInput = document.getElementById('bookingDate');
+            const startTimeInput = document.getElementById('startTime');
+            const endTimeInput = document.getElementById('endTime');
+
+            if (!instructorSelect || !dateInput || !startTimeInput || !endTimeInput) return;
+
+            const selectedDate = dateInput.value;
+            const startTime = startTimeInput.value;
+            const endTime = endTimeInput.value;
+
+            // Keep the default option
+            instructorSelect.innerHTML = '<option value="">Select Instructor (Optional)</option>';
+
+            // If date or times not selected, show all instructors
+            if (!selectedDate || !startTime || !endTime) {
+                resources.filter(r => r.type === 'instructor').forEach(instructor => {
+                    const option = document.createElement('option');
+                    option.value = instructor.id;
+                    option.textContent = instructor.name;
+                    instructorSelect.appendChild(option);
+                });
+                return;
+            }
+
+            // Get the editing booking ID if we're editing
+            const editingBookingId = bookingModal?.dataset?.editingBookingId;
+
+            // Calculate start and end hours
+            const startHour = parseInt(startTime.split(':')[0]) + parseInt(startTime.split(':')[1]) / 60;
+            const endHour = parseInt(endTime.split(':')[0]) + parseInt(endTime.split(':')[1]) / 60;
+
+            console.log('🔍 Filtering instructors for:', selectedDate, startTime, '-', endTime);
+
+            // Filter instructors by availability
+            const availableInstructors = resources.filter(r => {
+                if (r.type !== 'instructor') return false;
+
+                // Check if instructor has any conflicting bookings
+                const conflicts = bookings.filter(booking => {
+                    // Skip the booking being edited
+                    if (editingBookingId && booking.id === parseInt(editingBookingId)) return false;
+
+                    // Only check bookings on the same date with this instructor
+                    if (booking.date !== selectedDate) return false;
+                    if (booking.instructor !== r.id) return false;
+
+                    // Check time overlap
+                    const bookingStart = getHourFromTime(booking.startTime);
+                    const bookingEnd = getHourFromTime(booking.endTime);
+
+                    return timeSlotOverlaps(startHour, endHour, bookingStart, bookingEnd);
+                });
+
+                return conflicts.length === 0; // Available if no conflicts
+            });
+
+            console.log('✅ Available instructors:', availableInstructors.map(i => i.name));
+
+            // Populate dropdown with available instructors
+            availableInstructors.forEach(instructor => {
+                const option = document.createElement('option');
+                option.value = instructor.id;
+                option.textContent = instructor.name;
+                instructorSelect.appendChild(option);
+            });
+
+            // If no instructors available, show message
+            if (availableInstructors.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No instructors available for this time';
+                option.disabled = true;
+                instructorSelect.appendChild(option);
+            }
+        }
+
         // Enhanced Filter Functions
         function getFilteredResources() {
+            console.log('=== GET FILTERED RESOURCES ===');
+            console.log('Current user:', currentUser);
+            console.log('Primary filters:', filterState.primaryFilters);
+
             let filteredResources = [];
-            
+
+            // Start with all resources or user's booked resources based on primary filter
+            let availableResources = resources;
+
+            // If primary filter is 'my-bookings', limit to resources the current user has booked
+            if (filterState.primaryFilters.has('my-bookings')) {
+                console.log('In my-bookings mode, filtering resources...');
+                console.log('Current view:', currentView);
+                console.log('Current date:', currentDate);
+                const userBookedResourceIds = new Set();
+
+                // Get date range for current view
+                let startDate, endDate;
+                const today = new Date(currentDate);
+
+                if (currentView === 'day') {
+                    startDate = DateUtils.formatDate(today);
+                    endDate = startDate;
+                } else if (currentView === 'week') {
+                    // Week starts on Sunday
+                    const dayOfWeek = today.getDay();
+                    const weekStart = new Date(today);
+                    weekStart.setDate(today.getDate() - dayOfWeek);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekStart.getDate() + 6);
+                    startDate = DateUtils.formatDate(weekStart);
+                    endDate = DateUtils.formatDate(weekEnd);
+                } else if (currentView === 'month') {
+                    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    startDate = DateUtils.formatDate(monthStart);
+                    endDate = DateUtils.formatDate(monthEnd);
+                } else {
+                    // Default to current day
+                    startDate = DateUtils.formatDate(today);
+                    endDate = startDate;
+                }
+
+                console.log('Date range for my-bookings filter:', startDate, 'to', endDate);
+
+                // Find all resources the current user has booked in the current view's date range
+                bookings.forEach(booking => {
+                    const bookingDate = booking.date;
+                    const isInDateRange = bookingDate >= startDate && bookingDate <= endDate;
+
+                    console.log(`Checking booking: date=${bookingDate}, pilot=${booking.pilot}, aircraft=${booking.aircraft}, instructor=${booking.instructor}, inRange=${isInDateRange}`);
+
+                    if (booking.pilot === currentUser && isInDateRange) {
+                        console.log('Found user booking in date range!');
+                        // Add the aircraft
+                        if (booking.aircraft) {
+                            userBookedResourceIds.add(booking.aircraft);
+                            console.log('Added aircraft:', booking.aircraft);
+                        }
+                        // Add the instructor if there is one
+                        if (booking.instructor) {
+                            userBookedResourceIds.add(booking.instructor);
+                            console.log('Added instructor:', booking.instructor);
+                        }
+                    }
+                });
+
+                console.log('User booked resource IDs:', Array.from(userBookedResourceIds));
+                // Limit available resources to only those the user has booked in the date range
+                availableResources = resources.filter(r => userBookedResourceIds.has(r.id));
+                console.log('Available resources after filtering:', availableResources.map(r => r.id));
+            }
+
+            // Now apply aircraft and instructor filter states to the available resources
             // Get aircraft based on aircraft filter state
             if (filterState.aircraft.has('all')) {
-                filteredResources.push(...resources.filter(r => r.type === 'aircraft'));
+                filteredResources.push(...availableResources.filter(r => r.type === 'aircraft'));
             } else if (filterState.aircraft.size > 0) {
                 filterState.aircraft.forEach(aircraftId => {
-                    const aircraft = resources.find(r => r.id === aircraftId);
+                    const aircraft = availableResources.find(r => r.id === aircraftId);
                     if (aircraft) filteredResources.push(aircraft);
                 });
             }
-            
+
             // Get instructors based on instructor filter state
             if (filterState.instructors.has('all')) {
-                filteredResources.push(...resources.filter(r => r.type === 'instructor'));
+                filteredResources.push(...availableResources.filter(r => r.type === 'instructor'));
             } else if (filterState.instructors.size > 0) {
                 filterState.instructors.forEach(instructorId => {
-                    const instructor = resources.find(r => r.id === instructorId);
+                    const instructor = availableResources.find(r => r.id === instructorId);
                     if (instructor) filteredResources.push(instructor);
                 });
             }
-            
-            // If no resources selected from either category and primary filter is not 'all', return empty
-            if (filteredResources.length === 0 && !filterState.primaryFilters.has('all')) {
-                return [];
-            }
-            
-            // If primary filter is 'all' and no specific resources selected, return all resources
-            if (filterState.primaryFilters.has('all') && 
-                filterState.aircraft.has('all') && 
-                filterState.instructors.has('all')) {
-                return resources;
-            }
-            
+
             // Remove duplicates and return
-            return [...new Map(filteredResources.map(r => [r.id, r])).values()];
+            const finalResources = [...new Map(filteredResources.map(r => [r.id, r])).values()];
+            console.log('Final filtered resources:', finalResources.map(r => `${r.id} (${r.type})`));
+            return finalResources;
         }
 
         function getFilteredBookings(dateStr) {
@@ -6607,17 +3722,18 @@
                 console.log('After my-bookings filter:', filteredBookings.length);
             }
             
-            // Apply resource filters if not showing all resources
-            if (!filterState.primaryFilters.has('all') || 
-                !filterState.aircraft.has('all') || 
-                !filterState.instructors.has('all')) {
-                
+            // Apply resource filters ONLY if not in 'my-bookings' mode and not showing all resources
+            if (!filterState.primaryFilters.has('my-bookings') &&
+                (!filterState.primaryFilters.has('all') ||
+                 !filterState.aircraft.has('all') ||
+                 !filterState.instructors.has('all'))) {
+
                 const filteredResourceIds = getFilteredResources().map(r => r.id);
                 console.log('Filtered resource IDs:', filteredResourceIds);
-                
+
                 if (filteredResourceIds.length > 0) {
-                    filteredBookings = filteredBookings.filter(booking => 
-                        filteredResourceIds.includes(booking.aircraft) || 
+                    filteredBookings = filteredBookings.filter(booking =>
+                        filteredResourceIds.includes(booking.aircraft) ||
                         filteredResourceIds.includes(booking.instructor)
                     );
                 } else {
@@ -6726,7 +3842,7 @@
         }
         
         // Enhanced 4-directional auto-scroll function
-        let autoScrollAnimation = null;
+        // autoScrollAnimation already declared at top
         
         function performAutoScroll(clientX, clientY) {
             // Cancel any existing auto-scroll animation
@@ -6975,7 +4091,7 @@
         });
 
         // Drag to delete functionality
-        let dragDeleteZone = null;
+        // dragDeleteZone already declared at top
         
         function showDragDeleteZone() {
             dragDeleteZone = document.getElementById('dragDeleteZone');
@@ -6989,14 +4105,18 @@
         }
         
         // Modal delete button handler
-        document.getElementById('deleteBookingBtn').addEventListener('click', () => {
+        // NOTE: This is now handled in the global event delegation system below
+        function deleteCurrentBooking() {
+            const bookingModal = document.getElementById('bookingModal');
+            if (!bookingModal) return;
+
             const editingBookingId = bookingModal.dataset.editingBookingId;
             if (editingBookingId && confirm('Are you sure you want to delete this flight?')) {
                 deleteBooking(editingBookingId);
                 bookingModal.classList.remove('show');
             }
-        });
-        
+        }
+
         // Delete booking function
         function deleteBooking(bookingId) {
             const bookingIndex = bookings.findIndex(b => b.id === bookingId);
@@ -7050,7 +4170,7 @@
         }
 
         // Booking tooltip functions
-        let bookingTooltip = null;
+        // bookingTooltip already declared at top
 
         function showBookingTooltip(event, booking) {
             // Remove existing tooltip
@@ -7137,15 +4257,53 @@
             }, 60000); // Update every minute
         }
 
-        let isInitialLoad = true;
-
         // Initialize calendar
-
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing calendar...');
+            
+            // Initialize all the components
+            initializeFilterHandlers();
             populateResourceDropdown();
-            renderView();
+            
+            // Add view tab event handlers
+            document.querySelectorAll('.view-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Update current view
+                    currentView = tab.dataset.view;
+                    
+                    // Render the appropriate view
+                    renderView();
+                });
+            });
+            
+            // Initialize calendar with day view
+            currentView = 'day';
+            console.log('📅 About to render initial view:', currentView);
+            
+            // Add small delay to ensure all DOM elements are ready
+            setTimeout(() => {
+                console.log('🔄 Rendering initial calendar view...');
+                renderView();
+                
+                // Add double-click handlers after rendering
+                setTimeout(() => {
+                    // Initialize modal first, then add handlers
+                    initializeModal();
+                    addDoubleClickHandlers();
+                    console.log('✅ Modal initialized and double-click handlers added');
+                }, 200);
+            }, 100);
+            
+            // Start time updater
             startTimeUpdater();
             isInitialLoad = false;
+            
+            console.log('✅ Calendar initialization completed');
         });
         
         // Add current time indicator line
@@ -7276,10 +4434,378 @@
         function showInfoToast(title, message, duration = 5000) {
             return showToast(title, message, 'info', duration);
         }
-        
-    </script>
 
-    <!-- Load Navigation Component -->
-    <script src="load-navigation.js?v=1"></script>
-</body>
-</html> 
+        // ============ MODAL FUNCTIONS ============
+        
+        // Modal references
+        let bookingModal = null;
+        let closeModal = null;
+        let quickAddBtn = null;
+        
+        // Initialize modal functionality after DOM is ready
+        function initializeModal() {
+            bookingModal = document.getElementById('bookingModal');
+            closeModal = document.querySelector('#bookingModal .close-btn');
+            quickAddBtn = document.querySelector('.quick-add-btn');
+            
+            if (!bookingModal) {
+                console.warn('Booking modal not found');
+                return;
+            }
+            
+            // Close modal handlers
+            if (closeModal) {
+                closeModal.addEventListener('click', hideBookingModal);
+            }
+            
+            // Quick add button handler
+            if (quickAddBtn) {
+                quickAddBtn.addEventListener('click', showBookingModal);
+            }
+            
+            // Click outside to close modal
+            bookingModal.addEventListener('click', (e) => {
+                if (e.target === bookingModal) {
+                    hideBookingModal();
+                }
+            });
+            
+            // Delete button handler
+            const deleteBtn = document.getElementById('deleteBookingBtn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => {
+                    const editingBookingId = bookingModal.dataset.editingBookingId;
+                    if (editingBookingId && confirm('Are you sure you want to delete this flight?')) {
+                        deleteBooking(editingBookingId);
+                        hideBookingModal();
+                    }
+                });
+            }
+            
+            console.log('✅ Modal functionality initialized');
+        }
+        
+        // Show booking modal (compatibility function)
+        function showBookingModal(resourceId = null, date = null, startTime = null, endTime = null) {
+            if (!bookingModal) {
+                console.warn('Modal not initialized');
+                return;
+            }
+            
+            // Clear editing state when creating new booking
+            delete bookingModal.dataset.editingBookingId;
+            
+            // Update modal title
+            const modalTitle = document.getElementById('modalTitle');
+            if (modalTitle) {
+                modalTitle.textContent = 'Create New Booking';
+            }
+            
+            // Hide delete button for new bookings
+            const deleteBtn = document.getElementById('deleteBookingBtn');
+            if (deleteBtn) {
+                deleteBtn.style.display = 'none';
+            }
+            
+            // Pre-fill form if parameters provided
+            if (resourceId && date && startTime && endTime) {
+                openBookingModal(resourceId, date, startTime, endTime);
+            } else {
+                // Just show the modal without pre-filling
+                bookingModal.classList.add('show');
+            }
+
+            // Populate instructor dropdown when modal opens
+            populateInstructorDropdown();
+        }
+        
+        // Hide booking modal
+        function hideBookingModal() {
+            if (bookingModal) {
+                bookingModal.classList.remove('show');
+                delete bookingModal.dataset.editingBookingId;
+                
+                // Reset form
+                const form = document.getElementById('bookingForm');
+                if (form) {
+                    form.reset();
+                }
+                
+                // Hide delete button
+                const deleteBtn = document.getElementById('deleteBookingBtn');
+                if (deleteBtn) {
+                    deleteBtn.style.display = 'none';
+                }
+            }
+        }
+        
+        // Open booking modal with prefilled data
+        function openBookingModal(resourceId, date, startTime, endTime) {
+            if (!bookingModal) {
+                console.warn('Modal not initialized');
+                return;
+            }
+            
+            // Clear any editing state
+            delete bookingModal.dataset.editingBookingId;
+            
+            // Pre-fill the booking form with the selected date for both start and end dates
+            const bookingDateField = document.getElementById('bookingDate');
+            if (bookingDateField) {
+                bookingDateField.value = date;
+            }
+            
+            const startTimeField = document.getElementById('startTime');
+            if (startTimeField) {
+                startTimeField.value = startTime;
+            }
+            
+            const endTimeField = document.getElementById('endTime');
+            if (endTimeField) {
+                endTimeField.value = endTime;
+            }
+            
+            // Pre-select aircraft if resourceId provided
+            if (resourceId) {
+                const aircraftSelect = document.getElementById('aircraft');
+                if (aircraftSelect) {
+                    // Try to find matching aircraft
+                    for (let option of aircraftSelect.options) {
+                        if (option.value === resourceId || option.textContent.includes(resourceId)) {
+                            aircraftSelect.value = option.value;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Show modal
+            bookingModal.classList.add('show');
+        }
+        
+        // Open booking modal for editing existing booking
+        function editBooking(bookingId) {
+            if (!bookingModal) {
+                console.warn('Modal not initialized');
+                return;
+            }
+            
+            const booking = bookingsData.find(b => b.id === bookingId);
+            if (!booking) {
+                console.error('Booking not found:', bookingId);
+                return;
+            }
+            
+            // Set editing state
+            bookingModal.dataset.editingBookingId = bookingId;
+            
+            // Update modal title
+            const modalTitle = document.getElementById('modalTitle');
+            if (modalTitle) {
+                modalTitle.textContent = 'Edit Booking';
+            }
+            
+            // Show delete button
+            const deleteBtn = document.getElementById('deleteBookingBtn');
+            if (deleteBtn) {
+                deleteBtn.style.display = 'block';
+            }
+            
+            // Fill form with booking data
+            const pilotNameField = document.getElementById('pilotName');
+            if (pilotNameField && booking.pilotName) {
+                pilotNameField.value = booking.pilotName;
+            }
+            
+            const aircraftField = document.getElementById('aircraft');
+            if (aircraftField && booking.aircraft) {
+                aircraftField.value = booking.aircraft;
+            }
+            
+            const instructorField = document.getElementById('instructor');
+            if (instructorField && booking.instructor) {
+                instructorField.value = booking.instructor;
+            }
+            
+            const dateField = document.getElementById('bookingDate');
+            if (dateField && booking.date) {
+                dateField.value = booking.date;
+            }
+            
+            const startTimeField = document.getElementById('startTime');
+            if (startTimeField && booking.startTime) {
+                startTimeField.value = booking.startTime;
+            }
+            
+            const endTimeField = document.getElementById('endTime');
+            if (endTimeField && booking.endTime) {
+                endTimeField.value = booking.endTime;
+            }
+            
+            const flightTypeField = document.getElementById('flightType');
+            if (flightTypeField && booking.flightType) {
+                flightTypeField.value = booking.flightType;
+            }
+            
+            // Show modal
+            bookingModal.classList.add('show');
+        }
+        
+        // ============ DOUBLE-CLICK EVENT HANDLERS ============
+        
+        // Add double-click handlers to booking elements
+        function addDoubleClickHandlers() {
+            // Remove existing handlers first
+            document.querySelectorAll('.resource-booking').forEach(booking => {
+                booking.removeEventListener('dblclick', handleBookingDoubleClick);
+            });
+            
+            // Add new handlers
+            document.querySelectorAll('.resource-booking').forEach(booking => {
+                booking.addEventListener('dblclick', handleBookingDoubleClick);
+            });
+        }
+        
+        // Handle double-click on booking elements
+        function handleBookingDoubleClick(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            console.log('Double-click detected on booking');
+            
+            // Get booking ID from element
+            const bookingElement = event.currentTarget;
+            const bookingId = bookingElement.dataset.bookingId;
+            
+            if (bookingId) {
+                console.log('Opening booking for edit:', bookingId);
+                editBooking(bookingId);
+            } else {
+                console.warn('No booking ID found on element');
+                
+                // Try to find booking by matching text content or position
+                const bookingText = bookingElement.textContent;
+                const matchingBooking = bookingsData.find(booking => 
+                    bookingText.includes(booking.pilotName) || 
+                    bookingText.includes(booking.aircraft) ||
+                    bookingText.includes(booking.flightType)
+                );
+                
+                if (matchingBooking) {
+                    Logger.log('BOOKING', 'Found matching booking by content', matchingBooking.id);
+                    editBooking(matchingBooking.id);
+                } else {
+                    Logger.warn('BOOKING', 'Could not identify booking to edit');
+                    showWarningToast('Edit Booking', 'Could not identify booking to edit');
+                }
+            }
+        }
+
+
+        // ===================================================================
+        // EVENT DELEGATION SYSTEM - Modern approach to handle all interactions
+        // ===================================================================
+
+        console.log('🔥 DEBUG: Reached event delegation setup');
+
+        const ActionHandlers = {
+            // Calendar navigation
+            'calendar-prev': () => {
+                navigateCalendar('prev');
+                if (Mobile.hasTouch()) Mobile.haptic('light');
+            },
+            'calendar-next': () => {
+                navigateCalendar('next');
+                if (Mobile.hasTouch()) Mobile.haptic('light');
+            },
+
+            // Aircraft filter actions
+            'toggle-aircraft-filter': () => toggleAircraftFilter(),
+            'toggle-aircraft-popover': (e) => toggleAircraftPopover(e),
+            'select-all-aircraft': () => selectAllAircraft(),
+            'select-none-aircraft': () => selectNoneAircraft(),
+            'close-aircraft-popover': () => closePopover('aircraft-popover'),
+            'apply-aircraft-filters': () => applyAircraftFilters(),
+
+            // Instructor filter actions
+            'toggle-instructor-filter': () => toggleInstructorFilter(),
+            'toggle-instructor-popover': (e) => toggleInstructorPopover(e),
+            'select-all-instructors': () => selectAllInstructors(),
+            'select-none-instructors': () => selectNoneInstructors(),
+            'close-instructor-popover': () => closePopover('instructor-popover'),
+            'apply-instructor-filters': () => applyInstructorFilters(),
+
+            // Booking modal
+            'show-booking-modal': () => {
+                showBookingModal();
+                if (Mobile.hasTouch()) Mobile.haptic('medium');
+            },
+            'hide-booking-modal': () => hideBookingModal(),
+            'delete-current-booking': () => deleteCurrentBooking()
+        };
+
+        // Global event delegation for click events
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-action]');
+            if (!target) return;
+
+            const action = target.dataset.action;
+            const handler = ActionHandlers[action];
+
+            if (handler) {
+                Logger.log('ACTION', `Handling: ${action}`);
+                handler(e);
+            } else {
+                Logger.warn('ACTION', `No handler for action: ${action}`);
+            }
+        });
+
+        // Global event delegation for input events (with debouncing)
+        document.addEventListener('input', (e) => {
+            const target = e.target;
+
+            if (target.matches('[data-action="filter-aircraft"]')) {
+                debouncedFilterAircraft();
+            } else if (target.matches('[data-action="filter-instructor"]')) {
+                // debouncedFilterInstructor() when created
+                filterInstructorList();
+            }
+        });
+
+        // Global event delegation for change events
+        document.addEventListener('change', (e) => {
+            const target = e.target;
+
+            if (target.id === 'flightType' || target.id === 'aircraft') {
+                updateInstructorVisibility();
+            }
+
+            // Refresh instructor list when date or time changes
+            if (target.id === 'bookingDate' || target.id === 'startTime' || target.id === 'endTime') {
+                populateInstructorDropdown();
+            }
+        });
+
+        // Global event delegation for form submissions
+        document.addEventListener('submit', (e) => {
+            if (e.target.id === 'bookingForm') {
+                handleBookingFormSubmit(e);
+            }
+        });
+
+        Logger.log('CALENDAR', 'Event delegation system initialized');
+
+
+        // ===================================================================
+        // INITIALIZATION
+        // ===================================================================
+
+        // Initialize app state from storage
+        AppState.init();
+
+        Logger.log('CALENDAR', 'Calendar application ready', {
+            view: AppState.view.current,
+            bookings: AppState.bookings.length,
+            mobile: Mobile.isMobile(),
+            touch: Mobile.hasTouch()
+        });

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Filter Test</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/filtering.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .debug-log {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            max-width: 400px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+        }
+        .debug-log .success { color: #00ff00; }
+        .debug-log .error { color: #ff0000; }
+        .debug-log .info { color: #00aaff; }
+        .debug-log .warning { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <h1>Aircraft Filter Test Page</h1>
+    <p>This page tests the aircraft filter dropdown functionality with proper DOM elements.</p>
+
+    <!-- Filter System (copied from index.html) -->
+    <div class="filter-container">
+        <div class="filter-bar-primary">
+            <div class="essential-filters">
+                <button class="filter-pill active" data-filter="all">All</button>
+                <button class="filter-pill" data-filter="my-bookings">My Bookings</button>
+
+                <div class="split-button-pill aircraft-pill" style="position: relative;">
+                    <button class="pill-main" data-type="aircraft" data-action="toggle-aircraft-filter">
+                        <span class="pill-text">Aircraft</span>
+                        <span class="selection-count" id="aircraft-count">(All)</span>
+                    </button>
+                    <button class="pill-dropdown" data-action="toggle-aircraft-popover">▼</button>
+
+                    <!-- Aircraft Popover -->
+                    <div class="resource-popover" id="aircraft-popover">
+                        <div class="popover-header">
+                            <h4>Select Aircraft</h4>
+                            <div class="header-controls">
+                                <button class="select-all-btn" data-action="select-all-aircraft">All</button>
+                                <button class="select-none-btn" data-action="select-none-aircraft">None</button>
+                                <button class="popover-close" data-action="close-aircraft-popover" aria-label="Close aircraft filter">✕</button>
+                            </div>
+                        </div>
+
+                        <div class="popover-search">
+                            <input type="text" placeholder="Search tail numbers, aircraft types..." class="search-input" id="aircraft-search" data-action="filter-aircraft">
+                        </div>
+
+                        <div class="resource-list" id="aircraft-list">
+                            <!-- Aircraft items will be populated by JavaScript -->
+                        </div>
+
+                        <div class="popover-footer">
+                            <span class="selection-summary" id="aircraft-selection-summary">3 of 8 aircraft selected</span>
+                            <button class="apply-btn" data-action="apply-aircraft-filters">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug Log -->
+    <div class="debug-log" id="debugLog">
+        <div class="info">🔍 Debug Console</div>
+        <div class="info">─────────────────</div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="assets/js/utilities.js?v=2.0"></script>
+    <script src="assets/js/state.js?v=2.0"></script>
+    <script src="assets/js/complete.js?v=2.0"></script>
+
+    <script>
+        // Debug logging to on-page console
+        const debugLog = document.getElementById('debugLog');
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+
+        function addDebugMessage(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = message;
+            debugLog.appendChild(div);
+            debugLog.scrollTop = debugLog.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            addDebugMessage(args.join(' '), 'info');
+        };
+
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            addDebugMessage('ERROR: ' + args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalConsoleWarn.apply(console, args);
+            addDebugMessage('WARN: ' + args.join(' '), 'warning');
+        };
+
+        // Log when script loads
+        addDebugMessage('✅ Test page loaded', 'success');
+
+        // Check if event delegation is working
+        setTimeout(() => {
+            if (typeof ActionHandlers !== 'undefined') {
+                addDebugMessage('✅ ActionHandlers exists', 'success');
+                addDebugMessage(`📋 Available actions: ${Object.keys(ActionHandlers).length}`, 'info');
+            } else {
+                addDebugMessage('❌ ActionHandlers not found', 'error');
+            }
+        }, 500);
+
+        // Listen for errors
+        window.addEventListener('error', (e) => {
+            addDebugMessage(`❌ Error: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
+        });
+    </script>
+</body>
+</html>

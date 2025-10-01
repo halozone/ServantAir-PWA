@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Delegation Test</title>
+</head>
+<body>
+    <h1>Testing Event Delegation from complete.js</h1>
+
+    <button data-action="toggle-aircraft-popover">Test Aircraft Popover</button>
+
+    <div id="log"></div>
+
+    <script>
+        // Intercept console.log
+        const originalLog = console.log;
+        const logDiv = document.getElementById('log');
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const p = document.createElement('p');
+            p.textContent = args.join(' ');
+            logDiv.appendChild(p);
+        };
+
+        console.log('Test page loaded');
+    </script>
+
+    <script src="assets/js/utilities.js?v=2.0"></script>
+    <script src="assets/js/state.js?v=2.0"></script>
+    <script src="assets/js/complete.js?v=2.0"></script>
+
+    <script>
+        console.log('All scripts loaded');
+        console.log('Checking if ActionHandlers exists:', typeof ActionHandlers);
+    </script>
+</body>
+</html>
