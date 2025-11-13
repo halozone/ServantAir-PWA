@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operations - Servant Air Ministries</title>
+
+    <!-- Dark Mode Support -->
+    <link rel="stylesheet" href="assets/css/dark-mode.css">
+
+    <!-- Loading Spinners -->
+    <link rel="stylesheet" href="assets/css/loading-spinners.css">
+
+    <!-- Tooltips -->
+    <link rel="stylesheet" href="assets/css/tooltips.css">
+
     <style>
         * {
             margin: 0;
@@ -637,6 +647,14 @@
                         <input type="text" class="search-input" placeholder="Search aircraft, bookings, members...">
                         <div class="search-icon">🔍</div>
                     </div>
+                    <button id="notificationBell" class="notification-bell" data-tooltip="Notifications" data-tooltip-position="bottom" style="background: none; border: none; cursor: pointer; font-size: 24px; position: relative; padding: 8px;">
+                        🔔
+                        <span class="notification-badge" id="notificationBadge" style="display: none; position: absolute; top: 4px; right: 4px; background: #e53e3e; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; align-items: center; justify-content: center;">3</span>
+                    </button>
+                    <button id="darkModeToggle" data-tooltip="Toggle Dark Mode" data-tooltip-position="bottom">
+                        <span class="light-icon">☀️</span>
+                        <span class="dark-icon">🌙</span>
+                    </button>
                     <div class="user-avatar">JD</div>
                 </div>
             </header>
@@ -679,6 +697,11 @@
                         </div>
                         <div class="stat-value">3</div>
                         <div class="stat-change negative">2 due this week</div>
+                    </div>
+
+                    <!-- Weather Widget -->
+                    <div class="weather-widget-container" style="grid-column: span 2;">
+                        <div id="dashboardWeather" data-weather-widget data-airport="KPAO"></div>
                     </div>
                 </div>
 
@@ -1171,6 +1194,33 @@
             });
         });
     </script>
+
+    <!-- Dark Mode Manager (Load First) -->
+    <script src="assets/js/dark-mode.js"></script>
+
+    <!-- Loading Utilities -->
+    <script src="assets/js/loading.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Load Weather Widget Component -->
+    <script src="components/weather-widget.js"></script>
+
+    <!-- Load Notification System Component -->
+    <script src="components/notification-system.js"></script>
 
     <!-- Load Navigation Component -->
     <script src="load-navigation.js?v=1"></script>

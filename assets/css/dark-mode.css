@@ -1,0 +1,250 @@
+/**
+ * ServantAir PWA - Dark Mode Support
+ * Provides system-wide dark mode with manual toggle
+ */
+
+/* Light Mode (Default) */
+:root {
+    --bg-primary: #f7fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #edf2f7;
+    --text-primary: #1a202c;
+    --text-secondary: #718096;
+    --text-tertiary: #a0aec0;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --gradient-primary: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+    --gradient-card: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Dark Mode - Automatic (System Preference) */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg-primary: #1a202c;
+        --bg-secondary: #2d3748;
+        --bg-tertiary: #4a5568;
+        --text-primary: #f7fafc;
+        --text-secondary: #e2e8f0;
+        --text-tertiary: #cbd5e0;
+        --border-color: #4a5568;
+        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        --gradient-primary: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+        --gradient-card: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+}
+
+/* Dark Mode - Manual Toggle */
+[data-theme="dark"] {
+    --bg-primary: #1a202c;
+    --bg-secondary: #2d3748;
+    --bg-tertiary: #4a5568;
+    --text-primary: #f7fafc;
+    --text-secondary: #e2e8f0;
+    --text-tertiary: #cbd5e0;
+    --border-color: #4a5568;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --gradient-primary: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+    --gradient-card: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* Light Mode - Manual Toggle (Override System Preference) */
+[data-theme="light"] {
+    --bg-primary: #f7fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #edf2f7;
+    --text-primary: #1a202c;
+    --text-secondary: #718096;
+    --text-tertiary: #a0aec0;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --gradient-primary: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+    --gradient-card: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Apply Dark Mode Variables to Elements */
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app-container {
+    background: var(--bg-primary);
+}
+
+.main-content {
+    background: var(--bg-primary);
+}
+
+.header {
+    background: var(--bg-secondary);
+    border-bottom-color: var(--border-color);
+}
+
+.sidebar {
+    background: var(--bg-secondary);
+    border-right-color: var(--border-color);
+}
+
+.stat-card,
+.calendar-section,
+.action-button,
+.modal-content,
+.card,
+.weather-widget {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-md);
+}
+
+.search-input,
+.form-input,
+.form-select,
+.form-textarea {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.search-input::placeholder,
+.form-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.calendar-day {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+.calendar-day:hover {
+    background: var(--bg-tertiary);
+}
+
+.day-number,
+.stat-title,
+.calendar-title,
+.modal-title,
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+}
+
+p, span, div {
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    color: var(--text-primary);
+}
+
+/* Dark Mode Toggle Button */
+#darkModeToggle {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: 24px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+}
+
+#darkModeToggle:hover {
+    background: var(--bg-primary);
+    border-color: #56B4E9;
+    transform: translateY(-1px);
+}
+
+#darkModeToggle .light-icon {
+    display: none;
+}
+
+#darkModeToggle .dark-icon {
+    display: inline;
+}
+
+[data-theme="dark"] #darkModeToggle .light-icon {
+    display: inline;
+}
+
+[data-theme="dark"] #darkModeToggle .dark-icon {
+    display: none;
+}
+
+[data-theme="light"] #darkModeToggle .light-icon {
+    display: none;
+}
+
+[data-theme="light"] #darkModeToggle .dark-icon {
+    display: inline;
+}
+
+/* Smooth Transitions for Theme Changes */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Preserve Gradients and Special Colors in Dark Mode */
+[data-theme="dark"] .booking,
+[data-theme="dark"] .action-icon,
+[data-theme="dark"] .stat-icon {
+    /* Keep original vibrant colors */
+    filter: brightness(0.9);
+}
+
+/* Dark Mode Specific Adjustments */
+[data-theme="dark"] .modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .weather-widget {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .weather-temp {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .weather-raw {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .toast {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Adjust Flight Category Colors for Dark Mode */
+[data-theme="dark"] .weather-category.vfr {
+    background: rgba(72, 187, 120, 0.2);
+    color: #9ae6b4;
+}
+
+[data-theme="dark"] .weather-category.mvfr {
+    background: rgba(237, 137, 54, 0.2);
+    color: #fbd38d;
+}
+
+[data-theme="dark"] .weather-category.ifr {
+    background: rgba(229, 62, 62, 0.2);
+    color: #fc8181;
+}
+
+[data-theme="dark"] .weather-category.lifr {
+    background: rgba(139, 92, 246, 0.2);
+    color: #c4b5fd;
+}
