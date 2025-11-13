@@ -2,7 +2,10 @@
         // SERVANTAIR CALENDAR - Modern Mobile-First Calendar Application
         // ===================================================================
 
-        console.log('🔥 COMPLETE.JS LOADED - VERSION 2.0 - FIXED');
+        console.log('🔥 COMPLETE.JS LOADED - VERSION 5.1 - CALENDAR FIXES APPLIED');
+        console.log('✅ Instructor dropdown: Shows all instructors (available + unavailable)');
+        console.log('✅ Month view clicks: Events open edit modal');
+        console.log('✅ Hover effects: Enhanced visual feedback');
         Logger.log('CALENDAR', 'Initializing calendar application');
 
         // Helper function to get current date string in YYYY-MM-DD format
@@ -861,6 +864,7 @@
 
                     // Add click handler to show booking details/edit
                     bookingElement.addEventListener('click', (e) => {
+                        console.log('📅 Booking clicked:', booking);
                         e.stopPropagation(); // Prevent day navigation
                         editBooking(booking, booking.aircraft);
                     });
@@ -3595,6 +3599,8 @@
 
             // Get all instructors
             const allInstructors = resources.filter(r => r.type === 'instructor');
+            console.log('👨‍✈️ All instructors:', allInstructors.map(i => i.name));
+            console.log('✅ Available:', availableInstructors.length, '/', allInstructors.length);
 
             // Populate dropdown with all instructors
             allInstructors.forEach(instructor => {

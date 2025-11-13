@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Fixes Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-card h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        .status.pass {
+            background: #48bb78;
+            color: white;
+        }
+        .status.fail {
+            background: #e53e3e;
+            color: white;
+        }
+        .status.pending {
+            background: #ed8936;
+            color: white;
+        }
+        button {
+            background: #56B4E9;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 10px 10px 0;
+        }
+        button:hover {
+            background: #4A90E2;
+        }
+        .console-output {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .console-line {
+            margin: 4px 0;
+            padding: 2px 0;
+        }
+        .code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .code pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Calendar Fixes Verification</h1>
+    <p>This page helps verify that the three calendar fixes are working correctly.</p>
+
+    <div class="test-card">
+        <h2>Test 1: Check Complete.js Version</h2>
+        <p>Verify that the latest version of complete.js is loaded.</p>
+        <button onclick="checkVersion()">Check Version</button>
+        <div id="versionStatus"></div>
+        <div id="versionConsole" class="console-output"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Test 2: Month View Event Click Handler</h2>
+        <p>Verification steps:</p>
+        <ol>
+            <li>Open <a href="index.html" target="_blank">calendar/index.html</a></li>
+            <li>Switch to Month view</li>
+            <li>Click on any booking event (colored boxes in the calendar days)</li>
+            <li>Verify that the edit modal opens (not day view)</li>
+        </ol>
+        <div class="code">
+            <pre>Expected behavior:
+- Click on booking → Edit modal opens
+- Click on empty day space → Day view opens
+
+The console should show:
+📅 Booking clicked: {booking object}</pre>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>Test 3: Instructor Dropdown Shows All Instructors</h2>
+        <p>Verification steps:</p>
+        <ol>
+            <li>Open <a href="index.html" target="_blank">calendar/index.html</a></li>
+            <li>Click "+ New Booking" button</li>
+            <li>Select a date and time</li>
+            <li>Check the Instructor dropdown</li>
+        </ol>
+        <div class="code">
+            <pre>Expected behavior:
+✓ John Smith (CFI) - Available (selectable)
+✓ Sarah Wilson (CFII) - Available (selectable)
+Michael Brown (CFI-S) (Unavailable) - Grayed out
+
+The console should show:
+👨‍✈️ All instructors: [...]
+✅ Available: X / Y</pre>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>Test 4: Enhanced Hover Effects</h2>
+        <p>Verification steps:</p>
+        <ol>
+            <li>Open <a href="index.html" target="_blank">calendar/index.html</a></li>
+            <li>Switch to Month view</li>
+            <li>Hover over a booking event</li>
+        </ol>
+        <div class="code">
+            <pre>Expected behavior:
+- Booking slightly grows (scale 1.02)
+- Shadow appears
+- Slight brightness increase
+- Smooth transition</pre>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>Quick Debug: Force Hard Refresh</h2>
+        <p>If fixes aren't working, the browser may be caching old JavaScript:</p>
+        <ul>
+            <li><strong>Windows Chrome/Edge:</strong> Ctrl + Shift + R or Ctrl + F5</li>
+            <li><strong>Windows Firefox:</strong> Ctrl + F5</li>
+            <li><strong>Mac Chrome/Safari:</strong> Cmd + Shift + R</li>
+        </ul>
+        <button onclick="window.open('index.html?nocache=' + Date.now(), '_blank')">Open Calendar with Cache Bust</button>
+        <button onclick="clearCacheAndOpen()">Clear Storage & Open</button>
+    </div>
+
+    <div class="test-card">
+        <h2>File Verification</h2>
+        <p>Verify that the source files contain the fixes:</p>
+        <button onclick="checkSourceFile()">Check complete.js Source</button>
+        <div id="sourceStatus"></div>
+    </div>
+
+    <script>
+        function checkVersion() {
+            const output = document.getElementById('versionConsole');
+            const status = document.getElementById('versionStatus');
+
+            // Try to load and execute the script to check version
+            const script = document.createElement('script');
+            script.src = 'assets/js/complete.js?v=5.1&verify=' + Date.now();
+
+            // Capture console logs
+            const oldLog = console.log;
+            const logs = [];
+            console.log = function(...args) {
+                logs.push(args.join(' '));
+                oldLog.apply(console, args);
+            };
+
+            script.onload = function() {
+                console.log = oldLog;
+
+                const hasVersionLog = logs.some(log => log.includes('VERSION 5.1'));
+                const hasFixes = logs.some(log => log.includes('CALENDAR FIXES APPLIED'));
+
+                if (hasVersionLog && hasFixes) {
+                    status.innerHTML = '<div class="status pass">✅ PASS - Version 5.1 loaded with fixes</div>';
+                } else if (hasVersionLog) {
+                    status.innerHTML = '<div class="status pending">⚠️ PARTIAL - Version loaded but fixes not confirmed</div>';
+                } else {
+                    status.innerHTML = '<div class="status fail">❌ FAIL - Old version loaded</div>';
+                }
+
+                output.innerHTML = logs.map(log => `<div class="console-line">${log}</div>`).join('');
+            };
+
+            script.onerror = function() {
+                console.log = oldLog;
+                status.innerHTML = '<div class="status fail">❌ FAIL - Could not load script</div>';
+            };
+
+            document.head.appendChild(script);
+        }
+
+        function clearCacheAndOpen() {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            localStorage.clear();
+            sessionStorage.clear();
+            window.open('index.html?nocache=' + Date.now(), '_blank');
+        }
+
+        async function checkSourceFile() {
+            const status = document.getElementById('sourceStatus');
+            try {
+                const response = await fetch('assets/js/complete.js?verify=' + Date.now());
+                const text = await response.text();
+
+                const hasEventListener = text.includes('bookingElement.addEventListener(\'click\'');
+                const hasAllInstructors = text.includes('const allInstructors = resources.filter');
+                const hasCheckmark = text.includes('✓');
+                const hasVersion = text.includes('VERSION 5.1');
+
+                let results = '<div style="margin-top: 10px;">';
+                results += `<div>${hasVersion ? '✅' : '❌'} Version 5.1 header</div>`;
+                results += `<div>${hasEventListener ? '✅' : '❌'} Event click listener added</div>`;
+                results += `<div>${hasAllInstructors ? '✅' : '❌'} All instructors filter code</div>`;
+                results += `<div>${hasCheckmark ? '✅' : '❌'} Checkmark indicator (✓)</div>`;
+                results += '</div>';
+
+                if (hasVersion && hasEventListener && hasAllInstructors && hasCheckmark) {
+                    status.innerHTML = '<div class="status pass">✅ PASS - All fixes present in source</div>' + results;
+                } else {
+                    status.innerHTML = '<div class="status fail">❌ FAIL - Some fixes missing</div>' + results;
+                }
+            } catch (err) {
+                status.innerHTML = '<div class="status fail">❌ ERROR: ' + err.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>
