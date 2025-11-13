@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Switcher - ServantAir Demo</title>
+    <style>
+        :root {
+            --primary-color: #56B4E9;
+            --secondary-color: #4A90E2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #1a202c;
+            margin-bottom: 12px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .current-role {
+            background: #f7fafc;
+            border-left: 4px solid var(--primary-color);
+            padding: 16px;
+            margin-bottom: 32px;
+            border-radius: 8px;
+        }
+
+        .current-role strong {
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .role-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .role-btn:hover {
+            border-color: var(--primary-color);
+            background: #f0f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(86, 180, 233, 0.2);
+        }
+
+        .role-btn.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .role-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .role-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .role-desc {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 4px;
+        }
+
+        .role-btn.active .role-desc {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .primary-btn, .secondary-btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(86, 180, 233, 0.3);
+        }
+
+        .secondary-btn {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .secondary-btn:hover {
+            background: #edf2f7;
+        }
+
+        .info-box {
+            background: #fef5e7;
+            border-left: 3px solid #f39c12;
+            padding: 12px;
+            margin-top: 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #7c6d4e;
+        }
+
+        .info-box strong {
+            color: #d68910;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Role Switcher</h1>
+        <p class="subtitle">Switch user roles to test different permission levels</p>
+
+        <div class="current-role">
+            <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">Current Role:</div>
+            <strong id="currentRoleDisplay">Pilot</strong>
+        </div>
+
+        <div class="role-grid">
+            <button class="role-btn active" onclick="selectRole('pilot')">
+                <div class="role-icon">👨‍✈️</div>
+                <div class="role-name">Pilot</div>
+                <div class="role-desc">Standard user access</div>
+            </button>
+
+            <button class="role-btn" onclick="selectRole('mechanic')">
+                <div class="role-icon">🔧</div>
+                <div class="role-name">Mechanic</div>
+                <div class="role-desc">Maintenance access</div>
+            </button>
+
+            <button class="role-btn" onclick="selectRole('flightline_manager')">
+                <div class="role-icon">📋</div>
+                <div class="role-name">Flightline Mgr</div>
+                <div class="role-desc">Operations oversight</div>
+            </button>
+
+            <button class="role-btn" onclick="selectRole('admin')">
+                <div class="role-icon">👑</div>
+                <div class="role-name">Admin</div>
+                <div class="role-desc">Full system access</div>
+            </button>
+        </div>
+
+        <div class="action-buttons">
+            <button class="secondary-btn" onclick="clearRole()">Clear Role</button>
+            <button class="primary-btn" onclick="goToAircraft()">Open Aircraft Page</button>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 How it works:</strong> This demo uses localStorage to simulate user roles. Select a role above and click "Open Aircraft Page" to see role-based permissions in action.
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = localStorage.getItem('userRole') || 'pilot';
+        updateDisplay();
+
+        function selectRole(role) {
+            selectedRole = role;
+
+            // Update button states
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.role-btn').classList.add('active');
+
+            // Save to localStorage
+            localStorage.setItem('userRole', role);
+
+            // Update display
+            updateDisplay();
+
+            // Show confirmation
+            showNotification(`Role changed to: ${getRoleDisplayName(role)}`);
+        }
+
+        function updateDisplay() {
+            const roleDisplay = document.getElementById('currentRoleDisplay');
+            roleDisplay.textContent = getRoleDisplayName(selectedRole);
+
+            // Update active button
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            const activeBtn = document.querySelector(`[onclick*="${selectedRole}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+
+        function getRoleDisplayName(role) {
+            const names = {
+                'pilot': 'Pilot',
+                'mechanic': 'Mechanic',
+                'flightline_manager': 'Flightline Manager',
+                'admin': 'Administrator'
+            };
+            return names[role] || 'Unknown';
+        }
+
+        function clearRole() {
+            localStorage.removeItem('userRole');
+            selectedRole = 'pilot';
+            updateDisplay();
+            showNotification('Role cleared. Defaulting to Pilot.');
+        }
+
+        function goToAircraft() {
+            window.location.href = 'aircraft.html';
+        }
+
+        function showNotification(message) {
+            // Simple notification (in production, use a toast library)
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                font-weight: 600;
+                font-size: 14px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(400px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

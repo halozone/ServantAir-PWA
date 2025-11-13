@@ -1,8 +1,21 @@
 // Navigation loader for ServantAir Application
 // This script creates the navigation component directly in JavaScript
 
+// Helper function to get the correct base path
+function getBasePath() {
+    const isFileProtocol = window.location.protocol === 'file:';
+    if (isFileProtocol) {
+        const path = window.location.pathname;
+        if (path.includes('/calendar/')) { return '../'; }
+        return './';
+    }
+    return '/';
+}
+
 function loadNavigation() {
     console.log('Loading navigation...');
+    const basePath = getBasePath();
+    console.log('Using base path:', basePath);
     // First, inject the necessary CSS styles
     injectNavigationCSS();
     
@@ -32,61 +45,61 @@ function loadNavigation() {
             
             <ul class="nav-menu">
                 <li class="nav-item" data-page="dashboard">
-                    <a href="/dashboard.html" class="nav-link">
+                    <a href="${basePath}dashboard.html" class="nav-link">
                         <div class="nav-icon">📊</div>
                         Operations
                     </a>
                 </li>
                 <li class="nav-item" data-page="flight-line">
-                    <a href="/flight-line.html" class="nav-link">
+                    <a href="${basePath}flight-line.html" class="nav-link">
                         <div class="nav-icon">✈️</div>
                         Flight Line
                     </a>
                 </li>
                 <li class="nav-item" data-page="calendar">
-                    <a href="/calendar/index.html" class="nav-link">
+                    <a href="${basePath}calendar/index.html" class="nav-link">
                         <div class="nav-icon">📅</div>
                         Calendar
                     </a>
                 </li>
                 <li class="nav-item" data-page="aircraft">
-                    <a href="/aircraft.html" class="nav-link">
+                    <a href="${basePath}aircraft.html" class="nav-link">
                         <div class="nav-icon">✈️</div>
                         Aircraft
                     </a>
                 </li>
                 <li class="nav-item" data-page="profile">
-                    <a href="/profile.html" class="nav-link">
+                    <a href="${basePath}profile.html" class="nav-link">
                         <div class="nav-icon">👤</div>
                         Profile
                     </a>
                 </li>
                 <li class="nav-item" data-page="membership">
-                    <a href="/membership.html" class="nav-link">
+                    <a href="${basePath}membership.html" class="nav-link">
                         <div class="nav-icon">👥</div>
                         Membership
                     </a>
                 </li>
                 <li class="nav-item" data-page="payments">
-                    <a href="/payments.html" class="nav-link">
+                    <a href="${basePath}payments.html" class="nav-link">
                         <div class="nav-icon">💳</div>
                         Payments
                     </a>
                 </li>
                 <li class="nav-item" data-page="messages">
-                    <a href="/messages.html" class="nav-link">
+                    <a href="${basePath}messages.html" class="nav-link">
                         <div class="nav-icon">💬</div>
                         Messages
                     </a>
                 </li>
                 <li class="nav-item" data-page="roles">
-                    <a href="/roles.html" class="nav-link">
+                    <a href="${basePath}roles.html" class="nav-link">
                         <div class="nav-icon">🛡️</div>
                         Roles
                     </a>
                 </li>
                 <li class="nav-item" data-page="settings">
-                    <a href="/settings.html" class="nav-link">
+                    <a href="${basePath}settings.html" class="nav-link">
                         <div class="nav-icon">⚙️</div>
                         Settings
                     </a>

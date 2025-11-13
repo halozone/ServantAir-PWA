@@ -100,12 +100,6 @@
         }
         
         /* Event type differentiators - only color variations */
-        .resource-booking.instructor-booking {
-            /* Override background for instructor overlay bookings */
-            background: rgba(255, 255, 255, 0.15) !important;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
         
         .resource-booking.instructor-booking::before {
             content: '👨‍✈️';

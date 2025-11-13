@@ -13,11 +13,11 @@
         // Sample booking data
         // Load bookings from localStorage or use default data
         const defaultBookings = [
-            { id: 1, date: '2025-09-11', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'training', pilot: 'John Doe', instructor: 'CFI-1', instructorName: 'John Smith (CFI)', startTime: '09:00', endTime: '11:00' },
-            { id: 2, date: '2025-09-11', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'solo', pilot: 'Jane Smith', startTime: '14:00', endTime: '16:00' },
-            { id: 3, date: '2025-09-12', aircraft: 'N789EF', aircraftName: 'N789EF - Cessna 182', type: 'maintenance', pilot: 'Maintenance', startTime: '08:00', endTime: '17:00' },
-            { id: 4, date: '2025-09-13', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'checkride', pilot: 'Mike Johnson', instructor: 'CFI-2', instructorName: 'Sarah Wilson (CFII)', startTime: '10:00', endTime: '12:00' },
-            { id: 5, date: '2025-09-15', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'cross-country', pilot: 'Sarah Wilson', startTime: '13:00', endTime: '17:00' },
+            { id: 1, date: '2025-10-03', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'training', pilot: 'John Doe', instructor: 'CFI-1', instructorName: 'John Smith (CFI)', startTime: '09:00', endTime: '11:00' },
+            { id: 2, date: '2025-10-03', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'solo', pilot: 'Jane Smith', startTime: '14:00', endTime: '16:00' },
+            { id: 3, date: '2025-10-03', aircraft: 'N789EF', aircraftName: 'N789EF - Cessna 182', type: 'maintenance', pilot: 'Maintenance', startTime: '08:00', endTime: '17:00' },
+            { id: 4, date: '2025-10-03', aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'checkride', pilot: 'Mike Johnson', instructor: 'CFI-2', instructorName: 'Sarah Wilson (CFII)', startTime: '10:00', endTime: '12:00' },
+            { id: 5, date: '2025-10-03', aircraft: 'N456CD', aircraftName: 'N456CD - Piper Cherokee', type: 'cross-country', pilot: 'Sarah Wilson', startTime: '13:00', endTime: '17:00' },
             // Add bookings for Current User to test filtering
             { id: 6, date: getCurrentDateString(), aircraft: 'N123AB', aircraftName: 'N123AB - Cessna 172', type: 'training', pilot: 'Current User', instructor: 'CFI-1', instructorName: 'John Smith (CFI)', startTime: '08:00', endTime: '10:00' },
             { id: 7, date: getCurrentDateString(), aircraft: 'N789EF', aircraftName: 'N789EF - Cessna 182', type: 'solo', pilot: 'Current User', startTime: '14:00', endTime: '16:00' }
@@ -1233,7 +1233,7 @@
                                             left: ${leftOffset}px;
                                             width: ${columnWidth}px;
                                             height: ${totalHeight - 4}px;
-                                            z-index: 99;
+                                            z-index: 100;
                                             pointer-events: auto;
                                             border: none;
                                             box-sizing: border-box;
@@ -1241,8 +1241,6 @@
                                             will-change: transform;
                                             transform: translateZ(0);
                                             transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                                            opacity: 0.8;
-                                            border-left: 4px solid var(--primary-color);
                                         `;
                                         
                                         // Instructor-specific content - show aircraft and pilot
@@ -1279,8 +1277,9 @@
                                     }
                                 }
                                 
-                                // Still mark the slots as occupied
-                                slot.classList.add('occupied');
+                                // Mark slots as booked but don't add occupied styling (booking element provides visual indication)
+                                slot.setAttribute('data-booked', 'true');
+                                slot.style.background = 'transparent';
                             }
                         }
                     }
@@ -2141,6 +2140,7 @@
             // Convert to precise time with 30-minute resolution
             const preciseTime = baseHour + (halfIndex * 0.5);
             
+            /*
             // Debug logging to track the issue
             console.log(`🐛 DEBUG: getHalfHourFromPosition`, {
                 baseHour,
@@ -2150,7 +2150,8 @@
                 preciseTime,
                 resultTime: `${Math.floor(preciseTime)}:${(preciseTime % 1) === 0.5 ? '30' : '00'}`
             });
-            
+            */
+
             // Clamp to valid range (6 AM to midnight)
             return Math.max(6, Math.min(23.5, preciseTime));
         }
@@ -2968,7 +2969,6 @@
                 position: absolute;
                 pointer-events: none;
                 z-index: 950;
-                opacity: 0.8;
                 background: rgba(86, 180, 233, 0.3);
                 border: 2px dashed #56B4E9;
                 border-radius: 8px;
@@ -3071,7 +3071,6 @@
                 <div style="padding: 8px; color: #1e40af; font-weight: 600; font-size: 12px; text-align: center;">
                     <div>${draggedBooking.title || 'Flight'}</div>
                     <div style="margin-top: 4px; font-size: 10px;">${startTime} - ${endTime}</div>
-                    <div style="font-size: 9px; opacity: 0.8; margin-top: 2px;">${draggedBooking.pilot || ''}</div>
                 </div>
             `;
         }

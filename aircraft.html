@@ -318,6 +318,18 @@
             color: #c53030;
         }
 
+        .aircraft-status.grounded {
+            background: rgba(229, 62, 62, 0.3);
+            color: #c53030;
+            font-weight: 700;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
         .aircraft-body {
             padding: 24px;
         }
@@ -392,6 +404,12 @@
             background: #fef5f5;
         }
 
+        .cert-item.n\/a {
+            border-left-color: #cbd5e0;
+            background: #f7fafc;
+            opacity: 0.7;
+        }
+
         .cert-info {
             flex: 1;
         }
@@ -431,6 +449,11 @@
 
         .cert-status-icon.expired {
             background: var(--danger-color);
+            color: white;
+        }
+
+        .cert-status-icon.n\/a {
+            background: #cbd5e0;
             color: white;
         }
 
@@ -598,8 +621,8 @@
 
         .modal-body {
             padding: 32px;
-            max-height: calc(90vh - 140px);
-            overflow-y: auto;
+            /* Removed max-height and overflow to prevent double scrollbar */
+            /* Parent .modal-content handles scrolling */
         }
 
         /* Form Styles */
@@ -988,6 +1011,71 @@
             resize: vertical;
             min-height: 100px;
         }
+
+        /* Hide mechanic-only buttons for non-mechanics */
+        body:not(.is-mechanic) .mechanic-only,
+        html:not(.is-mechanic) .mechanic-only {
+            display: none !important;
+        }
+
+        /* Hide Add Aircraft button for non-authorized users */
+        body:not(.is-mechanic) .add-aircraft-btn,
+        html:not(.is-mechanic) .add-aircraft-btn {
+            display: none !important;
+        }
+
+        /* Show tooltip on hover for hidden buttons (optional) */
+        .mechanic-only {
+            position: relative;
+        }
+
+        /* Debug: Visual indicator for role (clickable element added via JS) */
+        .role-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            z-index: 9999;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .role-badge:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateY(-1px);
+        }
+
+        .role-badge.admin {
+            background: #dc2626;
+        }
+
+        .role-badge.admin:hover {
+            background: #b91c1c;
+        }
+
+        .role-badge.flightline_manager {
+            background: #f59e0b;
+        }
+
+        .role-badge.flightline_manager:hover {
+            background: #d97706;
+        }
+
+        .role-badge.pilot {
+            background: #3b82f6;
+        }
+
+        .role-badge.pilot:hover {
+            background: #2563eb;
+        }
     </style>
 </head>
 <body>
@@ -999,7 +1087,7 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div>
-        
+                    <h1 class="page-title">✈️ Aircraft Fleet</h1>
                     <p style="color: #718096; margin-top: 8px;">Manage your aircraft and track certifications</p>
                 </div>
                 <button class="add-aircraft-btn">+ Add Aircraft</button>
@@ -1045,7 +1133,7 @@
             </div>
 
             <!-- Aircraft Grid -->
-            <div class="aircraft-grid">
+            <div class="aircraft-grid" id="aircraftGrid">
                 <!-- Aircraft 1 -->
                 <div class="aircraft-card">
                     <div class="aircraft-header">
@@ -1576,23 +1664,54 @@
         const hamburgerMenu = document.getElementById('hamburgerMenu');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-        
-        hamburgerMenu.addEventListener('click', () => {
-            sidebarOverlay.classList.toggle('open');
-            if (sidebarOverlay.classList.contains('open')) {
-                sidebarBackdrop.style.display = 'block';
-                setTimeout(() => sidebarBackdrop.style.opacity = '1', 10);
-            } else {
+
+        if (hamburgerMenu && sidebarOverlay && sidebarBackdrop) {
+            hamburgerMenu.addEventListener('click', () => {
+                sidebarOverlay.classList.toggle('open');
+                if (sidebarOverlay.classList.contains('open')) {
+                    sidebarBackdrop.style.display = 'block';
+                    setTimeout(() => sidebarBackdrop.style.opacity = '1', 10);
+                } else {
+                    sidebarBackdrop.style.opacity = '0';
+                    setTimeout(() => sidebarBackdrop.style.display = 'none', 300);
+                }
+            });
+
+            sidebarBackdrop.addEventListener('click', () => {
+                sidebarOverlay.classList.remove('open');
                 sidebarBackdrop.style.opacity = '0';
                 setTimeout(() => sidebarBackdrop.style.display = 'none', 300);
-            }
-        });
-        
-        sidebarBackdrop.addEventListener('click', () => {
-            sidebarOverlay.classList.remove('open');
-            sidebarBackdrop.style.opacity = '0';
-            setTimeout(() => sidebarBackdrop.style.display = 'none', 300);
-        });
+            });
+        } else {
+            console.log('ℹ️ Mobile menu elements not found - using navigation from load-navigation.js');
+        }
+
+        // Create clickable role badge for testing
+        function createRoleBadge() {
+            const currentRole = localStorage.getItem('userRole') || 'pilot';
+
+            const roleLabels = {
+                'mechanic': '🔧 MECHANIC MODE',
+                'admin': '👑 ADMIN MODE',
+                'flightline_manager': '📋 FLIGHTLINE MANAGER',
+                'pilot': '✈️ PILOT MODE'
+            };
+
+            const badge = document.createElement('button');
+            badge.className = `role-badge ${currentRole}`;
+            badge.textContent = roleLabels[currentRole] || '✈️ PILOT MODE';
+            badge.title = 'Click to switch roles';
+            badge.onclick = () => {
+                console.log('🔄 Navigating to role switcher...');
+                window.location.href = 'role-switcher.html';
+            };
+
+            document.body.appendChild(badge);
+            console.log(`🏷️ Role badge created for: ${currentRole}`);
+        }
+
+        // Create role badge on page load
+        createRoleBadge();
 
         // Aircraft action buttons
         document.querySelectorAll('.action-btn').forEach(btn => {
@@ -1612,48 +1731,91 @@
         const cancelBtn = document.getElementById('cancelBtn');
         const addAircraftForm = document.getElementById('addAircraftForm');
 
-        // Add aircraft button - open modal
-        document.querySelector('.add-aircraft-btn').addEventListener('click', () => {
-            addAircraftModal.classList.add('show');
-        });
+        // Add aircraft button - open modal using new function
+        console.log('🔍 DEBUG: Looking for Add Aircraft button...');
+        console.log('🔍 DEBUG: All buttons with class add-aircraft-btn:', document.querySelectorAll('.add-aircraft-btn'));
+        console.log('🔍 DEBUG: All buttons on page:', document.querySelectorAll('button'));
 
-        // Close modal functions
-        function closeModal() {
-            addAircraftModal.classList.remove('show');
-            addAircraftForm.reset(); // Clear form when closing
+        const addAircraftBtn = document.querySelector('.add-aircraft-btn');
+        console.log('🔍 DEBUG: Add Aircraft Button found:', addAircraftBtn);
+        console.log('🔍 DEBUG: handleAddAircraft function exists:', typeof handleAddAircraft);
+        console.log('🔍 DEBUG: window.handleAddAircraft exists:', typeof window.handleAddAircraft);
+
+        if (addAircraftBtn) {
+            console.log('✅ Add Aircraft button found, attaching listener');
+            console.log('🔍 DEBUG: Button HTML:', addAircraftBtn.outerHTML);
+
+            addAircraftBtn.addEventListener('click', function(e) {
+                console.log('🖱️ Add Aircraft button clicked!');
+                console.log('🔍 Event:', e);
+                console.log('🔍 Event target:', e.target);
+                console.log('🔍 Calling handleAddAircraft()...');
+
+                if (typeof window.handleAddAircraft === 'function') {
+                    window.handleAddAircraft();
+                } else if (typeof handleAddAircraft === 'function') {
+                    handleAddAircraft();
+                } else {
+                    console.error('❌ handleAddAircraft is not a function!');
+                    console.error('window.handleAddAircraft:', window.handleAddAircraft);
+                    console.error('handleAddAircraft:', typeof handleAddAircraft);
+                }
+            });
+
+            console.log('✅ Click listener attached successfully');
+        } else {
+            console.warn('⚠️ Add Aircraft button NOT found in DOM');
+            console.warn('🔍 Searching for button with different selectors...');
+            console.warn('By class .add-aircraft-btn:', document.querySelector('.add-aircraft-btn'));
+            console.warn('By text content:', Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Add Aircraft')));
         }
 
-        closeModalBtn.addEventListener('click', closeModal);
-        cancelBtn.addEventListener('click', closeModal);
-
-        // Close modal when clicking backdrop
-        addAircraftModal.addEventListener('click', (e) => {
-            if (e.target === addAircraftModal) {
-                closeModal();
+        // Close modal functions (only if old modal exists)
+        if (addAircraftModal && addAircraftForm) {
+            function closeModal() {
+                addAircraftModal.classList.remove('show');
+                addAircraftForm.reset(); // Clear form when closing
             }
-        });
 
-        // Form submission
-        addAircraftForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Collect form data
-            const formData = new FormData(addAircraftForm);
-            const aircraftData = {};
-            
-            // Get all form values
-            const inputs = addAircraftForm.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                aircraftData[input.id] = input.value;
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', closeModal);
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', closeModal);
+            }
+
+            // Close modal when clicking backdrop
+            addAircraftModal.addEventListener('click', (e) => {
+                if (e.target === addAircraftModal) {
+                    closeModal();
+                }
             });
-            
-            console.log('New aircraft data:', aircraftData);
-            
-            // In a real application, you would send this data to your backend
-            alert('Aircraft added successfully! (In production, this would save to database)');
-            
-            closeModal();
-        });
+
+            // Form submission
+            addAircraftForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                // Collect form data
+                const formData = new FormData(addAircraftForm);
+                const aircraftData = {};
+
+                // Get all form values
+                const inputs = addAircraftForm.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    aircraftData[input.id] = input.value;
+                });
+
+                console.log('New aircraft data:', aircraftData);
+
+                // In a real application, you would send this data to your backend
+                alert('Aircraft added successfully! (In production, this would save to database)');
+
+                closeModal();
+            });
+        } else {
+            console.log('ℹ️ Old add aircraft modal not found - using new handleAddAircraft() function');
+        }
 
         // Function to determine status based on date
         function getStatusFromDate(dateString) {
@@ -1729,14 +1891,20 @@
 
         // Animation on load
         document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is mechanic and apply class to body
+            const userRole = localStorage.getItem('userRole') || 'pilot';
+            if (userRole === 'mechanic' || userRole === 'admin' || userRole === 'flightline_manager') {
+                document.body.classList.add('is-mechanic');
+            }
+
             // Initialize airworthiness status based on dates
             initializeAirworthinessStatus();
-            
+
             const cards = document.querySelectorAll('.aircraft-card, .stat-card, .page-header');
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
-                
+
                 setTimeout(() => {
                     card.style.transition = 'all 0.6s ease-out';
                     card.style.opacity = '1';
@@ -1979,5 +2147,92 @@
     
     <!-- Load Navigation Component -->
     <script src="load-navigation.js?v=1"></script>
+
+    <!-- Load Aircraft Data Model and Renderer -->
+    <script src="aircraft-data-model.js"></script>
+    <script src="aircraft-sample-data.js"></script>
+    <script src="aircraft-renderer.js"></script>
+    <script src="aircraft-interactions.js"></script>
+
+    <!-- Render Aircraft Cards Dynamically -->
+    <script>
+        // IMPORTANT: Set role class IMMEDIATELY before DOMContentLoaded
+        (function() {
+            const userRole = localStorage.getItem('userRole') || 'pilot';
+            console.log('🔐 Setting role class early. Role:', userRole);
+
+            if (userRole === 'mechanic' || userRole === 'admin' || userRole === 'flightline_manager') {
+                // Add class to HTML element to ensure it's set before any rendering
+                document.documentElement.classList.add('is-mechanic');
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.body.classList.add('is-mechanic');
+                    console.log('✅ Body class added: is-mechanic');
+                });
+            }
+        })();
+
+        // Wait for all scripts to load
+        window.addEventListener('DOMContentLoaded', function() {
+            const aircraftGrid = document.getElementById('aircraftGrid');
+
+            if (aircraftGrid && typeof sampleAircraftFleet !== 'undefined' && typeof renderAircraftCard !== 'undefined') {
+                // Clear existing static content
+                aircraftGrid.innerHTML = '';
+
+                // Update and render each aircraft card
+                sampleAircraftFleet.forEach(aircraft => {
+                    // Update compliance statuses for this aircraft
+                    if (typeof updateAllComplianceStatuses === 'function') {
+                        updateAllComplianceStatuses(aircraft);
+                    }
+                    // Render the card
+                    aircraftGrid.innerHTML += renderAircraftCard(aircraft);
+                });
+
+                console.log('✅ Aircraft cards rendered dynamically with role-based access');
+                console.log(`📊 Rendered ${sampleAircraftFleet.length} aircraft cards`);
+                console.log('Current role:', localStorage.getItem('userRole') || 'pilot (default)');
+                console.log('Body has is-mechanic class:', document.body.classList.contains('is-mechanic'));
+                console.log('HTML has is-mechanic class:', document.documentElement.classList.contains('is-mechanic'));
+            } else {
+                console.error('❌ Failed to render aircraft cards - missing dependencies');
+                console.error('aircraftGrid:', !!aircraftGrid);
+                console.error('sampleAircraftFleet:', typeof sampleAircraftFleet);
+                console.error('renderAircraftCard:', typeof renderAircraftCard);
+            }
+
+            // Add ESC key handler to close modals
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    // Find all visible modals
+                    const modals = document.querySelectorAll('.modal');
+                    let closedAModal = false;
+
+                    modals.forEach(modal => {
+                        const display = window.getComputedStyle(modal).display;
+                        if (display === 'flex' || display === 'block') {
+                            modal.style.display = 'none';
+                            closedAModal = true;
+                            console.log('🔑 ESC pressed - Modal closed without saving');
+                        }
+                    });
+
+                    // Also check for aircraft details modal
+                    const detailsModal = document.getElementById('aircraftDetailsModal');
+                    if (detailsModal && window.getComputedStyle(detailsModal).display !== 'none') {
+                        detailsModal.style.display = 'none';
+                        closedAModal = true;
+                        console.log('🔑 ESC pressed - Details modal closed');
+                    }
+
+                    if (closedAModal) {
+                        console.log('✅ All modals closed by ESC key');
+                    }
+                }
+            });
+
+            console.log('✅ ESC key handler registered for closing modals');
+        });
+    </script>
 </body>
 </html> 
