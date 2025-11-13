@@ -2,11 +2,11 @@
         // SERVANTAIR CALENDAR - Modern Mobile-First Calendar Application
         // ===================================================================
 
-        console.log('🔥 COMPLETE.JS LOADED - VERSION 6.0 - MAJOR FIXES APPLIED');
-        console.log('✅ Instructor dropdown: Shows ALL instructors (with debugging)');
+        console.log('🔥 COMPLETE.JS LOADED - VERSION 6.1 - CRITICAL BUGS FIXED');
+        console.log('✅ editBooking: Fixed bookingsData → bookings, handles objects & IDs');
+        console.log('✅ autoScrollAnimation: Declared missing variable');
+        console.log('✅ currentDate: Changed const → let (allows reassignment)');
         console.log('✅ Click/Tap behavior: Single click opens, long press (500ms) drags');
-        console.log('✅ Month view event clicks: Open edit modal');
-        console.log('✅ Hover effects: Enhanced visual feedback');
         Logger.log('CALENDAR', 'Initializing calendar application');
 
         // Helper function to get current date string in YYYY-MM-DD format
@@ -42,7 +42,7 @@
 
         // Calendar view variables (use AppState for new code)
         let currentView = AppState.view.current;
-        const currentDate = AppState.view.date;
+        let currentDate = AppState.view.date;
         let instructors = null; // Will be initialized later
 
         // Drag state variables (use AppState.drag for new code)
@@ -77,11 +77,13 @@
         // Performance throttling
         let lastGhostUpdate = 0;
         const ghostUpdateThrottle = 16; // ~60fps
-        
-        // calendarShadowElement already declared at top
-        // autoScrollAnimation already declared at top
-        // dragDeleteZone already declared at top
-        // bookingTooltip already declared at top
+
+        // UI Elements (initialized in DOMContentLoaded)
+        let calendarShadowElement = null;
+        let autoScrollAnimation = null;
+        let dragDeleteZone = null;
+        let bookingTooltip = null;
+        let bookingModal = null;
         
         // Save bookings to localStorage
         function saveBookings() {
@@ -4509,9 +4511,8 @@
         }
 
         // ============ MODAL FUNCTIONS ============
-        
-        // Modal references
-        let bookingModal = null;
+
+        // Modal references (bookingModal declared at top)
         let closeModal = null;
         let quickAddBtn = null;
         
@@ -4657,20 +4658,33 @@
         }
         
         // Open booking modal for editing existing booking
-        function editBooking(bookingId) {
+        function editBooking(bookingIdOrObject, resourceId) {
+            console.log('📝 editBooking called with:', bookingIdOrObject, resourceId);
+
             if (!bookingModal) {
                 console.warn('Modal not initialized');
                 return;
             }
-            
-            const booking = bookingsData.find(b => b.id === bookingId);
+
+            // Handle both booking object and booking ID
+            let booking;
+            if (typeof bookingIdOrObject === 'object' && bookingIdOrObject !== null) {
+                // Called with booking object (from month view)
+                booking = bookingIdOrObject;
+                console.log('✅ Booking object received:', booking.id);
+            } else {
+                // Called with booking ID (string)
+                booking = bookings.find(b => b.id === bookingIdOrObject);
+                console.log('🔍 Searching for booking ID:', bookingIdOrObject);
+            }
+
             if (!booking) {
-                console.error('Booking not found:', bookingId);
+                console.error('❌ Booking not found:', bookingIdOrObject);
                 return;
             }
             
             // Set editing state
-            bookingModal.dataset.editingBookingId = bookingId;
+            bookingModal.dataset.editingBookingId = booking.id;
             
             // Update modal title
             const modalTitle = document.getElementById('modalTitle');
