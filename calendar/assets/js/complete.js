@@ -2,9 +2,10 @@
         // SERVANTAIR CALENDAR - Modern Mobile-First Calendar Application
         // ===================================================================
 
-        console.log('🔥 COMPLETE.JS LOADED - VERSION 5.1 - CALENDAR FIXES APPLIED');
-        console.log('✅ Instructor dropdown: Shows all instructors (available + unavailable)');
-        console.log('✅ Month view clicks: Events open edit modal');
+        console.log('🔥 COMPLETE.JS LOADED - VERSION 6.0 - MAJOR FIXES APPLIED');
+        console.log('✅ Instructor dropdown: Shows ALL instructors (with debugging)');
+        console.log('✅ Click/Tap behavior: Single click opens, long press (500ms) drags');
+        console.log('✅ Month view event clicks: Open edit modal');
         console.log('✅ Hover effects: Enhanced visual feedback');
         Logger.log('CALENDAR', 'Initializing calendar application');
 
@@ -1104,58 +1105,88 @@
                     `;
                     
                 
-                    // Add double-tap/double-click handler for event editing
-                    let lastTap = 0;
-                    bookingElement.addEventListener('touchend', (e) => {
-                        e.stopPropagation();
-                        const currentTime = new Date().getTime();
-                        const tapLength = currentTime - lastTap;
-                        if (tapLength < 500 && tapLength > 0) {
-                            // Double tap detected
-                            editBooking(booking, resourceId);
-                        }
-                        lastTap = currentTime;
-                    });
-                    
-                    // Add double-click handler for desktop
-                    bookingElement.addEventListener('dblclick', (e) => {
-                        e.stopPropagation();
-                        editBooking(booking, resourceId);
-                    });
-                    
-                    // Add drag handlers for moving events
+                    // Click/Tap Interaction Variables
+                    let clickStartTime = 0;
+                    let longPressTimer = null;
+                    let hasMoved = false;
+                    let isDraggingThis = false;
+
+                    // DESKTOP: Single click opens, long press (500ms) starts drag
                     bookingElement.addEventListener('mousedown', (e) => {
                         e.stopPropagation();
-                        startEventDrag(e, booking, resourceId, bookingElement);
+                        clickStartTime = Date.now();
+                        hasMoved = false;
+                        isDraggingThis = false;
+
+                        // Set up long press timer (500ms) for drag
+                        longPressTimer = setTimeout(() => {
+                            console.log('🖱️ Long press detected - starting drag');
+                            isDraggingThis = true;
+                            startEventDrag(e, booking, resourceId, bookingElement);
+                        }, 500);
                     });
-                    
-                    // Touch drag handling with better event management
+
+                    bookingElement.addEventListener('mousemove', (e) => {
+                        hasMoved = true;
+                        if (isDraggingThis) {
+                            handleEventDragMove(e);
+                        }
+                    });
+
+                    bookingElement.addEventListener('mouseup', (e) => {
+                        e.stopPropagation();
+                        clearTimeout(longPressTimer);
+
+                        if (isDraggingThis) {
+                            handleEventDragEnd(e);
+                            isDraggingThis = false;
+                        } else if (!hasMoved && Date.now() - clickStartTime < 500) {
+                            // Single click - open modal
+                            console.log('🖱️ Single click - opening modal');
+                            editBooking(booking, resourceId);
+                        }
+                    });
+
+                    // MOBILE: Single tap opens, long press (500ms) starts drag
                     let touchStartTime = 0;
+                    let touchLongPressTimer = null;
                     let hasTouchMoved = false;
-                    
+                    let isTouchDragging = false;
+
                     bookingElement.addEventListener('touchstart', (e) => {
                         e.stopPropagation();
                         touchStartTime = Date.now();
                         hasTouchMoved = false;
-                        
-                        // Start drag immediately for touch
-                        setTimeout(() => {
-                            if (!hasTouchMoved && Date.now() - touchStartTime > 100) {
+                        isTouchDragging = false;
+
+                        // Set up long press timer (500ms) for drag
+                        touchLongPressTimer = setTimeout(() => {
+                            if (!hasTouchMoved) {
+                                console.log('📱 Long press detected - starting drag');
+                                isTouchDragging = true;
                                 startEventDrag(e, booking, resourceId, bookingElement);
                             }
-                        }, 100);
+                        }, 500);
                     });
-                    
+
                     bookingElement.addEventListener('touchmove', (e) => {
                         hasTouchMoved = true;
-                        if (isDraggingEvent && draggedBooking === booking) {
+                        if (isTouchDragging && isDraggingEvent && draggedBooking === booking) {
                             handleEventDragMove(e);
                         }
                     });
-                    
+
                     bookingElement.addEventListener('touchend', (e) => {
-                        if (isDraggingEvent && draggedBooking === booking) {
+                        clearTimeout(touchLongPressTimer);
+
+                        if (isTouchDragging && isDraggingEvent && draggedBooking === booking) {
                             handleEventDragEnd(e);
+                            isTouchDragging = false;
+                        } else if (!hasTouchMoved && Date.now() - touchStartTime < 500) {
+                            // Single tap - open modal
+                            e.stopPropagation();
+                            console.log('📱 Single tap - opening modal');
+                            editBooking(booking, resourceId);
                         }
                     });
                     
@@ -3538,12 +3569,23 @@
 
         // Populate instructor dropdown based on availability for selected date/time
         function populateInstructorDropdown() {
+            console.log('🔄 ==== POPULATE INSTRUCTOR DROPDOWN CALLED ====');
             const instructorSelect = document.getElementById('instructor');
             const dateInput = document.getElementById('bookingDate');
             const startTimeInput = document.getElementById('startTime');
             const endTimeInput = document.getElementById('endTime');
 
-            if (!instructorSelect || !dateInput || !startTimeInput || !endTimeInput) return;
+            console.log('📋 Form elements found:', {
+                instructorSelect: !!instructorSelect,
+                dateInput: !!dateInput,
+                startTimeInput: !!startTimeInput,
+                endTimeInput: !!endTimeInput
+            });
+
+            if (!instructorSelect || !dateInput || !startTimeInput || !endTimeInput) {
+                console.error('❌ Missing form elements! Cannot populate dropdown.');
+                return;
+            }
 
             const selectedDate = dateInput.value;
             const startTime = startTimeInput.value;
@@ -3552,14 +3594,23 @@
             // Keep the default option
             instructorSelect.innerHTML = '<option value="">Select Instructor (Optional)</option>';
 
+            console.log('📅 Selected date/time:', { selectedDate, startTime, endTime });
+            console.log('👥 Total resources in array:', resources.length);
+            console.log('👨‍✈️ Instructors in resources:', resources.filter(r => r.type === 'instructor'));
+
             // If date or times not selected, show all instructors
             if (!selectedDate || !startTime || !endTime) {
-                resources.filter(r => r.type === 'instructor').forEach(instructor => {
+                console.log('⚠️ Date/time not selected - showing ALL instructors');
+                const allInstructorsTemp = resources.filter(r => r.type === 'instructor');
+                console.log('👨‍✈️ Found', allInstructorsTemp.length, 'instructors to add');
+                allInstructorsTemp.forEach(instructor => {
                     const option = document.createElement('option');
                     option.value = instructor.id;
                     option.textContent = instructor.name;
                     instructorSelect.appendChild(option);
+                    console.log('  ✅ Added:', instructor.name);
                 });
+                console.log('✅ Dropdown populated with', allInstructorsTemp.length, 'instructors');
                 return;
             }
 
@@ -3603,6 +3654,7 @@
             console.log('✅ Available:', availableInstructors.length, '/', allInstructors.length);
 
             // Populate dropdown with all instructors
+            console.log('📝 Adding instructors to dropdown...');
             allInstructors.forEach(instructor => {
                 const isAvailable = availableInstructors.some(i => i.id === instructor.id);
                 const option = document.createElement('option');
@@ -3612,7 +3664,9 @@
                     : `${instructor.name} (Unavailable)`;
                 option.disabled = !isAvailable;
                 instructorSelect.appendChild(option);
+                console.log(`  ${isAvailable ? '✓' : '⚠️'} Added: ${option.textContent} (disabled: ${option.disabled})`);
             });
+            console.log(`✅ Dropdown now has ${instructorSelect.options.length} total options`);
 
             // If no instructors available, add helpful message at top
             if (availableInstructors.length === 0) {
