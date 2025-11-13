@@ -858,6 +858,13 @@
                         <div>${booking.startTime}-${booking.endTime}</div>
                         ${instructorHtml}
                     `;
+
+                    // Add click handler to show booking details/edit
+                    bookingElement.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent day navigation
+                        editBooking(booking, booking.aircraft);
+                    });
+
                     bookingsContainer.appendChild(bookingElement);
                 });
             }
@@ -3586,21 +3593,28 @@
 
             console.log('✅ Available instructors:', availableInstructors.map(i => i.name));
 
-            // Populate dropdown with available instructors
-            availableInstructors.forEach(instructor => {
+            // Get all instructors
+            const allInstructors = resources.filter(r => r.type === 'instructor');
+
+            // Populate dropdown with all instructors
+            allInstructors.forEach(instructor => {
+                const isAvailable = availableInstructors.some(i => i.id === instructor.id);
                 const option = document.createElement('option');
                 option.value = instructor.id;
-                option.textContent = instructor.name;
+                option.textContent = isAvailable
+                    ? `✓ ${instructor.name}`
+                    : `${instructor.name} (Unavailable)`;
+                option.disabled = !isAvailable;
                 instructorSelect.appendChild(option);
             });
 
-            // If no instructors available, show message
+            // If no instructors available, add helpful message at top
             if (availableInstructors.length === 0) {
-                const option = document.createElement('option');
-                option.value = '';
-                option.textContent = 'No instructors available for this time';
-                option.disabled = true;
-                instructorSelect.appendChild(option);
+                const messageOption = document.createElement('option');
+                messageOption.value = '';
+                messageOption.textContent = '⚠️ No instructors available for this time';
+                messageOption.disabled = true;
+                instructorSelect.insertBefore(messageOption, instructorSelect.children[1]);
             }
         }
 
