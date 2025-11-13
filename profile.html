@@ -581,10 +581,35 @@
         @media (min-width: 1024px) {
             .profile-content {
                 grid-template-columns: 2fr 1fr;
+                display: grid;
             }
 
             .profile-header {
                 grid-column: 1 / -1;
+            }
+
+            /* Personal Information - Left column */
+            .profile-content > .content-card:nth-child(2) {
+                grid-column: 1 / 2;
+                grid-row: 2;
+            }
+
+            /* Certifications & Currency - Full width below Personal Info */
+            .profile-content > .content-card:nth-child(3) {
+                grid-column: 1 / -1;
+                grid-row: 3;
+            }
+
+            /* Recent Activity - Right column, aligned with Personal Info */
+            .profile-content > .content-card:nth-child(4) {
+                grid-column: 2 / 3;
+                grid-row: 2;
+            }
+
+            /* Account Settings - Left column */
+            .profile-content > .content-card:nth-child(5) {
+                grid-column: 1 / 2;
+                grid-row: 4;
             }
         }
     </style>

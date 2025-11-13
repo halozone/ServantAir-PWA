@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - ServantAir</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .offline-container {
+            max-width: 600px;
+        }
+
+        .offline-icon {
+            font-size: 120px;
+            margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .offline-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: 2px solid white;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: white;
+            color: #56B4E9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: white;
+            color: #56B4E9;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .offline-features {
+            margin-top: 48px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: left;
+        }
+
+        .offline-features h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .feature-list {
+            list-style: none;
+            display: grid;
+            gap: 16px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .connection-status {
+            margin-top: 24px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            p {
+                font-size: 18px;
+            }
+
+            .offline-icon {
+                font-size: 80px;
+            }
+
+            .offline-features {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">✈️</div>
+        <h1>You're Offline</h1>
+        <p>Don't worry! You can still view your cached bookings and aircraft information.</p>
+
+        <div class="offline-actions">
+            <button class="btn btn-primary" onclick="location.reload()">
+                🔄 Try Again
+            </button>
+            <a href="/dashboard.html" class="btn">
+                📊 View Dashboard
+            </a>
+            <a href="/calendar/index.html" class="btn">
+                📅 View Calendar
+            </a>
+        </div>
+
+        <div class="offline-features">
+            <h2>Available Offline</h2>
+            <ul class="feature-list">
+                <li class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span>View cached flight bookings</span>
+                </li>
+                <li class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span>Browse aircraft information</span>
+                </li>
+                <li class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span>Check your profile and certifications</span>
+                </li>
+                <li class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span>Review recent activity</span>
+                </li>
+                <li class="feature-item">
+                    <span class="feature-icon">⏳</span>
+                    <span>New bookings will be queued until online</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="connection-status">
+            <span class="status-dot"></span>
+            <span id="statusText">No internet connection</span>
+        </div>
+    </div>
+
+    <script>
+        // Check for connection periodically
+        function checkConnection() {
+            if (navigator.onLine) {
+                document.getElementById('statusText').textContent = 'Connection restored! Reloading...';
+                document.querySelector('.status-dot').style.background = '#4CAF50';
+                document.querySelector('.status-dot').style.animation = 'none';
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }
+        }
+
+        // Check every 5 seconds
+        setInterval(checkConnection, 5000);
+
+        // Listen for online event
+        window.addEventListener('online', () => {
+            document.getElementById('statusText').textContent = 'Connection restored! Reloading...';
+            document.querySelector('.status-dot').style.background = '#4CAF50';
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
