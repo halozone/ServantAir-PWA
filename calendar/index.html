@@ -153,46 +153,13 @@
             
             <div class="modal-body">
                 <form id="bookingForm">
+                    <!-- Date First -->
                     <div class="form-group">
-                        <label class="form-label">Pilot Name <span style="color: #e53e3e;">*</span></label>
-                        <input type="text" class="form-input" id="pilotName" name="pilotName" required>
+                        <label class="form-label">Date <span style="color: #e53e3e;">*</span></label>
+                        <input type="date" class="form-input" id="bookingDate" name="bookingDate" required>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Aircraft <span style="color: #e53e3e;">*</span></label>
-                        <select class="form-select" id="aircraft" name="aircraft" required onchange="updateInstructorVisibility()">
-                            <option value="">Select Aircraft</option>
-                            <!-- Aircraft options populated by JavaScript -->
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="instructorGroup" style="display: none;">
-                        <label class="form-label">Instructor <span style="color: #e53e3e;">*</span></label>
-                        <select class="form-select" id="instructor" name="instructor">
-                            <option value="">Select Instructor (Optional)</option>
-                            <!-- Instructor options populated by JavaScript -->
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Date <span style="color: #e53e3e;">*</span></label>
-                            <input type="date" class="form-input" id="bookingDate" name="bookingDate" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Flight Type <span style="color: #e53e3e;">*</span></label>
-                            <select class="form-select" id="flightType" name="flightType" required onchange="updateInstructorVisibility()">
-                                <option value="">Select Type</option>
-                                <option value="training">Training</option>
-                                <option value="solo">Solo</option>
-                                <option value="checkride">Checkride</option>
-                                <option value="cross-country">Cross Country</option>
-                                <option value="maintenance">Maintenance</option>
-                            </select>
-                        </div>
-                    </div>
-
+                    <!-- Time -->
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Start Time <span style="color: #e53e3e;">*</span></label>
@@ -203,6 +170,43 @@
                             <label class="form-label">End Time <span style="color: #e53e3e;">*</span></label>
                             <input type="time" class="form-input" id="endTime" name="endTime" required step="900">
                         </div>
+                    </div>
+
+                    <!-- Type of Flight -->
+                    <div class="form-group">
+                        <label class="form-label">Flight Type <span style="color: #e53e3e;">*</span></label>
+                        <select class="form-select" id="flightType" name="flightType" required onchange="updateInstructorVisibility()">
+                            <option value="">Select Type</option>
+                            <option value="training">Training</option>
+                            <option value="solo">Solo</option>
+                            <option value="checkride">Checkride</option>
+                            <option value="cross-country">Cross Country</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+
+                    <!-- Pilot Name -->
+                    <div class="form-group">
+                        <label class="form-label">Pilot Name <span style="color: #e53e3e;">*</span></label>
+                        <input type="text" class="form-input" id="pilotName" name="pilotName" required>
+                    </div>
+
+                    <!-- Aircraft -->
+                    <div class="form-group">
+                        <label class="form-label">Aircraft <span style="color: #e53e3e;">*</span></label>
+                        <select class="form-select" id="aircraft" name="aircraft" required onchange="updateInstructorVisibility()">
+                            <option value="">Select Aircraft</option>
+                            <!-- Aircraft options populated by JavaScript -->
+                        </select>
+                    </div>
+
+                    <!-- Instructor (shown conditionally) -->
+                    <div class="form-group" id="instructorGroup" style="display: none;">
+                        <label class="form-label">Instructor <span style="color: #e53e3e;">*</span></label>
+                        <select class="form-select" id="instructor" name="instructor">
+                            <option value="">Select Instructor (Optional)</option>
+                            <!-- Instructor options populated by JavaScript -->
+                        </select>
                     </div>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">

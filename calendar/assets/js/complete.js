@@ -828,8 +828,7 @@
                     // Set the current date to the clicked day and switch to day view
                     currentDate = new Date(year, month, day);
                     currentView = 'day';
-                    updateViewButtons();
-                    renderDayView();
+                    renderView(); // Use renderView instead of renderDayView
                 });
             }
             
@@ -3292,7 +3291,11 @@
             document.querySelector('.modal-title').textContent = 'New Flight Booking';
             document.querySelector('button[type="submit"]').textContent = 'Book Flight';
             document.getElementById('deleteBookingBtn').style.display = 'none';
-            
+
+            // Populate instructor dropdown when modal opens
+            console.log('🔄 Calling populateInstructorDropdown from openBookingModal (first)...');
+            populateInstructorDropdown();
+
             // Open the modal
             document.getElementById('bookingModal').classList.add('show');
         }
@@ -4652,11 +4655,15 @@
                     }
                 }
             }
-            
+
+            // Populate instructor dropdown when modal opens
+            console.log('🔄 Calling populateInstructorDropdown from openBookingModal...');
+            populateInstructorDropdown();
+
             // Show modal
             bookingModal.classList.add('show');
         }
-        
+
         // Open booking modal for editing existing booking
         function editBooking(bookingIdOrObject, resourceId) {
             console.log('📝 editBooking called with:', bookingIdOrObject, resourceId);
@@ -4733,11 +4740,15 @@
             if (flightTypeField && booking.flightType) {
                 flightTypeField.value = booking.flightType;
             }
-            
+
+            // Populate instructor dropdown when modal opens
+            console.log('🔄 Calling populateInstructorDropdown from editBooking...');
+            populateInstructorDropdown();
+
             // Show modal
             bookingModal.classList.add('show');
         }
-        
+
         // ============ DOUBLE-CLICK EVENT HANDLERS ============
         
         // Add double-click handlers to booking elements
