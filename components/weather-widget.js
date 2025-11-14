@@ -15,8 +15,12 @@ class WeatherWidget {
             return;
         }
 
+        // Get saved airport from localStorage or use default
+        const savedAirport = localStorage.getItem('weatherWidget_lastAirport');
+        const defaultAirport = savedAirport || options.airport || this.container.dataset.airport || 'KPAO';
+
         this.options = {
-            airport: options.airport || this.container.dataset.airport || 'KPAO',
+            airport: defaultAirport,
             refreshInterval: options.refreshInterval || 300000, // 5 minutes
             showForecast: options.showForecast !== false,
             showMetar: options.showMetar !== false,
@@ -43,13 +47,20 @@ class WeatherWidget {
 
     render() {
         this.container.className = 'weather-widget';
+        const widgetId = this.container.id;
         this.container.innerHTML = `
             <div class="weather-header">
                 <div class="weather-title">
                     <span class="weather-icon">🌤️</span>
-                    <span class="weather-airport">${this.options.airport}</span>
+                    <input type="text"
+                           class="weather-airport-input"
+                           id="${widgetId}-airport-input"
+                           value="${this.options.airport}"
+                           placeholder="ICAO Code"
+                           maxlength="4"
+                           title="Enter 4-letter airport code (e.g., KPAO)">
                 </div>
-                <button class="weather-refresh" onclick="weatherWidget.fetchWeather()">
+                <button class="weather-refresh" id="${widgetId}-refresh-btn" title="Refresh weather data">
                     <span class="refresh-icon">🔄</span>
                 </button>
             </div>
@@ -62,6 +73,7 @@ class WeatherWidget {
         `;
 
         this.addStyles();
+        this.attachEventListeners();
     }
 
     async fetchWeather() {
@@ -104,6 +116,62 @@ class WeatherWidget {
     showError(message) {
         const content = this.container.querySelector('.weather-content');
         content.innerHTML = `<div class="weather-error">⚠️ ${message}</div>`;
+    }
+
+    attachEventListeners() {
+        const widgetId = this.container.id;
+        const airportInput = document.getElementById(`${widgetId}-airport-input`);
+        const refreshBtn = document.getElementById(`${widgetId}-refresh-btn`);
+
+        // Change airport on Enter key
+        airportInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.changeAirport(airportInput.value.toUpperCase());
+            }
+        });
+
+        // Change airport on blur (lost focus)
+        airportInput.addEventListener('blur', () => {
+            const newAirport = airportInput.value.toUpperCase();
+            if (newAirport && newAirport !== this.options.airport) {
+                this.changeAirport(newAirport);
+            } else {
+                // Reset to current airport if empty
+                airportInput.value = this.options.airport;
+            }
+        });
+
+        // Auto-uppercase as user types
+        airportInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        // Refresh button click
+        refreshBtn.addEventListener('click', () => {
+            this.fetchWeather();
+        });
+    }
+
+    changeAirport(newAirport) {
+        if (!newAirport || newAirport.length < 3) {
+            alert('Please enter a valid airport code (3-4 letters)');
+            return;
+        }
+
+        this.options.airport = newAirport;
+
+        // Save to localStorage
+        localStorage.setItem('weatherWidget_lastAirport', newAirport);
+
+        // Update input value
+        const widgetId = this.container.id;
+        const airportInput = document.getElementById(`${widgetId}-airport-input`);
+        if (airportInput) {
+            airportInput.value = newAirport;
+        }
+
+        // Fetch new weather data
+        this.fetchWeather();
     }
 
     renderWeatherData() {
@@ -299,6 +367,32 @@ class WeatherWidget {
                 font-weight: 600;
             }
 
+            .weather-airport-input {
+                border: 2px solid transparent;
+                background: #f7fafc;
+                border-radius: 8px;
+                padding: 6px 12px;
+                font-size: 16px;
+                font-weight: 600;
+                color: #2d3748;
+                width: 100px;
+                text-align: center;
+                text-transform: uppercase;
+                transition: all 0.3s ease;
+            }
+
+            .weather-airport-input:hover {
+                background: #edf2f7;
+                border-color: #cbd5e0;
+            }
+
+            .weather-airport-input:focus {
+                outline: none;
+                background: white;
+                border-color: #56B4E9;
+                box-shadow: 0 0 0 3px rgba(86, 180, 233, 0.1);
+            }
+
             .weather-refresh {
                 background: none;
                 border: none;
@@ -418,6 +512,42 @@ class WeatherWidget {
                 font-size: 12px;
                 color: #718096;
                 text-align: center;
+            }
+
+            /* Dark Mode Support */
+            [data-theme="dark"] .weather-widget {
+                background: var(--bg-secondary, #2d3748);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            }
+
+            [data-theme="dark"] .weather-airport-input {
+                background: var(--bg-tertiary, #1a202c);
+                color: var(--text-primary, #f7fafc);
+                border-color: transparent;
+            }
+
+            [data-theme="dark"] .weather-airport-input:hover {
+                background: var(--bg-secondary, #2d3748);
+                border-color: var(--border-color, #4a5568);
+            }
+
+            [data-theme="dark"] .weather-airport-input:focus {
+                background: var(--bg-secondary, #2d3748);
+                border-color: #56B4E9;
+            }
+
+            [data-theme="dark"] .weather-section-title {
+                color: var(--text-primary, #f7fafc);
+            }
+
+            [data-theme="dark"] .weather-raw {
+                background: var(--bg-tertiary, #1a202c);
+                color: var(--text-secondary, #e2e8f0);
+            }
+
+            [data-theme="dark"] .weather-footer {
+                border-top-color: var(--border-color, #4a5568);
+                color: var(--text-secondary, #a0aec0);
             }
 
             @media (max-width: 768px) {
