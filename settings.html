@@ -157,6 +157,11 @@
             margin-bottom: 8px;
         }
 
+        .page-subtitle {
+            color: #718096;
+            font-size: 14px;
+        }
+
         .settings-content {
             display: grid;
             gap: 24px;
@@ -327,7 +332,7 @@
         <main class="main-content">
             <!-- Page Header -->
             <div class="page-header">
-    
+                <h1 class="page-title">Settings</h1>
                 <p class="page-subtitle">Configure your aviation management system</p>
             </div>
 
@@ -493,19 +498,26 @@
     </div>
 
     <script>
-        // Mobile menu functionality
-        const hamburgerMenu = document.getElementById('hamburgerMenu');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-        
-        hamburgerMenu.addEventListener('click', () => {
-            sidebarOverlay.classList.toggle('open');
-            sidebarBackdrop.classList.toggle('show');
-        });
-        
-        sidebarBackdrop.addEventListener('click', () => {
-            sidebarOverlay.classList.remove('open');
-            sidebarBackdrop.classList.remove('show');
+        // Mobile menu functionality - wait for navigation to load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Give navigation time to load
+            setTimeout(() => {
+                const hamburgerMenu = document.getElementById('hamburgerMenu');
+                const sidebarOverlay = document.getElementById('sidebarOverlay');
+                const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+                if (hamburgerMenu && sidebarOverlay && sidebarBackdrop) {
+                    hamburgerMenu.addEventListener('click', () => {
+                        sidebarOverlay.classList.toggle('open');
+                        sidebarBackdrop.classList.toggle('show');
+                    });
+
+                    sidebarBackdrop.addEventListener('click', () => {
+                        sidebarOverlay.classList.remove('open');
+                        sidebarBackdrop.classList.remove('show');
+                    });
+                }
+            }, 100);
         });
 
         // Live preview functionality
@@ -524,12 +536,15 @@
             // Update CSS variables
             document.documentElement.style.setProperty('--primary-color', primaryColor);
             document.documentElement.style.setProperty('--secondary-color', secondaryColor);
-            
-            // Update brand names throughout the page
-            document.getElementById('mobileBrandName').textContent = brandName;
-            document.getElementById('sidebarBrandName').textContent = brandName;
-            
-            // Update logo icons
+
+            // Update brand names throughout the page (if navigation is loaded)
+            const mobileBrandName = document.getElementById('mobileBrandName');
+            const sidebarBrandName = document.getElementById('sidebarBrandName');
+
+            if (mobileBrandName) mobileBrandName.textContent = brandName;
+            if (sidebarBrandName) sidebarBrandName.textContent = brandName;
+
+            // Update logo icons (if they exist)
             document.querySelectorAll('.logo-icon-mobile').forEach(icon => {
                 icon.textContent = logoIcon;
             });
