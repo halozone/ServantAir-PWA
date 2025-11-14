@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Operations - Servant Air Ministries</title>
+
+    <!-- Dark Mode Support -->
+    <link rel="stylesheet" href="assets/css/dark-mode.css">
+
+    <!-- Loading Spinners -->
+    <link rel="stylesheet" href="assets/css/loading-spinners.css">
+
+    <!-- Tooltips -->
+    <link rel="stylesheet" href="assets/css/tooltips.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .content {
+            padding: 32px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Wizard Steps */
+        .wizard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            background: var(--bg-secondary);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .wizard-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            padding: 0 16px;
+        }
+
+        .wizard-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -50%;
+            top: 24px;
+            width: 100%;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 0;
+        }
+
+        .wizard-step.completed:not(:last-child)::after {
+            background: #48bb78;
+        }
+
+        .wizard-step.active:not(:last-child)::after {
+            background: linear-gradient(to right, #48bb78 50%, var(--border-color) 50%);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-weight: 600;
+            font-size: 18px;
+            position: relative;
+            z-index: 1;
+            border: 3px solid var(--border-color);
+        }
+
+        .wizard-step.completed .step-number {
+            background: #48bb78;
+            color: white;
+            border-color: #48bb78;
+        }
+
+        .wizard-step.active .step-number {
+            background: #56B4E9;
+            color: white;
+            border-color: #56B4E9;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .step-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--shadow-md);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        /* Aircraft Status */
+        .aircraft-selector {
+            margin-bottom: 24px;
+        }
+
+        .aircraft-card {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .aircraft-card:hover {
+            border-color: #56B4E9;
+        }
+
+        .aircraft-card.selected {
+            border-color: #56B4E9;
+            background: rgba(86, 180, 233, 0.1);
+        }
+
+        .aircraft-card.not-airworthy {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #e53e3e;
+        }
+
+        .aircraft-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .aircraft-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .airworthy-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .airworthy-badge.yes {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .airworthy-badge.no {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        /* Compliance Grid */
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .compliance-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .compliance-item.current {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .compliance-item.due-soon {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .compliance-item.overdue {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .compliance-label {
+            font-weight: 600;
+            display: block;
+        }
+
+        .compliance-date {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        /* Squawks */
+        .squawks-list {
+            margin-top: 16px;
+        }
+
+        .squawk-item {
+            background: var(--bg-primary);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #cbd5e0;
+        }
+
+        .squawk-item.grounding {
+            border-left-color: #e53e3e;
+        }
+
+        .squawk-item.non-grounding {
+            border-left-color: #ed8936;
+        }
+
+        .squawk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .squawk-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .squawk-severity {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .squawk-severity.grounding {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .squawk-severity.non-grounding {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .squawk-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Weather Section */
+        .weather-section {
+            margin-top: 24px;
+        }
+
+        .airport-inputs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .airport-input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .airport-input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .airport-input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .airport-input-group input:focus {
+            outline: none;
+            border-color: #56B4E9;
+        }
+
+        .add-airport-btn {
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-airport-btn:hover {
+            border-color: #56B4E9;
+            background: rgba(86, 180, 233, 0.1);
+        }
+
+        .weather-briefing {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        /* Form Elements */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #56B4E9;
+            box-shadow: 0 0 0 3px rgba(86, 180, 233, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Cost Summary */
+        .cost-summary {
+            background: var(--bg-tertiary);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cost-row:last-child {
+            border-bottom: none;
+            font-size: 18px;
+            font-weight: 600;
+            padding-top: 16px;
+        }
+
+        .cost-label {
+            color: var(--text-secondary);
+        }
+
+        .cost-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .payment-method {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .payment-method:hover {
+            border-color: #56B4E9;
+        }
+
+        .payment-method.selected {
+            border-color: #56B4E9;
+            background: rgba(86, 180, 233, 0.1);
+        }
+
+        .payment-method.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .payment-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .payment-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .payment-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Volunteer Hours Display */
+        .volunteer-balance {
+            background: #c6f6d5;
+            color: #276749;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .volunteer-balance-label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .volunteer-balance-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #56B4E9 0%, #4A90E2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(86, 180, 233, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #38a169;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        /* Alert Box */
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: #feebc8;
+            border-color: #ed8936;
+            color: #744210;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            border-color: #e53e3e;
+            color: #742a2a;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            border-color: #48bb78;
+            color: #22543d;
+        }
+
+        .alert-info {
+            background: #bee3f8;
+            border-color: #3182ce;
+            color: #2c5282;
+        }
+
+        /* Maintenance History Table */
+        .maintenance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .maintenance-table th {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .maintenance-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .maintenance-table tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .maintenance-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge.resolved {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-badge.open {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .status-badge.in-progress {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .wizard-steps {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .wizard-step::after {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .maintenance-table {
+                font-size: 12px;
+            }
+
+            .maintenance-table th,
+            .maintenance-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation will be loaded here -->
+
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div>
+                    <h1>Flight Operations</h1>
+                    <p>Complete your flight from pre-flight to post-flight</p>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="content">
+                <div class="wizard-container">
+                    <!-- Wizard Steps Indicator -->
+                    <div class="wizard-steps">
+                        <div class="wizard-step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Pre-Flight</div>
+                            <div class="step-subtitle">Aircraft & Weather</div>
+                        </div>
+                        <div class="wizard-step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Flight Log</div>
+                            <div class="step-subtitle">HOBBS & Tach</div>
+                        </div>
+                        <div class="wizard-step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Payment</div>
+                            <div class="step-subtitle">Process Payment</div>
+                        </div>
+                        <div class="wizard-step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-title">Post-Flight</div>
+                            <div class="step-subtitle">Writeups & Checks</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Pre-Flight Check -->
+                    <div class="step-content active" id="step1">
+                        <h2 class="section-title">🛩️ Pre-Flight Check</h2>
+                        <p class="section-subtitle">Select aircraft and review airworthiness status before flight</p>
+
+                        <!-- Aircraft Selection -->
+                        <div class="aircraft-selector" id="aircraftSelector">
+                            <!-- Aircraft cards will be dynamically loaded here -->
+                        </div>
+
+                        <!-- Weather Briefing -->
+                        <div class="weather-section">
+                            <h3 class="section-title">🌤️ Weather Briefing</h3>
+                            <p class="section-subtitle">Add airports for METAR, TAF, and NOTAMs</p>
+
+                            <div class="airport-inputs" id="airportInputs">
+                                <div class="airport-input-group">
+                                    <label>Departure Airport</label>
+                                    <input type="text" class="airport-code" placeholder="KPAO" maxlength="4">
+                                </div>
+                                <div class="airport-input-group">
+                                    <label>Destination Airport</label>
+                                    <input type="text" class="airport-code" placeholder="KSFO" maxlength="4">
+                                </div>
+                            </div>
+
+                            <button class="add-airport-btn" onclick="addAirportInput()">+ Add Another Airport</button>
+
+                            <div class="weather-briefing" id="weatherBriefing">
+                                <p style="text-align: center; color: var(--text-secondary);">Enter airport codes and click "Get Weather Briefing"</p>
+                            </div>
+
+                            <button class="btn btn-primary" style="margin-top: 16px; width: 100%;" onclick="getWeatherBriefing()">
+                                Get Weather Briefing
+                            </button>
+                        </div>
+
+                        <!-- Maintenance History Log -->
+                        <div class="weather-section" style="margin-top: 32px;">
+                            <h3 class="section-title">🔧 Maintenance History Log</h3>
+                            <p class="section-subtitle">Review recent maintenance actions for selected aircraft</p>
+
+                            <div id="maintenanceHistory">
+                                <p style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                                    Select an aircraft to view maintenance history
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="window.location.href='calendar.html'">Cancel</button>
+                            <button class="btn btn-primary" id="nextStep1" onclick="nextStep(1)" disabled>
+                                Next: Flight Log →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Flight Completion -->
+                    <div class="step-content" id="step2">
+                        <h2 class="section-title">✈️ Flight Completion</h2>
+                        <p class="section-subtitle">Enter flight times and calculate cost</p>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">HOBBS Start</label>
+                                <input type="number" class="form-input" id="hobbsStart" step="0.1" placeholder="1234.5" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">HOBBS End</label>
+                                <input type="number" class="form-input" id="hobbsEnd" step="0.1" placeholder="1236.8" required oninput="calculateFlightCost()">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">HOBBS Time (Hours)</label>
+                                <input type="number" class="form-input" id="hobbsTime" step="0.1" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tach Time (Hours)</label>
+                                <input type="number" class="form-input" id="tachTime" step="0.1" disabled>
+                                <small style="color: var(--text-secondary); font-size: 12px;">Auto-calculated: HOBBS × 1.25</small>
+                            </div>
+                        </div>
+
+                        <div class="cost-summary" id="costSummary">
+                            <div class="cost-row">
+                                <span class="cost-label">Aircraft:</span>
+                                <span class="cost-value" id="costAircraft">--</span>
+                            </div>
+                            <div class="cost-row">
+                                <span class="cost-label">Membership Type:</span>
+                                <span class="cost-value" id="costMembership">--</span>
+                            </div>
+                            <div class="cost-row">
+                                <span class="cost-label">Hourly Rate:</span>
+                                <span class="cost-value" id="costRate">--</span>
+                            </div>
+                            <div class="cost-row">
+                                <span class="cost-label">Flight Time:</span>
+                                <span class="cost-value" id="costTime">--</span>
+                            </div>
+                            <div class="cost-row">
+                                <span class="cost-label">Total Cost:</span>
+                                <span class="cost-value" id="costTotal">$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
+                            <button class="btn btn-primary" id="nextStep2" onclick="nextStep(2)" disabled>
+                                Next: Payment →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Payment -->
+                    <div class="step-content" id="step3">
+                        <h2 class="section-title">💳 Payment Processing</h2>
+                        <p class="section-subtitle">Choose payment method and complete payment</p>
+
+                        <div class="cost-summary">
+                            <div class="cost-row">
+                                <span class="cost-label">Total Amount Due:</span>
+                                <span class="cost-value" id="paymentTotal" style="font-size: 24px; color: #56B4E9;">$0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Volunteer Hours Balance (if applicable) -->
+                        <div id="volunteerBalanceSection" style="display: none;">
+                            <div class="volunteer-balance">
+                                <div class="volunteer-balance-label">Your Volunteer Hours Balance</div>
+                                <div class="volunteer-balance-value" id="volunteerBalance">0.0 hours</div>
+                                <div style="font-size: 12px; margin-top: 8px;">
+                                    Equivalent to <span id="volunteerCredit">$0.00</span> credit
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Select Payment Method</h3>
+
+                        <div class="payment-methods" id="paymentMethods">
+                            <div class="payment-method" data-method="stripe" onclick="selectPaymentMethod('stripe')">
+                                <div class="payment-icon">💳</div>
+                                <div class="payment-name">Credit/Debit Card</div>
+                                <div class="payment-subtitle">Stripe - Instant</div>
+                            </div>
+                            <div class="payment-method" data-method="paypal" onclick="selectPaymentMethod('paypal')">
+                                <div class="payment-icon">🅿️</div>
+                                <div class="payment-name">PayPal</div>
+                                <div class="payment-subtitle">Instant</div>
+                            </div>
+                            <div class="payment-method" data-method="zelle" onclick="selectPaymentMethod('zelle')">
+                                <div class="payment-icon">💸</div>
+                                <div class="payment-name">Zelle</div>
+                                <div class="payment-subtitle">Pending Verification</div>
+                            </div>
+                            <div class="payment-method" data-method="cash" onclick="selectPaymentMethod('cash')">
+                                <div class="payment-icon">💵</div>
+                                <div class="payment-name">Cash</div>
+                                <div class="payment-subtitle">Pending Verification</div>
+                            </div>
+                            <div class="payment-method" data-method="check" onclick="selectPaymentMethod('check')">
+                                <div class="payment-icon">📝</div>
+                                <div class="payment-name">Check</div>
+                                <div class="payment-subtitle">Pending Verification</div>
+                            </div>
+                            <div class="payment-method" data-method="volunteer" onclick="selectPaymentMethod('volunteer')" style="display: none;" id="volunteerPaymentOption">
+                                <div class="payment-icon">⏰</div>
+                                <div class="payment-name">Volunteer Hours</div>
+                                <div class="payment-subtitle">3:1 Ratio</div>
+                            </div>
+                        </div>
+
+                        <div id="paymentDetails"></div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="prevStep(3)">← Back</button>
+                            <button class="btn btn-success" id="processPayment" onclick="processPayment()" disabled>
+                                Process Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Post-Flight (Optional) -->
+                    <div class="step-content" id="step4">
+                        <h2 class="section-title">✅ Post-Flight (Optional)</h2>
+                        <p class="section-subtitle">Submit maintenance writeups or VOR checks if needed</p>
+
+                        <div class="alert alert-success">
+                            <strong>✅ Payment Processed Successfully!</strong><br>
+                            Flight logged and payment recorded.
+                        </div>
+
+                        <!-- Maintenance Writeup (Optional) -->
+                        <div class="form-group">
+                            <h3 class="section-title" style="font-size: 18px;">🔧 Maintenance Writeup (Optional)</h3>
+
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="hasWriteup" onchange="toggleWriteupForm()">
+                                <label for="hasWriteup">Report a maintenance issue or squawk</label>
+                            </div>
+
+                            <div id="writeupForm" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">Title</label>
+                                    <input type="text" class="form-input" id="writeupTitle" placeholder="Brief summary of the issue">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-textarea" id="writeupDescription" placeholder="Detailed description of the issue..."></textarea>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-input" id="writeupDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Severity</label>
+                                        <select class="form-select" id="writeupSeverity">
+                                            <option value="non-grounding">Non-Grounding</option>
+                                            <option value="grounding">Grounding</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">HOBBS Time</label>
+                                        <input type="number" class="form-input" id="writeupHobbs" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VOR Check (Optional) -->
+                        <div class="form-group">
+                            <h3 class="section-title" style="font-size: 18px;">📡 VOR Check (Optional)</h3>
+
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="hasVORCheck" onchange="toggleVORForm()">
+                                <label for="hasVORCheck">Submit VOR check (30-day currency)</label>
+                            </div>
+
+                            <div id="vorForm" style="display: none;">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">VOR Check Type</label>
+                                        <select class="form-select" id="vorType" onchange="updateVORFields()">
+                                            <option value="">Select type...</option>
+                                            <option value="ground">Ground-Based (±4 degrees)</option>
+                                            <option value="vor-vor">VOR/VOR Air (within 6 degrees)</option>
+                                            <option value="air">VOR Air (within 6 degrees)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Date Performed</label>
+                                        <input type="date" class="form-input" id="vorDate" required>
+                                    </div>
+                                </div>
+
+                                <div id="vorFieldsGround" style="display: none;">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Airport/Location</label>
+                                            <input type="text" class="form-input" id="vorLocation" placeholder="KPAO">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">VOR Station</label>
+                                            <input type="text" class="form-input" id="vorStation" placeholder="SFO VOR">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Published Radial</label>
+                                            <input type="number" class="form-input" id="vorRadial" min="0" max="360" placeholder="270">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Bearing Error (degrees)</label>
+                                            <input type="number" class="form-input" id="vorError" step="0.1" placeholder="+2.5">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="vorFieldsVORVOR" style="display: none;">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">VOR 1 Station</label>
+                                            <input type="text" class="form-input" id="vor1Station" placeholder="SFO VOR">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">VOR 1 Radial</label>
+                                            <input type="number" class="form-input" id="vor1Radial" min="0" max="360" placeholder="090">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">VOR 2 Station</label>
+                                            <input type="text" class="form-input" id="vor2Station" placeholder="OAK VOR">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">VOR 2 Radial</label>
+                                            <input type="number" class="form-input" id="vor2Radial" min="0" max="360" placeholder="095">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Difference (degrees)</label>
+                                            <input type="number" class="form-input" id="vorDifference" step="0.1" placeholder="5.0">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="vorFieldsAir" style="display: none;">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">VOR Station</label>
+                                            <input type="text" class="form-input" id="vorStationAir" placeholder="SFO VOR">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Published Radial</label>
+                                            <input type="number" class="form-input" id="vorRadialAir" min="0" max="360" placeholder="270">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Bearing Error (degrees)</label>
+                                            <input type="number" class="form-input" id="vorErrorAir" step="0.1" placeholder="+3.2">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">HOBBS Time</label>
+                                    <input type="number" class="form-input" id="vorHobbs" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">Complete Later</button>
+                            <button class="btn btn-success" onclick="submitPostFlight()">
+                                Submit & Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sample Data (will be replaced with API calls in production)
+        const currentUser = {
+            id: 1,
+            name: 'John Doe',
+            membershipTypeId: 1,
+            volunteerHours: 12.5 // Can earn volunteer hours
+        };
+
+        const aircraft = [
+            {
+                id: 1,
+                tailNumber: 'N123AB',
+                type: 'Cessna 172S',
+                isAirworthy: true,
+                compliance: {
+                    annual: { status: 'current', dueDate: '2025-03-15' },
+                    hundredHour: { status: 'due-soon', dueDate: '2025-01-20' },
+                    transponder: { status: 'current', dueDate: '2025-11-15' },
+                    elt: { status: 'current', dueDate: '2025-06-01' },
+                    vor: { status: 'overdue', dueDate: '2024-12-13' },
+                    pitotStatic: { status: 'current', dueDate: '2025-11-15' }
+                },
+                squawks: [
+                    { id: 1, title: 'Left nav light flickering', severity: 'non-grounding', description: 'Intermittent issue with left navigation light' }
+                ]
+            },
+            {
+                id: 2,
+                tailNumber: 'N456CD',
+                type: 'Cessna 172M',
+                isAirworthy: false,
+                compliance: {
+                    annual: { status: 'current', dueDate: '2025-05-01' },
+                    hundredHour: { status: 'current', dueDate: '2025-02-15' },
+                    transponder: { status: 'overdue', dueDate: '2024-11-01' },
+                    elt: { status: 'current', dueDate: '2025-08-15' },
+                    vor: { status: 'current', dueDate: '2025-01-05' },
+                    pitotStatic: { status: 'overdue', dueDate: '2024-10-20' }
+                },
+                squawks: [
+                    { id: 2, title: 'Transponder inoperative', severity: 'grounding', description: 'Transponder not responding during pre-flight check' }
+                ]
+            },
+            {
+                id: 3,
+                tailNumber: 'N789EF',
+                type: 'Piper PA-28',
+                isAirworthy: true,
+                compliance: {
+                    annual: { status: 'current', dueDate: '2025-07-20' },
+                    hundredHour: { status: 'current', dueDate: '2025-03-10' },
+                    transponder: { status: 'current', dueDate: '2026-01-15' },
+                    elt: { status: 'current', dueDate: '2025-09-30' },
+                    vor: { status: 'current', dueDate: '2025-01-12' },
+                    pitotStatic: { status: 'current', dueDate: '2025-12-20' }
+                },
+                squawks: []
+            }
+        ];
+
+        const membershipTypes = [
+            { id: 1, name: 'Member' },
+            { id: 2, name: 'Sponsor' },
+            { id: 3, name: 'Corporate' }
+        ];
+
+        const pricingMatrix = {
+            1: { 1: 150.00, 2: 135.00, 3: 120.00 }, // Aircraft 1
+            2: { 1: 145.00, 2: 130.00, 3: 115.00 }, // Aircraft 2
+            3: { 1: 155.00, 2: 140.00, 3: 125.00 }  // Aircraft 3
+        };
+
+        // Maintenance History Data
+        const maintenanceHistory = {
+            1: [ // N123AB
+                {
+                    id: 1,
+                    date: '2024-12-05',
+                    title: 'Annual Inspection',
+                    description: 'Annual inspection completed',
+                    severity: 'non-grounding',
+                    status: 'resolved',
+                    dateFixed: '2024-12-08',
+                    mechanic: 'Mike Johnson',
+                    mechanicFAA: 'A&P 1234567',
+                    correctiveAction: 'Completed annual inspection per FAR Part 43',
+                    hobbs: 3245.2
+                },
+                {
+                    id: 2,
+                    date: '2024-11-20',
+                    title: 'Oil change',
+                    description: 'Regular 50-hour oil change',
+                    severity: 'non-grounding',
+                    status: 'resolved',
+                    dateFixed: '2024-11-20',
+                    mechanic: 'Tom Williams',
+                    mechanicFAA: 'A&P 7654321',
+                    correctiveAction: 'Oil and filter changed, engine inspected',
+                    hobbs: 3210.5
+                },
+                {
+                    id: 3,
+                    date: '2024-11-15',
+                    title: 'Left nav light flickering',
+                    description: 'Intermittent issue with left navigation light',
+                    severity: 'non-grounding',
+                    status: 'in-progress',
+                    dateFixed: null,
+                    mechanic: 'Mike Johnson',
+                    mechanicFAA: 'A&P 1234567',
+                    correctiveAction: 'Investigating wiring issue',
+                    hobbs: 3205.8
+                }
+            ],
+            2: [ // N456CD
+                {
+                    id: 4,
+                    date: '2024-12-10',
+                    title: 'Transponder inoperative',
+                    description: 'Transponder not responding during pre-flight check',
+                    severity: 'grounding',
+                    status: 'open',
+                    dateFixed: null,
+                    mechanic: null,
+                    mechanicFAA: null,
+                    correctiveAction: 'Awaiting repair',
+                    hobbs: 2890.3
+                },
+                {
+                    id: 5,
+                    date: '2024-11-25',
+                    title: '100-hour inspection',
+                    description: '100-hour inspection due',
+                    severity: 'non-grounding',
+                    status: 'resolved',
+                    dateFixed: '2024-11-26',
+                    mechanic: 'Tom Williams',
+                    mechanicFAA: 'A&P 7654321',
+                    correctiveAction: '100-hour inspection completed per FAR Part 43',
+                    hobbs: 2850.0
+                }
+            ],
+            3: [ // N789EF
+                {
+                    id: 6,
+                    date: '2024-12-01',
+                    title: 'VOR check',
+                    description: 'VOR check completed',
+                    severity: 'non-grounding',
+                    status: 'resolved',
+                    dateFixed: '2024-12-01',
+                    mechanic: 'Mike Johnson',
+                    mechanicFAA: 'A&P 1234567',
+                    correctiveAction: 'VOR check completed per FAR 91.171',
+                    hobbs: 4120.5
+                },
+                {
+                    id: 7,
+                    date: '2024-11-18',
+                    title: 'Tire replacement',
+                    description: 'Right main tire worn',
+                    severity: 'non-grounding',
+                    status: 'resolved',
+                    dateFixed: '2024-11-19',
+                    mechanic: 'Tom Williams',
+                    mechanicFAA: 'A&P 7654321',
+                    correctiveAction: 'Replaced right main tire, balanced and tested',
+                    hobbs: 4100.2
+                }
+            ]
+        };
+
+        // State
+        let selectedAircraft = null;
+        let selectedPaymentMethod = null;
+        let currentStep = 1;
+        let flightCost = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAircraft();
+            updateStepIndicator();
+        });
+
+        function renderAircraft() {
+            const container = document.getElementById('aircraftSelector');
+            container.innerHTML = '';
+
+            aircraft.forEach(ac => {
+                const card = document.createElement('div');
+                card.className = `aircraft-card ${!ac.isAirworthy ? 'not-airworthy' : ''}`;
+                card.onclick = () => ac.isAirworthy && selectAircraft(ac.id);
+
+                const complianceHTML = Object.entries(ac.compliance).map(([key, value]) => `
+                    <div class="compliance-item ${value.status}">
+                        <span class="compliance-label">${formatComplianceName(key)}</span>
+                        <span class="compliance-date">${value.dueDate}</span>
+                    </div>
+                `).join('');
+
+                const squawksHTML = ac.squawks.length > 0 ? `
+                    <div class="squawks-list">
+                        <strong style="display: block; margin-bottom: 8px; font-size: 13px;">Squawks:</strong>
+                        ${ac.squawks.map(sq => `
+                            <div class="squawk-item ${sq.severity}">
+                                <div class="squawk-header">
+                                    <span class="squawk-title">${sq.title}</span>
+                                    <span class="squawk-severity ${sq.severity}">${sq.severity.toUpperCase()}</span>
+                                </div>
+                                <div class="squawk-description">${sq.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : '';
+
+                card.innerHTML = `
+                    <div class="aircraft-header">
+                        <div>
+                            <div class="aircraft-name">${ac.tailNumber}</div>
+                            <div style="color: var(--text-secondary); font-size: 14px;">${ac.type}</div>
+                        </div>
+                        <div class="airworthy-badge ${ac.isAirworthy ? 'yes' : 'no'}">
+                            ${ac.isAirworthy ? '✅ Airworthy' : '❌ Not Airworthy'}
+                        </div>
+                    </div>
+                    <div class="compliance-grid">
+                        ${complianceHTML}
+                    </div>
+                    ${squawksHTML}
+                    ${!ac.isAirworthy ? '<div class="alert alert-error" style="margin-top: 12px;"><strong>Aircraft cannot be flown</strong> - Grounding squawks or overdue compliance items must be resolved first.</div>' : ''}
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function formatComplianceName(name) {
+            const names = {
+                annual: 'Annual',
+                hundredHour: '100-Hour',
+                transponder: 'Transponder',
+                elt: 'ELT',
+                vor: 'VOR',
+                pitotStatic: 'Pitot/Static'
+            };
+            return names[name] || name;
+        }
+
+        function selectAircraft(id) {
+            selectedAircraft = aircraft.find(a => a.id === id);
+
+            // Update UI
+            document.querySelectorAll('.aircraft-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Enable next button
+            document.getElementById('nextStep1').disabled = false;
+
+            // Render maintenance history for selected aircraft
+            renderMaintenanceHistory(id);
+        }
+
+        function renderMaintenanceHistory(aircraftId) {
+            const container = document.getElementById('maintenanceHistory');
+            const history = maintenanceHistory[aircraftId] || [];
+
+            if (history.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No maintenance history recorded for this aircraft.</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="maintenance-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Mechanic</th>
+                            <th>HOBBS</th>
+                            <th>Corrective Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${history.map(item => `
+                            <tr>
+                                <td>${item.date}</td>
+                                <td><strong>${item.title}</strong></td>
+                                <td>${item.description}</td>
+                                <td><span class="squawk-severity ${item.severity}">${item.severity.replace('-', ' ').toUpperCase()}</span></td>
+                                <td><span class="status-badge ${item.status}">${item.status.replace('-', ' ').toUpperCase()}</span></td>
+                                <td>${item.mechanic || 'Unassigned'}<br><small style="color: var(--text-tertiary);">${item.mechanicFAA || 'N/A'}</small></td>
+                                <td>${item.hobbs}</td>
+                                <td>${item.correctiveAction}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function addAirportInput() {
+            const container = document.getElementById('airportInputs');
+            const div = document.createElement('div');
+            div.className = 'airport-input-group';
+            div.innerHTML = `
+                <label>Additional Airport</label>
+                <input type="text" class="airport-code" placeholder="KXXX" maxlength="4">
+            `;
+            container.appendChild(div);
+        }
+
+        function getWeatherBriefing() {
+            const inputs = document.querySelectorAll('.airport-code');
+            const airports = Array.from(inputs)
+                .map(input => input.value.toUpperCase())
+                .filter(code => code.length >= 3);
+
+            if (airports.length === 0) {
+                alert('Please enter at least one airport code');
+                return;
+            }
+
+            const briefing = document.getElementById('weatherBriefing');
+            briefing.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 12px; color: var(--text-secondary);">Loading weather for ${airports.join(', ')}...</p>
+                </div>
+            `;
+
+            // Simulate weather fetch (in production, call real API)
+            setTimeout(() => {
+                briefing.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>Weather Briefing for ${airports.join(', ')}</strong><br>
+                        <small>Demo data - In production, this will show real METAR, TAF, and NOTAMs</small>
+                    </div>
+                    ${airports.map(code => `
+                        <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
+                            <strong style="color: var(--text-primary);">${code}</strong>
+                            <div style="font-family: monospace; font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                                METAR: ${code} 131853Z 27008KT 10SM FEW050 SCT250 18/09 A3012<br>
+                                TAF: ${code} 131720Z 1318/1418 27010KT P6SM FEW050
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }, 1000);
+        }
+
+        function calculateFlightCost() {
+            const start = parseFloat(document.getElementById('hobbsStart').value) || 0;
+            const end = parseFloat(document.getElementById('hobbsEnd').value) || 0;
+
+            if (end <= start) {
+                document.getElementById('nextStep2').disabled = true;
+                return;
+            }
+
+            const hobbsTime = end - start;
+            const tachTime = hobbsTime * 1.25;
+
+            document.getElementById('hobbsTime').value = hobbsTime.toFixed(1);
+            document.getElementById('tachTime').value = tachTime.toFixed(1);
+
+            // Get pricing
+            const membershipType = membershipTypes.find(m => m.id === currentUser.membershipTypeId);
+            const hourlyRate = pricingMatrix[selectedAircraft.id][currentUser.membershipTypeId];
+            flightCost = hobbsTime * hourlyRate;
+
+            // Update cost summary
+            document.getElementById('costAircraft').textContent = `${selectedAircraft.tailNumber} (${selectedAircraft.type})`;
+            document.getElementById('costMembership').textContent = membershipType.name;
+            document.getElementById('costRate').textContent = `$${hourlyRate.toFixed(2)}/hour`;
+            document.getElementById('costTime').textContent = `${hobbsTime.toFixed(1)} hours`;
+            document.getElementById('costTotal').textContent = `$${flightCost.toFixed(2)}`;
+
+            document.getElementById('nextStep2').disabled = false;
+        }
+
+        function nextStep(step) {
+            if (step === 1 && !selectedAircraft) {
+                alert('Please select an aircraft');
+                return;
+            }
+
+            if (step === 2) {
+                const start = parseFloat(document.getElementById('hobbsStart').value);
+                const end = parseFloat(document.getElementById('hobbsEnd').value);
+                if (!start || !end || end <= start) {
+                    alert('Please enter valid HOBBS times');
+                    return;
+                }
+                // Update payment total
+                document.getElementById('paymentTotal').textContent = `$${flightCost.toFixed(2)}`;
+
+                // Show volunteer hours if user has them
+                if (currentUser.volunteerHours > 0) {
+                    document.getElementById('volunteerBalanceSection').style.display = 'block';
+                    document.getElementById('volunteerBalance').textContent = `${currentUser.volunteerHours.toFixed(1)} hours`;
+                    document.getElementById('volunteerCredit').textContent = `$${(currentUser.volunteerHours / 3 * 40).toFixed(2)}`;
+                    document.getElementById('volunteerPaymentOption').style.display = 'block';
+                }
+            }
+
+            currentStep = step + 1;
+            updateStepIndicator();
+            showStep(currentStep);
+        }
+
+        function prevStep(step) {
+            currentStep = step - 1;
+            updateStepIndicator();
+            showStep(currentStep);
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`step${step}`).classList.add('active');
+        }
+
+        function updateStepIndicator() {
+            document.querySelectorAll('.wizard-step').forEach((step, index) => {
+                const stepNum = index + 1;
+                step.classList.remove('active', 'completed');
+
+                if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                    step.querySelector('.step-number').innerHTML = '✓';
+                } else if (stepNum === currentStep) {
+                    step.classList.add('active');
+                    step.querySelector('.step-number').innerHTML = stepNum;
+                } else {
+                    step.querySelector('.step-number').innerHTML = stepNum;
+                }
+            });
+        }
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+
+            document.querySelectorAll('.payment-method').forEach(pm => {
+                pm.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Show payment details based on method
+            const detailsContainer = document.getElementById('paymentDetails');
+
+            if (method === 'stripe') {
+                detailsContainer.innerHTML = `
+                    <div class="alert alert-info" style="margin-top: 16px;">
+                        <strong>Credit/Debit Card Payment</strong><br>
+                        In production, Stripe payment form will appear here
+                    </div>
+                `;
+            } else if (method === 'paypal') {
+                detailsContainer.innerHTML = `
+                    <div class="alert alert-info" style="margin-top: 16px;">
+                        <strong>PayPal Payment</strong><br>
+                        In production, PayPal button will appear here
+                    </div>
+                `;
+            } else if (method === 'volunteer') {
+                const hoursNeeded = (flightCost / 40) * 3;
+                const hasEnough = currentUser.volunteerHours >= hoursNeeded;
+
+                detailsContainer.innerHTML = `
+                    <div class="alert ${hasEnough ? 'alert-success' : 'alert-error'}" style="margin-top: 16px;">
+                        <strong>Volunteer Hours Payment</strong><br>
+                        Flight Cost: $${flightCost.toFixed(2)}<br>
+                        Volunteer Hours Needed: ${hoursNeeded.toFixed(1)} hours (3:1 ratio at $40/hr)<br>
+                        Your Balance: ${currentUser.volunteerHours.toFixed(1)} hours<br>
+                        ${hasEnough ? '✅ Sufficient balance' : '❌ Insufficient balance'}
+                    </div>
+                `;
+
+                document.getElementById('processPayment').disabled = !hasEnough;
+                return;
+            } else {
+                detailsContainer.innerHTML = `
+                    <div class="alert alert-warning" style="margin-top: 16px;">
+                        <strong>Payment Pending Verification</strong><br>
+                        Your ${method.toUpperCase()} payment will be marked as pending and requires treasurer verification.
+                    </div>
+                `;
+            }
+
+            document.getElementById('processPayment').disabled = false;
+        }
+
+        function processPayment() {
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            // Simulate payment processing
+            const isAutoVerified = ['stripe', 'paypal'].includes(selectedPaymentMethod);
+
+            // Show loading
+            const btn = document.getElementById('processPayment');
+            btn.innerHTML = '<span class="spinner spinner-sm"></span> Processing...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // Success - move to post-flight
+                nextStep(3);
+                btn.innerHTML = 'Process Payment';
+                btn.disabled = false;
+
+                // Log payment (in production, save to database)
+                console.log('Payment processed:', {
+                    method: selectedPaymentMethod,
+                    amount: flightCost,
+                    autoVerified: isAutoVerified,
+                    user: currentUser.id,
+                    aircraft: selectedAircraft.id
+                });
+
+                // If pending verification, notify treasurer
+                if (!isAutoVerified) {
+                    console.log('Notification sent to treasurer for payment verification');
+                }
+            }, 2000);
+        }
+
+        function toggleWriteupForm() {
+            const checkbox = document.getElementById('hasWriteup');
+            const form = document.getElementById('writeupForm');
+            form.style.display = checkbox.checked ? 'block' : 'none';
+
+            if (checkbox.checked) {
+                // Auto-populate date with today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('writeupDate').value = today;
+
+                // Auto-populate HOBBS with end time from Step 2
+                const hobbsEnd = parseFloat(document.getElementById('hobbsEnd').value);
+                if (hobbsEnd) {
+                    document.getElementById('writeupHobbs').value = hobbsEnd;
+                }
+            }
+        }
+
+        function toggleVORForm() {
+            const checkbox = document.getElementById('hasVORCheck');
+            const form = document.getElementById('vorForm');
+            form.style.display = checkbox.checked ? 'block' : 'none';
+
+            if (checkbox.checked) {
+                // Auto-populate date with today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('vorDate').value = today;
+
+                // Auto-populate HOBBS with end time from Step 2
+                const hobbsEnd = parseFloat(document.getElementById('hobbsEnd').value);
+                if (hobbsEnd) {
+                    document.getElementById('vorHobbs').value = hobbsEnd;
+                }
+            }
+        }
+
+        function updateVORFields() {
+            const type = document.getElementById('vorType').value;
+
+            document.getElementById('vorFieldsGround').style.display = 'none';
+            document.getElementById('vorFieldsVORVOR').style.display = 'none';
+            document.getElementById('vorFieldsAir').style.display = 'none';
+
+            if (type === 'ground') {
+                document.getElementById('vorFieldsGround').style.display = 'block';
+            } else if (type === 'vor-vor') {
+                document.getElementById('vorFieldsVORVOR').style.display = 'block';
+            } else if (type === 'air') {
+                document.getElementById('vorFieldsAir').style.display = 'block';
+            }
+        }
+
+        function submitPostFlight() {
+            const hasWriteup = document.getElementById('hasWriteup').checked;
+            const hasVOR = document.getElementById('hasVORCheck').checked;
+
+            // Collect data
+            const postFlightData = {
+                flightCompleted: true,
+                aircraft: selectedAircraft.id,
+                user: currentUser.id,
+                hobbsStart: parseFloat(document.getElementById('hobbsStart').value),
+                hobbsEnd: parseFloat(document.getElementById('hobbsEnd').value),
+                paymentMethod: selectedPaymentMethod,
+                amount: flightCost
+            };
+
+            if (hasWriteup) {
+                const writeup = {
+                    title: document.getElementById('writeupTitle').value,
+                    description: document.getElementById('writeupDescription').value,
+                    date: document.getElementById('writeupDate').value,
+                    severity: document.getElementById('writeupSeverity').value,
+                    hobbs: parseFloat(document.getElementById('writeupHobbs').value),
+                    reporter: currentUser.name,
+                    aircraftId: selectedAircraft.id
+                };
+
+                if (!writeup.title || !writeup.description || !writeup.date) {
+                    alert('Please fill in all writeup fields');
+                    return;
+                }
+
+                postFlightData.writeup = writeup;
+
+                // Notify mechanics
+                console.log('Notification sent to mechanics:', writeup);
+            }
+
+            if (hasVOR) {
+                const vorType = document.getElementById('vorType').value;
+                const vorDate = document.getElementById('vorDate').value;
+
+                if (!vorType) {
+                    alert('Please select VOR check type');
+                    return;
+                }
+
+                if (!vorDate) {
+                    alert('Please select VOR check date');
+                    return;
+                }
+
+                const vorCheck = {
+                    type: vorType,
+                    date: vorDate,
+                    hobbs: parseFloat(document.getElementById('vorHobbs').value),
+                    aircraftId: selectedAircraft.id,
+                    performedBy: currentUser.name
+                };
+
+                if (vorType === 'ground') {
+                    vorCheck.location = document.getElementById('vorLocation').value;
+                    vorCheck.station = document.getElementById('vorStation').value;
+                    vorCheck.radial = parseFloat(document.getElementById('vorRadial').value);
+                    vorCheck.error = parseFloat(document.getElementById('vorError').value);
+                } else if (vorType === 'vor-vor') {
+                    vorCheck.vor1Station = document.getElementById('vor1Station').value;
+                    vorCheck.vor1Radial = parseFloat(document.getElementById('vor1Radial').value);
+                    vorCheck.vor2Station = document.getElementById('vor2Station').value;
+                    vorCheck.vor2Radial = parseFloat(document.getElementById('vor2Radial').value);
+                    vorCheck.difference = parseFloat(document.getElementById('vorDifference').value);
+                } else if (vorType === 'air') {
+                    vorCheck.station = document.getElementById('vorStationAir').value;
+                    vorCheck.radial = parseFloat(document.getElementById('vorRadialAir').value);
+                    vorCheck.error = parseFloat(document.getElementById('vorErrorAir').value);
+                }
+
+                postFlightData.vorCheck = vorCheck;
+
+                // Auto-update aircraft compliance
+                console.log('Aircraft VOR compliance updated');
+            }
+
+            // Save to database (in production)
+            console.log('Post-flight data saved:', postFlightData);
+
+            // Success message
+            alert('Flight completed successfully!\n\nThank you for flying with Servant Air.');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Auto-uppercase airport codes
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('input', (e) => {
+                if (e.target.classList.contains('airport-code')) {
+                    e.target.value = e.target.value.toUpperCase();
+                }
+            });
+        });
+    </script>
+
+    <!-- Dark Mode Manager -->
+    <script src="assets/js/dark-mode.js"></script>
+
+    <!-- Loading Utilities -->
+    <script src="assets/js/loading.js"></script>
+
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js?v=1"></script>
+</body>
+</html>
