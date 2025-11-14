@@ -611,6 +611,12 @@
                 grid-column: 1 / 2;
                 grid-row: 4;
             }
+
+            /* Aircraft Checkouts - Full width below Account Settings */
+            .profile-content > .content-card:nth-child(6) {
+                grid-column: 1 / -1;
+                grid-row: 5;
+            }
         }
     </style>
 </head>
@@ -933,24 +939,92 @@
                     
                     <button class="primary-btn" style="margin-top: 20px;">Update Password</button>
                 </div>
+
+                <!-- Aircraft Checkouts -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Aircraft Checkouts</h2>
+                        <button class="edit-btn">Request Checkout</button>
+                    </div>
+
+                    <div class="cert-section">
+                        <p style="color: #718096; font-size: 14px; margin-bottom: 16px;">You can only book aircraft you are checked out on, unless flying with an instructor.</p>
+
+                        <div class="cert-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Aircraft</th>
+                                        <th>Type/Model</th>
+                                        <th>Checkout Date</th>
+                                        <th>Checkout Instructor</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>N123AB</strong></td>
+                                        <td>Cessna 172S</td>
+                                        <td>Mar 20, 2023</td>
+                                        <td>CFI John Smith</td>
+                                        <td><span class="cert-status current">Checked Out</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>N456CD</strong></td>
+                                        <td>Cessna 172N</td>
+                                        <td>Jun 15, 2023</td>
+                                        <td>CFI Sarah Wilson</td>
+                                        <td><span class="cert-status current">Checked Out</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>N789EF</strong></td>
+                                        <td>Piper PA-28-181</td>
+                                        <td>Nov 10, 2024</td>
+                                        <td>CFI Michael Brown</td>
+                                        <td><span class="cert-status current">Checked Out</span></td>
+                                    </tr>
+                                    <tr class="warning">
+                                        <td><strong>N234GH</strong></td>
+                                        <td>Cessna 182T</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td><span class="cert-status expiring">Pending Checkout</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 16px; padding: 12px; background: #f7fafc; border-radius: 8px; border-left: 4px solid #56B4E9;">
+                            <p style="font-size: 13px; color: #4a5568; margin: 0;">
+                                <strong>Note:</strong> To request a checkout in a new aircraft, click "Request Checkout" above and schedule with an authorized instructor. High-performance and complex aircraft require additional endorsements.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
     <script>
-        // Mobile menu functionality
-        const hamburgerMenu = document.getElementById('hamburgerMenu');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-        
-        hamburgerMenu.addEventListener('click', () => {
-            sidebarOverlay.classList.toggle('open');
-            sidebarBackdrop.classList.toggle('show');
-        });
-        
-        sidebarBackdrop.addEventListener('click', () => {
-            sidebarOverlay.classList.remove('open');
-            sidebarBackdrop.classList.remove('show');
+        // Mobile menu functionality - wait for navigation to load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const hamburgerMenu = document.getElementById('hamburgerMenu');
+                const sidebarOverlay = document.getElementById('sidebarOverlay');
+                const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+                if (hamburgerMenu && sidebarOverlay && sidebarBackdrop) {
+                    hamburgerMenu.addEventListener('click', () => {
+                        sidebarOverlay.classList.toggle('open');
+                        sidebarBackdrop.classList.toggle('show');
+                    });
+
+                    sidebarBackdrop.addEventListener('click', () => {
+                        sidebarOverlay.classList.remove('open');
+                        sidebarBackdrop.classList.remove('show');
+                    });
+                }
+            }, 100);
         });
 
         // Edit button functionality
