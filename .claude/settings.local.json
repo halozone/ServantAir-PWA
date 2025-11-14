@@ -51,7 +51,8 @@
       "Bash(npm info:*)",
       "Bash(shadcn-ui-mcp-server:*)",
       "Bash(gh auth status:*)",
-      "Bash(gh repo create:*)"
+      "Bash(gh repo create:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

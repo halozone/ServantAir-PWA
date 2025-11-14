@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership Administration</title>
+
+    <!-- Dark Mode Support -->
+    <link rel="stylesheet" href="assets/css/dark-mode.css">
+
+    <!-- Loading Spinners -->
+    <link rel="stylesheet" href="assets/css/loading-spinners.css">
+
+    <!-- Tooltips -->
+    <link rel="stylesheet" href="assets/css/tooltips.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary, #f7fafc);
+            color: var(--text-primary, #2d3748);
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary-color: #56B4E9;
+            --secondary-color: #4A90E2;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: var(--bg-secondary, white);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary, #1a202c);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary, #718096);
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: var(--bg-secondary, white);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary, #64748b);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: var(--bg-tertiary, #f7fafc);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary, white);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-color, #e2e8f0);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary, #1a202c);
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary, #718096);
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(86, 180, 233, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary, #f7fafc);
+            border: 1px solid var(--border-color, #e2e8f0);
+            color: var(--text-primary, #4a5568);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color, #e2e8f0);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary, #4a5568);
+            font-size: 14px;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: var(--danger-color);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color, #e2e8f0);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--bg-secondary, white);
+            color: var(--text-primary, #2d3748);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(86, 180, 233, 0.1);
+        }
+
+        .form-input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .form-input[type="number"]::-webkit-outer-spin-button,
+        .form-input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-prefix {
+            position: relative;
+        }
+
+        .input-prefix::before {
+            content: attr(data-prefix);
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary, #718096);
+            font-weight: 600;
+        }
+
+        .input-prefix .form-input {
+            padding-left: 32px;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: var(--text-tertiary, #a0aec0);
+            margin-top: 4px;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary, white);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: white;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color, #e2e8f0);
+            font-size: 14px;
+            color: var(--text-primary, #2d3748);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-tertiary, #f7fafc);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-default {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .badge-custom {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .badge-member {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .badge-sponsor {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .badge-corporate {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary, #718096);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-description {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary, white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary, #1a202c);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary, #718096);
+        }
+
+        /* Pricing Matrix */
+        .pricing-matrix {
+            overflow-x: auto;
+        }
+
+        .pricing-matrix table {
+            min-width: 800px;
+        }
+
+        .pricing-matrix th.aircraft-col {
+            min-width: 150px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .pricing-matrix td.aircraft-cell {
+            font-weight: 600;
+            background: var(--bg-tertiary, #f7fafc);
+        }
+
+        .pricing-input {
+            width: 100px;
+            padding: 8px 12px;
+            border: 2px solid var(--border-color, #e2e8f0);
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .pricing-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Member History Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color, #e2e8f0);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -28px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid var(--bg-secondary, white);
+        }
+
+        .timeline-content {
+            background: var(--bg-tertiary, #f7fafc);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: var(--text-tertiary, #a0aec0);
+            margin-bottom: 4px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: var(--text-primary, #1a202c);
+            margin-bottom: 4px;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            color: var(--text-secondary, #718096);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary, white);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 24px 24px 16px;
+            border-bottom: 2px solid var(--border-color, #e2e8f0);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary, #1a202c);
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--bg-tertiary, #f7fafc);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-secondary, #718096);
+        }
+
+        .modal-close:hover {
+            background: var(--border-color, #e2e8f0);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color, #e2e8f0);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-info {
+            background: #e6f7ff;
+            border-left: 4px solid var(--primary-color);
+            color: #1a202c;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-left: 4px solid var(--warning-color);
+            color: #1a202c;
+        }
+
+        .alert-icon {
+            font-size: 20px;
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .app-container {
+                flex-direction: row;
+            }
+
+            .main-content {
+                padding: 32px;
+                flex: 1;
+                min-width: 0;
+                width: calc(100vw - 280px);
+                max-width: calc(100vw - 280px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation will be loaded here by JavaScript -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Membership Administration</h1>
+                <p class="page-subtitle">Manage membership types, pricing, and member assignments. Admin and Treasurer access only.</p>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="types">Membership Types</button>
+                <button class="tab-btn" data-tab="pricing">Aircraft Pricing</button>
+                <button class="tab-btn" data-tab="members">Member Management</button>
+                <button class="tab-btn" data-tab="history">History & Audit</button>
+            </div>
+
+            <!-- Tab 1: Membership Types -->
+            <div class="tab-content active" id="tab-types">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Active Membership Types</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">45</div>
+                        <div class="stat-label">Total Members</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">$12,450</div>
+                        <div class="stat-label">Monthly Dues Revenue</div>
+                    </div>
+                </div>
+
+                <!-- Membership Types List -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Membership Types</h2>
+                            <p class="card-subtitle">Configure membership types and their fees</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="showAddMembershipTypeModal()">
+                            ➕ Add Type
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="membershipTypesTable">
+                            <thead>
+                                <tr>
+                                    <th>Type Name</th>
+                                    <th>Category</th>
+                                    <th>Initiation Fee</th>
+                                    <th>Monthly Dues</th>
+                                    <th>Quarterly Fee</th>
+                                    <th>Annual Fee</th>
+                                    <th>Members</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Aircraft Pricing -->
+            <div class="tab-content" id="tab-pricing">
+                <div class="alert alert-info">
+                    <span class="alert-icon">ℹ️</span>
+                    <div>
+                        <strong>Aircraft Pricing by Membership Type</strong><br>
+                        Set custom hourly rates for each aircraft based on membership type. Rates shown are per flight hour (Hobbs time).
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Pricing Matrix</h2>
+                            <p class="card-subtitle">Hourly rates ($/hr) by aircraft and membership type</p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="savePricingMatrix()">
+                            💾 Save All Changes
+                        </button>
+                    </div>
+
+                    <div class="pricing-matrix">
+                        <table id="pricingMatrix">
+                            <!-- Generated by JavaScript -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Member Management -->
+            <div class="tab-content" id="tab-members">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Member Assignments</h2>
+                            <p class="card-subtitle">Assign and manage member membership types</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Search Members</label>
+                        <input type="text" class="form-input" id="searchMembers" placeholder="Search by name, email, or member ID..." oninput="filterMembers()">
+                    </div>
+
+                    <div class="table-container">
+                        <table id="membersTable">
+                            <thead>
+                                <tr>
+                                    <th>Member</th>
+                                    <th>Email</th>
+                                    <th>Current Membership</th>
+                                    <th>Join Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: History & Audit -->
+            <div class="tab-content" id="tab-history">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Membership History & Audit Log</h2>
+                            <p class="card-subtitle">Track all membership changes and updates</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline" id="historyTimeline">
+                        <!-- Timeline items populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Membership Type Modal -->
+    <div class="modal-overlay" id="membershipTypeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Membership Type</h2>
+                <button class="modal-close" onclick="closeMembershipTypeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="membershipTypeForm">
+                    <div class="form-group">
+                        <label class="form-label required">Type Name</label>
+                        <input type="text" class="form-input" id="typeName" placeholder="e.g., Student, Full Member" required>
+                        <p class="form-help">Display name for this membership type</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">Category</label>
+                        <select class="form-select" id="typeCategory" required>
+                            <option value="">Select category</option>
+                            <option value="member">Member</option>
+                            <option value="sponsor">Sponsor</option>
+                            <option value="corporate">Corporate</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Initiation Fee (One-Time)</label>
+                        <div class="input-prefix" data-prefix="$">
+                            <input type="number" class="form-input" id="initiationFee" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <p class="form-help">Charged once when member first joins</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Monthly Dues</label>
+                            <div class="input-prefix" data-prefix="$">
+                                <input type="number" class="form-input" id="monthlyDues" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Quarterly Fee</label>
+                            <div class="input-prefix" data-prefix="$">
+                                <input type="number" class="form-input" id="quarterlyFee" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Annual Fee</label>
+                            <div class="input-prefix" data-prefix="$">
+                                <input type="number" class="form-input" id="annualFee" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <span class="alert-icon">ℹ️</span>
+                        <div>
+                            <strong>Fee Structure:</strong> You can set multiple fee types. Members will be charged based on the fees defined for their membership type.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMembershipTypeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveMembershipType()">Save Membership Type</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Member Type Modal -->
+    <div class="modal-overlay" id="changeMemberTypeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Change Membership Type</h2>
+                <button class="modal-close" onclick="closeChangeMemberTypeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Member</label>
+                    <p id="selectedMemberName" style="font-weight: 600; color: var(--text-primary);"></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Current Membership</label>
+                    <p id="currentMembershipType" style="font-weight: 600; color: var(--primary-color);"></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">New Membership Type</label>
+                    <select class="form-select" id="newMembershipType" required>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Effective Date</label>
+                    <input type="date" class="form-input" id="effectiveDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Reason for Change</label>
+                    <textarea class="form-input" id="changeReason" rows="3" placeholder="Optional notes about this change..."></textarea>
+                </div>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <strong>Note:</strong> Changing membership type will affect aircraft pricing and monthly dues. The change history will be logged for audit purposes.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeChangeMemberTypeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveMemberTypeChange()">Change Membership Type</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dark Mode Manager -->
+    <script src="assets/js/dark-mode.js"></script>
+
+    <!-- Loading Utilities -->
+    <script src="assets/js/loading.js"></script>
+
+    <script>
+        // Sample Data - In production, this would come from backend API
+        let membershipTypes = [
+            {
+                id: 1,
+                name: 'Member',
+                category: 'member',
+                initiationFee: 1000.00,
+                monthlyDues: 200.00,
+                quarterlyFee: 0.00,
+                annualFee: 500.00,
+                memberCount: 25,
+                isDefault: true
+            },
+            {
+                id: 2,
+                name: 'Sponsor',
+                category: 'sponsor',
+                initiationFee: 5000.00,
+                monthlyDues: 500.00,
+                quarterlyFee: 0.00,
+                annualFee: 1500.00,
+                memberCount: 12,
+                isDefault: true
+            },
+            {
+                id: 3,
+                name: 'Corporate',
+                category: 'corporate',
+                initiationFee: 10000.00,
+                monthlyDues: 1000.00,
+                quarterlyFee: 0.00,
+                annualFee: 3000.00,
+                memberCount: 8,
+                isDefault: true
+            }
+        ];
+
+        let aircraft = [
+            { id: 1, tailNumber: 'N123AB', type: 'Cessna 172S' },
+            { id: 2, tailNumber: 'N456CD', type: 'Cessna 172N' },
+            { id: 3, tailNumber: 'N789EF', type: 'Piper PA-28-181' },
+            { id: 4, tailNumber: 'N234GH', type: 'Cessna 182T' }
+        ];
+
+        // Pricing matrix: aircraft_id => membership_type_id => hourly_rate
+        let pricingMatrix = {
+            1: { 1: 150.00, 2: 135.00, 3: 120.00 },
+            2: { 1: 145.00, 2: 130.00, 3: 115.00 },
+            3: { 1: 160.00, 2: 145.00, 3: 130.00 },
+            4: { 1: 180.00, 2: 165.00, 3: 150.00 }
+        };
+
+        let members = [
+            { id: 1, name: 'John Doe', email: 'john@example.com', membershipTypeId: 1, joinDate: '2023-01-15', status: 'active' },
+            { id: 2, name: 'Jane Smith', email: 'jane@example.com', membershipTypeId: 2, joinDate: '2023-03-22', status: 'active' },
+            { id: 3, name: 'Bob Johnson', email: 'bob@example.com', membershipTypeId: 1, joinDate: '2023-06-10', status: 'active' },
+            { id: 4, name: 'Alice Williams', email: 'alice@example.com', membershipTypeId: 3, joinDate: '2023-08-05', status: 'active' }
+        ];
+
+        let membershipHistory = [
+            {
+                id: 1,
+                memberId: 2,
+                memberName: 'Jane Smith',
+                action: 'Membership Type Changed',
+                from: 'Member',
+                to: 'Sponsor',
+                date: '2024-11-01',
+                reason: 'Upgraded to sponsor level',
+                performedBy: 'Admin User'
+            },
+            {
+                id: 2,
+                memberId: 4,
+                memberName: 'Alice Williams',
+                action: 'New Member Added',
+                from: null,
+                to: 'Corporate',
+                date: '2023-08-05',
+                reason: 'Initial membership',
+                performedBy: 'Admin User'
+            }
+        ];
+
+        let currentEditingMember = null;
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+
+                // Update active tab button
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update active tab content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            });
+        });
+
+        // Render membership types table
+        function renderMembershipTypes() {
+            const tbody = document.querySelector('#membershipTypesTable tbody');
+            tbody.innerHTML = '';
+
+            membershipTypes.forEach(type => {
+                const categoryBadge = type.isDefault ?
+                    `<span class="badge badge-default">Default</span>` :
+                    `<span class="badge badge-custom">Custom</span>`;
+
+                const row = `
+                    <tr>
+                        <td><strong>${type.name}</strong></td>
+                        <td>${categoryBadge}</td>
+                        <td>$${type.initiationFee.toFixed(2)}</td>
+                        <td>$${type.monthlyDues.toFixed(2)}</td>
+                        <td>$${type.quarterlyFee.toFixed(2)}</td>
+                        <td>$${type.annualFee.toFixed(2)}</td>
+                        <td>${type.memberCount}</td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="editMembershipType(${type.id})">Edit</button>
+                            ${!type.isDefault ? `<button class="btn btn-sm btn-danger" onclick="deleteMembershipType(${type.id})">Delete</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Render pricing matrix
+        function renderPricingMatrix() {
+            const table = document.getElementById('pricingMatrix');
+            let html = '<thead><tr><th class="aircraft-col">Aircraft</th>';
+
+            // Header row with membership types
+            membershipTypes.forEach(type => {
+                html += `<th>${type.name}<br><small style="opacity: 0.8; font-weight: 400;">$/hr</small></th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            // Data rows for each aircraft
+            aircraft.forEach(ac => {
+                html += `<tr><td class="aircraft-cell"><strong>${ac.tailNumber}</strong><br><small>${ac.type}</small></td>`;
+
+                membershipTypes.forEach(type => {
+                    const rate = pricingMatrix[ac.id]?.[type.id] || 0;
+                    html += `<td><div class="input-prefix" data-prefix="$">
+                        <input type="number" class="pricing-input"
+                               data-aircraft="${ac.id}"
+                               data-membership="${type.id}"
+                               value="${rate.toFixed(2)}"
+                               min="0"
+                               step="0.01"
+                               onchange="updatePricing(${ac.id}, ${type.id}, this.value)">
+                    </div></td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        // Render members table
+        function renderMembers() {
+            const tbody = document.querySelector('#membersTable tbody');
+            tbody.innerHTML = '';
+
+            members.forEach(member => {
+                const membershipType = membershipTypes.find(t => t.id === member.membershipTypeId);
+                const badgeClass = `badge-${membershipType?.category || 'default'}`;
+
+                const row = `
+                    <tr>
+                        <td><strong>${member.name}</strong></td>
+                        <td>${member.email}</td>
+                        <td><span class="badge ${badgeClass}">${membershipType?.name || 'N/A'}</span></td>
+                        <td>${new Date(member.joinDate).toLocaleDateString()}</td>
+                        <td><span class="badge badge-custom">${member.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="showChangeMemberTypeModal(${member.id})">Change Type</button>
+                            <button class="btn btn-sm btn-secondary" onclick="viewMemberHistory(${member.id})">History</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Render history timeline
+        function renderHistory() {
+            const timeline = document.getElementById('historyTimeline');
+            timeline.innerHTML = '';
+
+            membershipHistory.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(entry => {
+                const item = `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">${new Date(entry.date).toLocaleDateString()} - ${entry.performedBy}</div>
+                            <div class="timeline-title">${entry.action}</div>
+                            <div class="timeline-description">
+                                <strong>${entry.memberName}</strong>: ${entry.from ? `${entry.from} → ${entry.to}` : entry.to}
+                                ${entry.reason ? `<br><em>${entry.reason}</em>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                timeline.innerHTML += item;
+            });
+        }
+
+        // Modal functions
+        function showAddMembershipTypeModal() {
+            document.getElementById('modalTitle').textContent = 'Add Membership Type';
+            document.getElementById('membershipTypeForm').reset();
+            document.getElementById('membershipTypeModal').classList.add('show');
+        }
+
+        function closeMembershipTypeModal() {
+            document.getElementById('membershipTypeModal').classList.remove('show');
+        }
+
+        function saveMembershipType() {
+            const newType = {
+                id: membershipTypes.length + 1,
+                name: document.getElementById('typeName').value,
+                category: document.getElementById('typeCategory').value,
+                initiationFee: parseFloat(document.getElementById('initiationFee').value) || 0,
+                monthlyDues: parseFloat(document.getElementById('monthlyDues').value) || 0,
+                quarterlyFee: parseFloat(document.getElementById('quarterlyFee').value) || 0,
+                annualFee: parseFloat(document.getElementById('annualFee').value) || 0,
+                memberCount: 0,
+                isDefault: false
+            };
+
+            membershipTypes.push(newType);
+            renderMembershipTypes();
+            renderPricingMatrix();
+            closeMembershipTypeModal();
+
+            // Show success message
+            alert('✅ Membership type added successfully!');
+        }
+
+        function editMembershipType(id) {
+            const type = membershipTypes.find(t => t.id === id);
+            if (!type) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Membership Type';
+            document.getElementById('typeName').value = type.name;
+            document.getElementById('typeCategory').value = type.category;
+            document.getElementById('initiationFee').value = type.initiationFee;
+            document.getElementById('monthlyDues').value = type.monthlyDues;
+            document.getElementById('quarterlyFee').value = type.quarterlyFee;
+            document.getElementById('annualFee').value = type.annualFee;
+
+            document.getElementById('membershipTypeModal').classList.add('show');
+        }
+
+        function deleteMembershipType(id) {
+            if (!confirm('Are you sure you want to delete this membership type?')) return;
+
+            const index = membershipTypes.findIndex(t => t.id === id);
+            if (index > -1) {
+                membershipTypes.splice(index, 1);
+                renderMembershipTypes();
+                renderPricingMatrix();
+                alert('✅ Membership type deleted successfully!');
+            }
+        }
+
+        function updatePricing(aircraftId, membershipTypeId, rate) {
+            if (!pricingMatrix[aircraftId]) pricingMatrix[aircraftId] = {};
+            pricingMatrix[aircraftId][membershipTypeId] = parseFloat(rate);
+        }
+
+        function savePricingMatrix() {
+            alert('✅ Pricing matrix saved successfully!');
+        }
+
+        function showChangeMemberTypeModal(memberId) {
+            currentEditingMember = members.find(m => m.id === memberId);
+            if (!currentEditingMember) return;
+
+            const currentType = membershipTypes.find(t => t.id === currentEditingMember.membershipTypeId);
+
+            document.getElementById('selectedMemberName').textContent = currentEditingMember.name;
+            document.getElementById('currentMembershipType').textContent = currentType?.name || 'N/A';
+
+            // Populate membership type dropdown
+            const select = document.getElementById('newMembershipType');
+            select.innerHTML = '<option value="">Select new membership type</option>';
+            membershipTypes.forEach(type => {
+                if (type.id !== currentEditingMember.membershipTypeId) {
+                    select.innerHTML += `<option value="${type.id}">${type.name}</option>`;
+                }
+            });
+
+            // Set default date to today
+            document.getElementById('effectiveDate').valueAsDate = new Date();
+
+            document.getElementById('changeMemberTypeModal').classList.add('show');
+        }
+
+        function closeChangeMemberTypeModal() {
+            document.getElementById('changeMemberTypeModal').classList.remove('show');
+            currentEditingMember = null;
+        }
+
+        function saveMemberTypeChange() {
+            if (!currentEditingMember) return;
+
+            const newTypeId = parseInt(document.getElementById('newMembershipType').value);
+            const effectiveDate = document.getElementById('effectiveDate').value;
+            const reason = document.getElementById('changeReason').value;
+
+            const oldType = membershipTypes.find(t => t.id === currentEditingMember.membershipTypeId);
+            const newType = membershipTypes.find(t => t.id === newTypeId);
+
+            // Update member
+            currentEditingMember.membershipTypeId = newTypeId;
+
+            // Update member counts
+            if (oldType) oldType.memberCount--;
+            if (newType) newType.memberCount++;
+
+            // Add to history
+            membershipHistory.unshift({
+                id: membershipHistory.length + 1,
+                memberId: currentEditingMember.id,
+                memberName: currentEditingMember.name,
+                action: 'Membership Type Changed',
+                from: oldType?.name,
+                to: newType?.name,
+                date: effectiveDate,
+                reason: reason || 'No reason provided',
+                performedBy: 'Admin User'
+            });
+
+            renderMembers();
+            renderMembershipTypes();
+            renderHistory();
+            closeChangeMemberTypeModal();
+
+            alert('✅ Membership type changed successfully!');
+        }
+
+        function viewMemberHistory(memberId) {
+            const member = members.find(m => m.id === memberId);
+            if (!member) return;
+
+            // Switch to history tab
+            document.querySelector('[data-tab="history"]').click();
+
+            // Optionally filter history for this member
+            // For now, just scroll to top of history
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filterMembers() {
+            const searchTerm = document.getElementById('searchMembers').value.toLowerCase();
+            const rows = document.querySelectorAll('#membersTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu functionality - wait for navigation to load
+            setTimeout(() => {
+                const hamburgerMenu = document.getElementById('hamburgerMenu');
+                const sidebarOverlay = document.getElementById('sidebarOverlay');
+                const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+                if (hamburgerMenu && sidebarOverlay && sidebarBackdrop) {
+                    hamburgerMenu.addEventListener('click', () => {
+                        sidebarOverlay.classList.toggle('open');
+                        sidebarBackdrop.classList.toggle('show');
+                    });
+
+                    sidebarBackdrop.addEventListener('click', () => {
+                        sidebarOverlay.classList.remove('open');
+                        sidebarBackdrop.classList.remove('show');
+                    });
+                }
+            }, 100);
+
+            // Render initial data
+            renderMembershipTypes();
+            renderPricingMatrix();
+            renderMembers();
+            renderHistory();
+        });
+    </script>
+
+    <!-- Load Navigation Component -->
+    <script src="load-navigation.js"></script>
+</body>
+</html>
