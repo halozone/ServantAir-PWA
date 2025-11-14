@@ -517,8 +517,9 @@ class WeatherWidget {
                 font-family: 'Courier New', monospace;
                 font-size: 12px;
                 color: #4a5568;
-                overflow-x: auto;
-                white-space: nowrap;
+                line-height: 1.6;
+                word-wrap: break-word;
+                white-space: pre-wrap;
             }
 
             .weather-metar,
@@ -564,6 +565,7 @@ class WeatherWidget {
             [data-theme="dark"] .weather-raw {
                 background: var(--bg-tertiary, #1a202c);
                 color: var(--text-secondary, #e2e8f0);
+                line-height: 1.6;
             }
 
             [data-theme="dark"] .weather-footer {
